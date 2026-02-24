@@ -2,7 +2,7 @@
 
 **Date :** 2026-02-24  
 **Contexte :** Session migration Paheko, ordre priorite 1re passe (sujet n°1).  
-**Idee liee :** `references/idees/a-rechercher/2026-02-24_integration-paheko-core.md`
+**Idee liee :** `references/idees-kanban/a-rechercher/2026-02-24_integration-paheko-core.md`
 
 ---
 
@@ -65,6 +65,6 @@ Modules custom evoques (a developper / adapter) : Declarations eco-organismes (B
 
 ## Liens
 
-- Idee : `references/idees/a-rechercher/2026-02-24_integration-paheko-core.md`
+- Idee : `references/idees-kanban/a-rechercher/2026-02-24_integration-paheko-core.md`
 - Decision 08 : `references/artefacts/2026-02-24_08_decision-architecture-max-paheko.md`
 - Migration Paheko : `references/migration-paeco/index.md`

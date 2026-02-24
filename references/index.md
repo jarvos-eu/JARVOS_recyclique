@@ -19,7 +19,7 @@ Refonte complete de Recyclique 1.4.4. Nouveau backend. Solo dev : Strophe. BMAD 
 - **`todo.md`** — To-do de reflexion, recherche et agregations hors flux BMAD (hors epics/stories).
   _(Charger si : session d'ideation, de recherche ou de synthese conceptuelle.)_
 
-- **`idees/`** — Kanban d'idees (un fichier par idee, stades a-conceptualiser, a-rechercher, a-creuser, a-faire, archive). Vue globale : **idees/index.md**. Gestion : skill **idees-kanban** (`.cursor/skills/idees-kanban/`).
+- **`idees-kanban/`** — Kanban d'idees (un fichier par idee, stades a-conceptualiser, a-rechercher, a-creuser, a-faire, archive). Vue globale : **idees-kanban/index.md**. Gestion : skill **idees-kanban** (`.cursor/skills/idees-kanban/`).
   _(Charger si : Strophe donne une idee a noter, ajout de note / transition / archivage, ou session d'ideation / priorisation.)_
 
 ---
@@ -47,7 +47,7 @@ Chaque dossier liste son contenu dans son propre **index** : `references/<dossie
 - **`artefacts/`** — Artefacts temporaires de handoff entre agents. Detail : **artefacts/index.md**.
   _(Charger : si un artefact est mentionne dans `ou-on-en-est.md` ou selon le besoin de la session.)_
 
-- **`idees/`** — Kanban d'idees. Vue globale : **idees/index.md**. Gestion : skill idees-kanban.
+- **`idees-kanban/`** — Kanban d'idees. Vue globale : **idees-kanban/index.md**. Gestion : skill idees-kanban.
   _(Charger : idee a capturer, note / transition / archivage, ou session d'ideation.)_
 
 - **`recherche/`** — Prompts et reponses de recherche externe (Perplexity, Claude.ai, GPT, etc.). Detail : **recherche/index.md**.

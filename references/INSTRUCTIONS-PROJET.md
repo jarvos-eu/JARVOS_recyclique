@@ -11,7 +11,7 @@
 |---------|-------|
 | `recherche/` | Prompts et reponses de recherche externe (Perplexity, Claude.ai, GPT, etc.) |
 | `artefacts/` | Artefacts temporaires de handoff entre agents |
-| `idees/` | Kanban d'idees (un fichier par idee) — gere par le skill **idees-kanban** |
+| `idees-kanban/` | Kanban d'idees (un fichier par idee) — gere par le skill **idees-kanban** |
 | `ancien-repo/` | Guide et clone local du repo Recyclique 1.4.4 (`repo/` gitignore) + doc brownfield |
 | `migration-paeco/` | Guides Paheko/RecyClique, TODO, CR, decla eco-organismes |
 | `vision-projet/` | Matière pour vision projet (Brief, roadmap, présentations, contexte RAG / JARVOS nano-mini) |
@@ -109,4 +109,4 @@ Ordre : a faire en premier, puis en cours, puis fait. Pour changer le statut d'u
 
 ## Idees (Kanban)
 
-**Gestion** : utiliser le skill **idees-kanban** (`.cursor/skills/idees-kanban/`). Ne pas creer ni deplacer de fichiers dans `references/idees/` sans suivre ce skill — il assure le format, les stades et la mise a jour de `references/idees/index.md`.
+**Gestion** : utiliser le skill **idees-kanban** (`.cursor/skills/idees-kanban/`). Ne pas creer ni deplacer de fichiers dans `references/idees-kanban/` sans suivre ce skill — il assure le format, les stades et la mise a jour de `references/idees-kanban/index.md`.

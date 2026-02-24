@@ -2,7 +2,7 @@
 
 **Date :** 2026-02-24  
 **Session :** Brainstorm suite (sync financiere, module correspondance)  
-**Point d'entree suite :** `references/ou-on-en-est.md` + `references/idees/index.md`
+**Point d'entree suite :** `references/ou-on-en-est.md` + `references/idees-kanban/index.md`
 
 ---
 
@@ -37,6 +37,6 @@
 ## Liens
 
 - Design modules : `references/artefacts/2026-02-24_07_design-systeme-modules.md` (EventBus, ModuleBase, module Paheko Sync).
-- Idee sync financiere : `references/idees/a-rechercher/2026-02-24_sync-financiere-caisse-paheko.md`.
-- Idee integration core : `references/idees/a-rechercher/2026-02-24_integration-paheko-core.md`.
-- Nouvelle idee : module correspondance Paheko (`references/idees/a-conceptualiser/2026-02-24_module-correspondance-paheko.md`).
+- Idee sync financiere : `references/idees-kanban/a-rechercher/2026-02-24_sync-financiere-caisse-paheko.md`.
+- Idee integration core : `references/idees-kanban/a-rechercher/2026-02-24_integration-paheko-core.md`.
+- Nouvelle idee : module correspondance Paheko (`references/idees-kanban/a-conceptualiser/2026-02-24_module-correspondance-paheko.md`).

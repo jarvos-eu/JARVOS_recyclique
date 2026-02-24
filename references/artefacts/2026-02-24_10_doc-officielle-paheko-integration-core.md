@@ -2,7 +2,7 @@
 
 **Date :** 2026-02-24  
 **Contexte :** Session Analyst — integration Paheko core ; complement a la cartographie 09 (guides internes).  
-**Idee liee :** `references/idees/a-rechercher/2026-02-24_integration-paheko-core.md`  
+**Idee liee :** `references/idees-kanban/a-rechercher/2026-02-24_integration-paheko-core.md`  
 **Session / conversation :** Analyst - Integration Paheko core doc et recherches
 
 ---
@@ -55,4 +55,4 @@ Les reponses seront a enregistrer dans `references/recherche/` (fichiers `_repon
 
 - Cartographie guides (1re passe) : `references/artefacts/2026-02-24_09_cartographie-integration-paheko-core.md`
 - Decision 08 : `references/artefacts/2026-02-24_08_decision-architecture-max-paheko.md`
-- Idee : `references/idees/a-rechercher/2026-02-24_integration-paheko-core.md`
+- Idee : `references/idees-kanban/a-rechercher/2026-02-24_integration-paheko-core.md`

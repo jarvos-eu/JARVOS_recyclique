@@ -26,7 +26,7 @@ Pour **chaque** fichier (y compris dans les sous-dossiers de _depot) :
 Si le **nom** du fichier évoque des idées (idees, ids, list d'idees, etc.) **ou** si le **contenu** contient une liste d'idées (sans exiger la phrase « noter cette idée ») :
 
 - Lire **`.cursor/skills/idees-kanban/SKILL.md`** et, pour **chaque** idée extraite, appliquer la section **« Créer une idée »** du skill idées-kanban (une fiche par idée).
-- Ensuite, ventiler le **fichier source** (la liste) : il ne va **pas** dans references/idees/ (réservé aux fiches une-idée-un-fichier). Le placer vers vision-projet ou artefacts (ex. `YYYY-MM-DD_archive_liste-idees-importees.md`).
+- Ensuite, ventiler le **fichier source** (la liste) : il ne va **pas** dans references/idees-kanban/ (réservé aux fiches une-idée-un-fichier). Le placer vers vision-projet ou artefacts (ex. `YYYY-MM-DD_archive_liste-idees-importees.md`).
 ---
 
 ## 3. Grille de destination
@@ -74,7 +74,7 @@ Pour chaque fichier dans _depot (récursif) :
 - **references/index.md** : modifier uniquement si nouveau sous-dossier ou changement de rôle de dossier.
 - **doc/index.md** : si un fichier va dans doc/, l'ajouter à la table.
 
-Ne pas mettre à jour `references/idees/index.md` dans ce skill — c’est géré par le skill idees-kanban.
+Ne pas mettre à jour `references/idees-kanban/index.md` dans ce skill — c’est géré par le skill idees-kanban.
 
 ---
 

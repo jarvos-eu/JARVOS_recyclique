@@ -2,7 +2,7 @@
 
 **Date :** 2026-02-24  
 **Session :** Brainstorming avec Mary (analyst BMAD)  
-**Agent suivant :** lire `references/ou-on-en-est.md` + `references/idees/index.md` pour reprendre.
+**Agent suivant :** lire `references/ou-on-en-est.md` + `references/idees-kanban/index.md` pour reprendre.
 
 ---
 
