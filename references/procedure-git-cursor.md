@@ -54,6 +54,21 @@ Convention des versions et tags : **references/versioning.md** (v0.1.0 → v1.0.
 
 ---
 
+## Co-auteur Cursor (contributeur GitHub)
+
+Cursor ajoute automatiquement un trailer `Co-authored-by: Cursor <cursoragent@cursor.com>` aux commits faits par l'agent. GitHub affiche alors un contributeur supplementaire (ex. « Cursor Adjoint »).
+
+- **Desactiver pour les futurs commits** : Cursor > Parametres (Ctrl+,) > **Agents > Attribution** — desactiver l'option ; **redemarrer Cursor** pour que ce soit pris en compte. A verifier apres chaque mise a jour de Cursor (le reglage peut revenir).
+- **Retirer du passe** : reecrire l'historique pour supprimer le trailer des messages de commit (voir ci-dessous), puis force-push — uniquement avec validation explicite de Strophe.
+
+**Reecriture historique (retirer Co-authored-by)** — a faire en local, puis `git push --force origin master` apres validation utilisateur :
+```powershell
+git filter-branch -f --msg-filter "sed '/^Co-authored-by: Cursor/d'" -- --all
+```
+(Sous PowerShell, guillemets doubles autour de la commande sed.) Apres quoi supprimer les refs de backup si tout est OK : `git for-each-ref --format="%(refname)" refs/original/ | ForEach-Object { git update-ref -d $_ }`.
+
+---
+
 ## Depannage
 
 - **PowerShell** : enchaîner les commandes avec `;` et non `&&` (ex. `git status; git branch`).

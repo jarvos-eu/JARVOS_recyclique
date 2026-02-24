@@ -1,13 +1,28 @@
 ---
-description: Renommer ou deplacer des fichiers — utiliser les commandes natives, ne pas reecrire
+description: Renommer ou deplacer des fichiers — utiliser les commandes natives, ne pas reecrire (Windows)
 alwaysApply: true
 ---
 
-# Fichiers : renommer / deplacer
+# Fichiers : renommer / deplacer (Windows)
 
 Pour **renommer** ou **deplacer** un fichier :
 
-- Utiliser une **commande native** : `mv` (terminal), ou l'action Rename / Move de l'IDE (Cursor).
+- Utiliser une **commande native** : terminal Windows (PowerShell ou CMD), ou l'action Rename / Move de l'IDE (Cursor).
 - **Ne pas** simuler un renommage en lisant le fichier et en l'ecrivant sous un nouveau chemin puis en supprimant l'ancien — cela gaspille des tokens et multiplie les risques d'erreur.
 
 Si le renommage exige aussi de **mettre a jour des references** dans d'autres fichiers (liens, chemins), faire : 1) rename/move avec la commande native, 2) search_replace (ou equivalent) cible dans les fichiers qui referencent l'ancien nom.
+
+---
+
+## Specs des commandes natives (Windows)
+
+**Terminal**
+
+- **PowerShell** : `Move-Item -Path <source> -Destination <destination>` (ou `mi` en alias). Pour renommer : meme commande avec un autre nom de fichier en destination.
+- **CMD** : `move <source> <destination>`.
+
+**Cursor / VS Code (IDE)**
+
+- **Renommer** : F2 sur le fichier selectionne dans l'Explorateur ; ou clic droit → « Rename » ; ou palette de commandes **Ctrl+Shift+P** → « File: Rename ».
+- **Deplacer** : glisser-deposer dans l'Explorateur ; ou Rename puis saisir un chemin relatif (ex. `..\autre-dossier\fichier.ext`).
+- La palette permet aussi de chercher « Rename » pour acceder a la meme action.

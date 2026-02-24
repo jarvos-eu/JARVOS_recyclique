@@ -13,14 +13,16 @@ Exemples : `2026-02-24_01_mission-…`, `2026-02-24_brief-pour-architecte.md`
 
 ## Fichiers de recherche (Perplexity, Claude.ai, GPT, etc.)
 
-- Prompt : `YYYY-MM-DD_prompt_[IA-name]_titre-court.md`
-- Reponse : `YYYY-MM-DD_reponse_[IA-name]_titre-court.md`
+Ordre : date → titre court → IA → type.
+
+- Prompt : `YYYY-MM-DD_titre-court_[IA-name]_prompt.md`
+- Reponse : `YYYY-MM-DD_titre-court_[IA-name]_reponse.md`
 
 → placer dans `references/recherche/`
 
 Exemples :
-- `2026-02-24_prompt_perplexity_choix-backend.md`
-- `2026-02-24_reponse_perplexity_choix-backend.md`
+- `2026-02-24_choix-backend_perplexity_prompt.md`
+- `2026-02-24_choix-backend_perplexity_reponse.md`
 
 ## Priorite par date
 

@@ -38,15 +38,17 @@ Emplacement : `references/artefacts/`. Mettre a jour `references/artefacts/index
 
 ### Fichiers de recherche
 
+Ordre : **date** → **titre court** → **IA** → **type** (prompt / reponse).
+
 ```
-YYYY-MM-DD_prompt_[IA-name]_titre-court.md    (avant envoi a l'IA)
-YYYY-MM-DD_reponse_[IA-name]_titre-court.md   (apres reception de la reponse)
+YYYY-MM-DD_titre-court_[IA-name]_prompt.md    (avant envoi a l'IA)
+YYYY-MM-DD_titre-court_[IA-name]_reponse.md   (apres reception de la reponse)
 ```
 
 Exemples :
-- `2026-02-24_prompt_perplexity_choix-backend.md`
-- `2026-02-24_reponse_perplexity_choix-backend.md`
-- `2026-02-24_prompt_claude_analyse-marche-ressourceries.md`
+- `2026-02-24_choix-backend_perplexity_prompt.md`
+- `2026-02-24_choix-backend_perplexity_reponse.md`
+- `2026-02-24_analyse-marche-ressourceries_claude_prompt.md`
 
 Emplacement : `references/recherche/`. Mettre a jour `references/recherche/index.md` a chaque ajout.
 

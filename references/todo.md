@@ -2,13 +2,27 @@
 
 > Taches hors flux BMAD (hors epics/stories).
 > Une seule liste : `[ ]` a faire, `[~]` en cours, `[x]` fait. Changer uniquement le marqueur.
+> **Strategie spirale** : 1re passe = decouverte sur tous les sujets ; 2e passe = recherches detaillees (API Paheko, analyse dumps, etc.).
 
 ---
 
 - [ ] Renseigner l'URL du repo GitHub public Recyclique 1.4.4 dans `references/ancien-repo/README.md`
-- [ ] Lancer git clone du repo Recyclique 1.4.4 (`references/ancien-repo/repo/`)
-- [ ] Lancer le workflow Document Project sur `references/ancien-repo/repo/` pour l'analyse brownfield
+- [x] Lancer git clone du repo Recyclique 1.4.4 (`references/ancien-repo/repo/`)
+- [x] Lancer le workflow Document Project sur `references/ancien-repo/repo/` pour l'analyse brownfield
 - [ ] Decider de l'architecture technique du nouveau backend (recherche technique a faire)
 - [ ] Clarifier le perimetre v0.1.0 vs fonctionnalites a reporter
+- [ ] Cataloguer modules Paheko optionnels disponibles dans leur ecosysteme (prompt Perplexity cree : 2026-02-24_catalogue-plugins-modules-paheko_perplexity_prompt.md)
+- [x] Rechercher frameworks plugin Python (Pluggy, stevedore, manifeste declaratif) — fait : 3 reponses Perplexity + analyse + design arbitre (artefact 07)
+- [ ] Verifier capacites natives Paheko : calendrier, fichiers, communication
+- [ ] Rechercher version Paheko recommandee (stable, LTS, 1.3.x) pour integration (prompt : 2026-02-24_version-paheko-stable_perplexity_prompt.md)
+- [ ] Rechercher auth/SSO Paheko avec app externe FastAPI (tokens, OpenID, bonnes pratiques) (prompt : 2026-02-24_auth-sso-paheko-app-externe_perplexity_prompt.md)
+- [~] Cartographier sync financiere : sessions de caisse Recyclic → ecritures Paheko (cartographie interne faite ; blocage sur recherche API Paheko)
+- [ ] Rechercher API Paheko caisse : endpoints, modeles, sessions, ventes, paiements — prerequis decision source de verite (prompt : 2026-02-24_api-paheko-caisse_perplexity_prompt.md)
+- [ ] Rechercher extension saisie au poids Paheko : modeles, import depuis caisse, API lecture/ecriture — prerequis architecture flux matiere (prompt : 2026-02-24_extension-saisie-poids-paheko_perplexity_prompt.md)
+- [ ] Decider source de verite caisse (Paheko seul vs miroir Recyclic) apres recherche API — bloquant architecture BDD
+- [ ] Monter en local BDD Recyclic + Paheko (dumps prod fournis), puis analyser et cartographier correspondances reelles (2e passe)
+- [ ] Formaliser checklist "copy+consolidate+security" pour import code depuis 1.4.4
+- [ ] Inventorier usages LLM actuels dans Recyclic 1.4.4
+- [ ] Definir strategie LLM/IA : hardcodé + placeholder Ganglion vs. JARVOS Nano/Mini
 - [x] Mise en place de la structure de travail (2026-02-24)
 - [x] Plan Git : tests, procedure, subagent @git-specialist, regle git-workflow (2026-02-24)

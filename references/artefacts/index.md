@@ -22,4 +22,10 @@ Ordre d'execution : 01 → 02 (phase 1) ; puis 03 → 04 → 05 une fois le rapp
 
 ## Autres artefacts
 
-(Ajouter ici les futurs artefacts non-Git : briefs, handoffs, etc. Une ligne par fichier ou par theme.)
+| Fichier | Role |
+|---------|------|
+| `2026-02-24_06_brainstorm-migration-paheko.md` | Brainstorm migration Paheko : contexte, themes, analyse critique, 10 idees Kanban, 7 todos, decisions posees. Point d'entree pour sessions suivantes. |
+| `2026-02-24_07_design-systeme-modules.md` | Design systeme de modules : decisions arbitrees, contrat ModuleBase, module.toml, loader, slots React, zones d'ombre residuelles. |
+| `2026-02-24_08_decision-architecture-max-paheko.md` | Decision architecture « max Paheko » : caisse native, saisie au poids, module correspondance, tensions, agenda recherche. |
+| `2026-02-24_09_cartographie-integration-paheko-core.md` | Cartographie 1re passe integration Paheko core : ce qui existe dans les guides (archi, Docker, extensions), a valider, lien 2e passe. |
+| `2026-02-24_10_doc-officielle-paheko-integration-core.md` | Complement doc officielle Paheko (Extensions + API) ; inconnues et renvoi vers les 5 prompts Perplexity (API caisse, Saisie au poids, version, auth/SSO, catalogue). |
