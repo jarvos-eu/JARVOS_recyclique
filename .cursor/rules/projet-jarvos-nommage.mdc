@@ -1,0 +1,34 @@
+---
+description: Conventions de nommage des fichiers dans references/ - artefacts de handoff et fichiers de recherche
+alwaysApply: true
+---
+
+# Conventions de nommage — references/
+
+## Artefacts temporaires / handoff entre agents
+
+`YYYY-MM-DD_NN_titre-court.md` (NN = 01, 02, … optionnel) → placer dans `references/artefacts/`
+
+Exemples : `2026-02-24_01_mission-…`, `2026-02-24_brief-pour-architecte.md`
+
+## Fichiers de recherche (Perplexity, Claude.ai, GPT, etc.)
+
+- Prompt : `YYYY-MM-DD_prompt_[IA-name]_titre-court.md`
+- Reponse : `YYYY-MM-DD_reponse_[IA-name]_titre-court.md`
+
+→ placer dans `references/recherche/`
+
+Exemples :
+- `2026-02-24_prompt_perplexity_choix-backend.md`
+- `2026-02-24_reponse_perplexity_choix-backend.md`
+
+## Priorite par date
+
+Quand plusieurs fichiers dates sont disponibles dans `recherche/` ou `artefacts/`, charger en priorite le plus recent (date prefix la plus haute).
+Charger des fichiers plus anciens uniquement si le sujet l'exige explicitement.
+
+## Mise a jour des index
+
+- Nouveau fichier dans `artefacts/`, `recherche/` ou `ecosysteme/` : mettre a jour le index du dossier (`references/artefacts/index.md`, etc.).
+- `references/idees/` : gere par le skill **idees-kanban** — ne pas mettre a jour `references/idees/index.md` manuellement.
+- Nouveau sous-dossier dans `references/` : mettre a jour `references/index.md`.

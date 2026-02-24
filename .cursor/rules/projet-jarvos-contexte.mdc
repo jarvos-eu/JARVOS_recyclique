@@ -1,0 +1,14 @@
+---
+description: Point d'entree contexte projet JARVOS Recyclique - charge references/index.md au debut de chaque session
+alwaysApply: true
+---
+
+# Contexte projet JARVOS Recyclique
+
+Au debut de chaque session sur ce projet : noter la date systeme courante (elle sert a evaluer la fraicheur des fichiers dates dans `references/`), puis lire `references/index.md`.
+
+Cet index est le **point d'entree unique** : il contient un abstract de chaque ressource disponible et indique explicitement quoi charger selon le type de session.
+
+**Ne pas charger `references/` en entier.** Utiliser l'index pour cibler ce que la session necessite. Pour le detail d'un sous-dossier (artefacts, recherche, ecosysteme), charger `references/<dossier>/index.md` indiqué dans l'index principal.
+
+Quand Strophe donne une idee a capturer (« j'ai une idee », « note ça », « note une idee », etc.) ou demande d'ajouter une note / transition / archivage sur une idee : lire `.cursor/skills/idees-kanban/SKILL.md` et appliquer les etapes du skill **idees-kanban**.

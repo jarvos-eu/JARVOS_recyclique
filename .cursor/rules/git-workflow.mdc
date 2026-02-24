@@ -1,0 +1,13 @@
+---
+description: Workflow Git JARVOS_recyclique — deleguer a @git-specialist ou proposer les commandes a l'utilisateur
+alwaysApply: true
+---
+
+# Workflow Git — JARVOS_recyclique
+
+Operations Git (commit, push, PR) :
+
+1. **Subagent disponible** : deleguer a @git-specialist (`.cursor/agents/git-specialist.md`). Il applique `references/procedure-git-cursor.md`.
+2. **Sinon** : proposer a l'utilisateur les commandes exactes (staging, commit Conventional Commits, push). Ne pas faire `git push` soi-meme si credentials inaccessibles. S'appuyer sur `references/procedure-git-cursor.md` pour format et ordre.
+
+Ne jamais push (ni force push) sans validation explicite de l'utilisateur.

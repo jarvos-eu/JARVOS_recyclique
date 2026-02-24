@@ -1,0 +1,105 @@
+# Instructions projet — references/
+
+> Ce fichier est destine aux agents qui doivent creer ou modifier des fichiers dans `references/`.
+> Ne le charge pas sans raison — l'index principal (`references/index.md`) et les index de dossier (`references/artefacts/index.md`, etc.) suffisent pour la navigation.
+
+---
+
+## Structure des sous-dossiers
+
+| Dossier | Usage |
+|---------|-------|
+| `recherche/` | Prompts et reponses de recherche externe (Perplexity, Claude.ai, GPT, etc.) |
+| `artefacts/` | Artefacts temporaires de handoff entre agents |
+| `idees/` | Kanban d'idees (un fichier par idee) — gere par le skill **idees-kanban** |
+| `ancien-repo/` | Guide et clone local du repo Recyclique 1.4.4 (`repo/` gitignore) |
+| `vrac/` | Fichiers non classes ou sensibles (gitignore) |
+| `ecosysteme/` | References ecosysteme JARVOS Recyclique (gitignore) |
+
+**Regle** : ne pas deposer de fichiers directement a la racine de `references/` sans raison justifiee. Toujours utiliser le bon sous-dossier.
+
+---
+
+## Conventions de nommage
+
+### Artefacts de handoff entre agents
+
+```
+YYYY-MM-DD_NN_titre-court.md
+```
+
+NN = ordre d'execution (01, 02, …), optionnel. Exemples : `2026-02-24_01_mission-…`, `2026-02-24_brief-pour-architecte.md`.
+Emplacement : `references/artefacts/`. Mettre a jour `references/artefacts/index.md` a chaque ajout.
+
+### Fichiers de recherche
+
+```
+YYYY-MM-DD_prompt_[IA-name]_titre-court.md    (avant envoi a l'IA)
+YYYY-MM-DD_reponse_[IA-name]_titre-court.md   (apres reception de la reponse)
+```
+
+Exemples :
+- `2026-02-24_prompt_perplexity_choix-backend.md`
+- `2026-02-24_reponse_perplexity_choix-backend.md`
+- `2026-02-24_prompt_claude_analyse-marche-ressourceries.md`
+
+Emplacement : `references/recherche/`. Mettre a jour `references/recherche/index.md` a chaque ajout.
+
+---
+
+## Maintenance des index
+
+**Index principal** (`references/index.md`) : a jour quand un sous-dossier est ajoute ou supprime, ou quand le role d'un dossier change. Ne pas y lister le contenu de chaque dossier — le detail est dans chaque `references/<dossier>/index.md`.
+
+**Index par dossier** (`references/artefacts/index.md`, `references/recherche/index.md`, `references/ecosysteme/index.md`) : mettre a jour a chaque ajout (ou theme significatif) dans ce dossier. Une ligne ou une entree par fichier ou par groupe.
+
+**Format d'une entree dans l'index** :
+
+```
+- **`nom-fichier-ou-dossier`** — Description concise (ce que c'est, ce que ca contient).
+  _(Charger si : condition explicite de chargement.)_
+```
+
+**Regle fondamentale** : chaque entree doit permettre a un agent de decider de charger ou non le fichier SANS avoir a l'ouvrir. L'index est un abstract, pas une liste.
+
+---
+
+## Regles pour ou-on-en-est.md
+
+**Format** :
+
+```markdown
+# Ou on en est — JARVOS Recyclique
+
+Mis a jour : YYYY-MM-DD | Agent/Session : …
+
+## Etat actuel
+[Description courte de l'etat du projet]
+
+## Derniere session
+[Date, quoi a ete fait, decisions prises]
+
+## Prochaine etape
+[Action concrete suivante]
+```
+
+**Quand mettre a jour** : en fin de session importante (planification, analyse, decision majeure). L'agent peut proposer une mise a jour ; Strophe valide et sauvegarde.
+
+---
+
+## Regles pour todo.md
+
+**Usage** : taches de reflexion, recherche, agregations, questions a trancher — hors flux BMAD (epics/stories). Ne pas dupliquer ce qui est deja dans les stories BMAD.
+
+**Format** : une seule liste, pas de sections. Marqueurs uniquement :
+- `[ ]` — a faire
+- `[~]` — en cours
+- `[x]` — fait
+
+Ordre : a faire en premier, puis en cours, puis fait. Pour changer le statut d'une tache, modifier uniquement le marqueur (pas de deplacement de ligne). Organiser par themes en commentaire si le fichier grossit.
+
+---
+
+## Idees (Kanban)
+
+**Gestion** : utiliser le skill **idees-kanban** (`.cursor/skills/idees-kanban/`). Ne pas creer ni deplacer de fichiers dans `references/idees/` sans suivre ce skill — il assure le format, les stades et la mise a jour de `references/idees/index.md`.
