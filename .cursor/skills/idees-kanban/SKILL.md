@@ -11,10 +11,17 @@ Un fichier par idée. Le fichier **grandit** (sections datées), on ne réécrit
 
 ---
 
+## 0. Première utilisation (repo cloné, dossier ignoré)
+
+Si `references/idees/` ou un sous-dossier manque (ex. clone d’un repo où `references/idees/` est dans .gitignore) : **créer toute l’arborescence** avant toute opération (créer idée, ajouter note, transitionner, archiver). Créer les dossiers `references/idees/`, `references/idees/a-conceptualiser/`, `a-rechercher/`, `a-creuser/`, `a-faire/`, `archive/`. Si `references/idees/index.md` n’existe pas, le créer avec le titre, la phrase de mise à jour par le skill, et la table avec la ligne placeholder `| _(aucune idée pour l'instant)_ | | | | |`.
+
+---
+
 ## 1. Créer une idée
 
 Quand Strophe dit une idée à noter (« j'ai une idée », « note ça », « note une idée », etc.) :
 
+0. Si `references/idees/` ou `references/idees/index.md` n’existe pas, exécuter d’abord l’étape 0 ci-dessus.
 1. Utiliser la **date du jour** (date système) pour `YYYY-MM-DD` dans le nom du fichier et dans la première section datée.
 2. Choisir le stade initial (par défaut `a-conceptualiser` sauf indication : a-rechercher, a-creuser, a-faire).
 3. Créer `references/idees/<stade>/YYYY-MM-DD_titre-court.md` en utilisant le template dans `.cursor/skills/idees-kanban/TEMPLATE.md`. Remplacer le titre (H1) et la section datée par l'idée brute + intention. Titre court = minuscules, tirets (ex. `export-pdf-bilans`).

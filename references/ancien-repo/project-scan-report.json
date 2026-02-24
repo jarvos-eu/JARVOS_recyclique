@@ -1,0 +1,43 @@
+{
+  "workflow_version": "1.2.0",
+  "timestamps": {"started": "2026-02-24T12:00:00Z", "last_updated": "2026-02-24T12:25:00Z"},
+  "mode": "initial_scan",
+  "scan_level": "deep",
+  "scan_purpose": "analyse_referentielle_migration_1.4.4_vers_v0.1.0",
+  "project_root": "references/ancien-repo/repo",
+  "project_knowledge": "references/ancien-repo",
+  "completed_steps": [
+    {"step": "step_1", "status": "completed", "timestamp": "2026-02-24T12:05:00Z", "summary": "Classified as monorepo with 3 parts (frontend, api, bot)"},
+    {"step": "step_2", "status": "completed", "timestamp": "2026-02-24T12:06:00Z", "summary": "Existing docs inventoried"},
+    {"step": "step_3", "status": "completed", "timestamp": "2026-02-24T12:10:00Z", "summary": "Tech stack and architecture patterns documented"},
+    {"step": "step_4", "status": "completed", "timestamp": "2026-02-24T12:15:00Z", "summary": "API contracts, data models, component inventory written"},
+    {"step": "step_5", "status": "completed", "timestamp": "2026-02-24T12:18:00Z", "summary": "Source tree and critical folders documented"},
+    {"step": "step_6", "status": "completed", "timestamp": "2026-02-24T12:20:00Z", "summary": "Development and deployment guides written"},
+    {"step": "step_7", "status": "completed", "timestamp": "2026-02-24T12:21:00Z", "summary": "Integration architecture documented"},
+    {"step": "step_8_to_10", "status": "completed", "timestamp": "2026-02-24T12:25:00Z", "summary": "Project overview, index, supporting docs generated"}
+  ],
+  "current_step": "completed",
+  "findings": {"project_classification": "monorepo, 3 parts, React+FastAPI+PostgreSQL"},
+  "outputs_generated": [
+    "project-scan-report.json",
+    "project-structure.md",
+    "existing-documentation-inventory.md",
+    "technology-stack.md",
+    "architecture-patterns.md",
+    "api-contracts-api.md",
+    "data-models-api.md",
+    "component-inventory-frontend.md",
+    "source-tree-analysis.md",
+    "development-guide.md",
+    "deployment-configuration.md",
+    "integration-architecture.md",
+    "project-overview.md",
+    "index.md"
+  ],
+  "resume_instructions": "Reprendre à l'étape 1 (classification déjà faite : monorepo frontend + api + bot)",
+  "project_types": [
+    {"part_id": "frontend", "project_type_id": "web", "display_name": "Frontend React (Vite, Mantine)"},
+    {"part_id": "api", "project_type_id": "backend", "display_name": "API FastAPI (Python)"},
+    {"part_id": "bot", "project_type_id": "backend", "display_name": "Bot Telegram (Python)"}
+  ]
+}

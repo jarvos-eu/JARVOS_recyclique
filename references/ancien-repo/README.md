@@ -17,10 +17,8 @@ Ce dossier sert a rapatrier et analyser le repo public Recyclique 1.4.4, le proj
 
 ```bash
 # Depuis la racine du projet JARVOS Recyclique
-git clone [URL_REPO_GITHUB_PUBLIC] references/ancien-repo/repo/
+git clone https://github.com/La-Clique-qui-Recycle/RecyClique.git references/ancien-repo/repo/
 ```
-
-> **TODO** : remplacer `[URL_REPO_GITHUB_PUBLIC]` par l'URL du repo GitHub public Recyclique 1.4.4.
 
 Le dossier `repo/` est gitignore — le clone reste local uniquement (contenu volumineux).
 
@@ -35,8 +33,8 @@ Une fois le clone effectue, utiliser le workflow **Document Project** :
 ```
 
 Pointer le workflow vers `references/ancien-repo/repo/`.
-Il produira une documentation structuree (overview, architecture, decisions, patterns, stories)
-dans `references/` qui servira de base de connaissance pour le refactor JARVOS Recyclique.
+Il produira une documentation structuree (overview, architecture, contrats API, modeles, etc.)
+dans **ce dossier** (`references/ancien-repo/`) : point d'entree **index.md**. Cette doc servira de base de connaissance pour le refactor JARVOS Recyclique.
 
 ---
 

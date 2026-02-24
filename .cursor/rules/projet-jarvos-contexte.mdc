@@ -1,9 +1,9 @@
 ---
-description: Point d'entree contexte projet JARVOS Recyclique - charge references/index.md au debut de chaque session
+description: Point d'entree contexte projet JARVOS_recyclique - charge references/index.md au debut de chaque session
 alwaysApply: true
 ---
 
-# Contexte projet JARVOS Recyclique
+# Contexte projet JARVOS_recyclique
 
 Au debut de chaque session sur ce projet : noter la date systeme courante (elle sert a evaluer la fraicheur des fichiers dates dans `references/`), puis lire `references/index.md`.
 

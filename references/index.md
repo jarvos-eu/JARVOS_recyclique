@@ -6,6 +6,9 @@ Refonte complete de Recyclique 1.4.4. Nouveau backend. Solo dev : Strophe. BMAD 
 > Lis cet index : il contient un abstract de chaque ressource.
 > Charge uniquement ce que ta session necessite — les indications "(Charger si : …)" sont la pour ca.
 
+**references/** = construction du projet (contexte interne, specs, matière pour Brief/PRD).  
+**doc/** (racine) = communication publique (modes d'emploi, présentations, supports à partager).
+
 ---
 
 ## Etat et suivi
@@ -50,11 +53,27 @@ Chaque dossier liste son contenu dans son propre **index** : `references/<dossie
 - **`recherche/`** — Prompts et reponses de recherche externe (Perplexity, Claude.ai, GPT, etc.). Detail : **recherche/index.md**.
   _(Charger : fichiers mentionnes dans ou-on-en-est ou sur demande explicite.)_
 
-- **`ecosysteme/`** — References JARVOS_ecosysteme et JARVOS_fondations. Confidentiel. Gitignore. Detail : **ecosysteme/index.md**.
+- **`ecosysteme/`** — References JARVOS_ecosysteme et JARVOS_fondations. Confidentiel. Gitignore. Detail : **ecosysteme/index.md**. Les documents ecosysteme sont **references** (liens, index), jamais **copies** ailleurs.
   _(Charger : sur demande explicite uniquement.)_
 
-- **`ancien-repo/`** — Instructions git clone + guide analyse brownfield Recyclique 1.4.4. `repo/` gitignore.
+- **`ancien-repo/`** — Instructions git clone + guide analyse brownfield Recyclique 1.4.4. `repo/` gitignore. Sortie du workflow **document-project** (analyse referentielle pour migration) : **ancien-repo/index.md** et docs associees (overview, API, modeles, composants, integration, liste endpoints, architecture brownfield).
   _(Charger : si la session porte sur l'historique, l'analyse brownfield ou l'import de decisions.)_
+
+- **`migration-paeco/`** — Guides Paheko/RecyClique, TODO, comptes-rendus, decla eco-organismes. Detail : **migration-paeco/index.md**.
+  _(Charger : session sur integration Paheko, decla eco-organismes ou historique decisions.)_
+
+- **`vision-projet/`** — Matière pour la vision projet (Brief, roadmap, présentations, contexte RAG/JARVOS nano-mini). Detail : **vision-projet/index.md**.
+  _(Charger : session sur vision projet, Brief BMAD, ou contexte "ou on va".)_
+
+- **`_depot/`** — Dépôt de fichiers en attente de ventilation vers les bons dossiers. Gestion : skill **traiter-depot** (`.cursor/skills/traiter-depot/`). Peut rester vide.
+  _(Charger : session de tri / ventilation du depot.)_
 
 - **`vrac/`** — Fichiers non classes. Sensible. Gitignore. Pas d'index.
   _(Charger : sur demande explicite uniquement.)_
+
+---
+
+## Hors references (racine projet)
+
+- **`doc/`** — Communication publique : modes d'emploi, presentations (financeurs, partenaires), supports a partager. Index : **doc/index.md**.
+  _(Utiliser pour tout document destine a etre publie ou partage en l'etat.)_

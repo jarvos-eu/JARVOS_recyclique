@@ -1,0 +1,20 @@
+# Index — references/vision-projet/
+
+Matiere pour la **vision projet** (construction du projet) : contexte historique, directions (ex. RAG / JARVOS nano-mini), matiere brute pour Brief, PRD et presentations. Interne — versions epurees pour envoi public vont dans `doc/` (racine).
+
+> Charger si : session sur vision projet, Brief BMAD, roadmap, ou contexte "ou on va" (JARVOS nano/mini, etc.).
+
+---
+
+## Regle ecosysteme
+
+Les documents de l'ecosysteme JARVOS (references/ecosysteme/) sont **references** ici ou ailleurs, jamais **copies** — un seul emplacement canonique.
+
+---
+
+## Fichiers
+
+| Fichier | Contenu |
+|---------|--------|
+| `2026-01_archive_systeme-rag-intelligent.md` | Archive : dossier RAG intelligent (contexte depasse — JARVOS_nano / _mini prevus pour ce besoin) |
+| `matiere_presentation-plateforme-recyclic.md` | **Matiere premiere** pour presentations / vision projet. Utiliser avec precaution ; a epurer avant envoi public (version epuree → doc/). |
