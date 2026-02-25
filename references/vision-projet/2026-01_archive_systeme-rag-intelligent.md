@@ -1,4 +1,4 @@
-**\[AGENT INSTRUCTION\] : ce fichier est très ancien. c’est JARVOS\_nano puis \_mini puis etc. qui fera tout ça avec ses propres technos**
+**\[AGENT INSTRUCTION\] : ce fichier est très ancien. c'est JARVOS\_nano puis \_mini puis etc. qui fera tout ça avec ses propres technos**
 
 **📋 RecyClique \- Système RAG Intelligent : Dossier Complet Mis à Jour**
 

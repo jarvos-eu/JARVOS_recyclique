@@ -169,7 +169,7 @@ class PahekoModule(ModuleBase):
 
 - **Durabilité** : clôture caisse → écriture Paheko garantie même si module Paheko redémarre
 - **Multi-worker natif** : tous les Gunicorn workers partagent le même stream
-- **Replay** : historique des événements rejoouable (audit comptable)
+- **Replay** : historique des événements rejouable (audit comptable)
 - **Isolation des erreurs** : un handler qui échoue n'empêche pas les autres
 - **Évolutivité** : si on ajoute un worker dédié events plus tard, même API, même streams
 
@@ -180,6 +180,12 @@ class PahekoModule(ModuleBase):
 - Pluggy : synchrone, inadapté FastAPI async
 
 Réfs recherche : `references/recherche/2026-02-24_pluggy-vs-alternatives-hooks_perplexity_reponse-1.md` et `reponse-2-redis.md`.
+
+---
+
+## File d'attente push Paheko
+
+Même stack **Redis Streams** que l'EventBus. Stream dédié (ex. `push:paheko:caisse`) : le backend RecyClique publie chaque ticket à pousser ; des workers consommateurs FastAPI lisent le stream, appellent le plugin Paheko (HTTP), et font ACK après succès. **Retry sans perte** si Paheko down (message non ACK reste dans le stream). Aucun nouveau composant. Voir [artefact 07](2026-02-25_07_decisions-push-redis-source-eee.md).
 
 ---
 

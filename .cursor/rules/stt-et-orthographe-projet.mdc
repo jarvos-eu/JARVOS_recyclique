@@ -1,0 +1,12 @@
+---
+description: Entrees STT et orthographe RecyClique / Paheko
+alwaysApply: true
+---
+
+# Entrees utilisateur — STT et noms projet
+
+**STT** : l'utilisateur saisit a la voix (Speak-to-Text). Mots approximatifs frequents. Quand c'est incoherent ou bizarre, **extrapoler** le sens probable plutot que demander systematiquement une precision.
+
+**Noms souvent mal ecrits** (interpreter les variantes comme les memes) :
+- **RecyClique** / **Recyclique** (bonnes formes). Typos : Recylique, Recylic, Recyclic — ancien nom ou STT.
+- **Paheko** (P-a-h-e-k-o). Typos : PaEco, Paeco, Pa Eco.

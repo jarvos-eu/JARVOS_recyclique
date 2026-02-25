@@ -12,4 +12,6 @@ Module middleware dans le back-end Recyclic qui traduit les objets metier Recycl
 
 **Questions ouvertes** : resilience si Paheko down ; granularite des appels (par session, par ticket) ; emplacement dans l'architecture (module ModuleBase dedie, voir artefact 07).
 
+**Distinction** : le module **correspondance Paheko** (traducteur RecyClique → API Paheko pour caisse/compta) est distinct du **module décla éco-organismes** (vision : [references/vision-projet/vision-module-decla-eco-organismes.md](../../vision-projet/vision-module-decla-eco-organismes.md) — agnostique, mapping catégories boutique → éco-organismes).
+
 Intention : a-conceptualiser

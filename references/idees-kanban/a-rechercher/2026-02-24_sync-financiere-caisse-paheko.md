@@ -32,3 +32,20 @@ Vente especes : 53 / 707. Vente cheque : 511 / 707. Remise cheques : 512 / 511. 
 4. Document correspondances : pas fourni par Germaine/Corinne ; acces aux dumps BDD prod Recyclic + Paheko prevu, montage en local pour analyser et deduire (2e passe).
 
 Blocage actuel : recherche API Paheko caisse (endpoints, modeles) necessaire avant de trancher source de verite.
+
+---
+
+## 2026-02-25 — Decisions 2e passe
+
+- **Source de verite** = Paheko seul. RecyClique gere la caisse en propre et envoie a la fermeture un payload vers un plugin PHP Paheko (ex. recyclique) qui ecrit dans plugin_caisse_* et appelle POS::syncAccounting().
+- Pas d'ecriture directe RecyClique → BDD Paheko ; pas de modification du core Paheko.
+- Tables caisse confirmees (plugin_caisse_sessions, tabs, tabs_items, tabs_payments, etc.) ; ecritures compta creees par syncAccounting, pas a la fermeture.
+- Reference : [references/artefacts/2026-02-25_04_analyse-plugins-caisse-decisions-push.md](../../artefacts/2026-02-25_04_analyse-plugins-caisse-decisions-push.md).
+
+---
+
+## 2026-02-25 — Decisions granularite push et resilience
+
+- **Push par ticket** (pas par session) ; clôture = syncAccounting + contrôle.
+- **File d'attente** = Redis Streams (côté FastAPI), workers consommateurs, retry si Paheko down.
+- References : [artefact 2026-02-25_07](../../artefacts/2026-02-25_07_decisions-push-redis-source-eee.md), [grille 05](../../artefacts/2026-02-25_05_grille-confrontation-recyclic-paheko.md).

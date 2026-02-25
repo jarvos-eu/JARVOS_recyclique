@@ -5,6 +5,10 @@ description: Ventilates files from references/_depot/ into the correct reference
 
 # Traiter la boîte de dépôt
 
+**Pour exécuter en contexte isolé** (sans charger tout le contexte du chat) : déléguer à l'agent **@depot-specialist** (`.cursor/agents/depot-specialist.md`). Sinon, appliquer ce skill dans le chat courant.
+
+---
+
 Ventiler le contenu de **references/_depot/** vers les bons dossiers (references/* ou doc/), en respectant les conventions du projet. Un fichier = une destination. Toujours mettre à jour les index après chaque ventilation.
 
 **Règle fichiers** : déplacer/copier avec **commandes natives** (Copy-Item, Move-Item, Rename-Item ; sous Windows préférer `-LiteralPath` pour noms avec `[]` ou caractères spéciaux). Ne jamais simuler un déplacement en lisant + écrivant ailleurs.
@@ -40,7 +44,7 @@ Si le **nom** du fichier évoque des idées (idees, ids, list d'idees, etc.) **o
 | Dump BDD prod (Paheko SQLite, Recyclic PostgreSQL, sauvegardes sensibles) | **references/dumps/** | Nommer explicitement (ex. paheko-prod.sqlite, recyclic-prod.sql). Gitignore. |
 | Références écosystème JARVOS | **references/ecosysteme/** | Emplacement canonique ; une fois ventilé là, ne pas dupliquer ce contenu ailleurs |
 | Handoff entre agents, missions, briefs datés | **references/artefacts/** | `YYYY-MM-DD_NN_titre-court.md` |
-| Prompts / réponses recherche externe (IA) | **references/recherche/** | `YYYY-MM-DD_prompt_[IA]_titre.md` / `_reponse_` |
+| Prompts / réponses recherche externe (IA) | **references/recherche/** | `YYYY-MM-DD_titre-court_[IA]_prompt.md` / `_reponse.md` |
 | Sans destination adaptée (après échange avec l'utilisateur) | **references/vrac/** | Gitignore, pas d'index |
 
 **Ecosysteme** : destination = references/ecosysteme/. Les autres dossiers y font référence (liens, index), sans copie du contenu.

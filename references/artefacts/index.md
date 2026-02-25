@@ -6,17 +6,17 @@ Artefacts temporaires de handoff entre agents. Convention : `YYYY-MM-DD_NN_titre
 
 ---
 
-## Plan Git (tests, procedure, subagent)
+## Archive (artefacts historiques)
+
+Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/archive/`. Procedure et regle en vigueur : [references/procedure-git-cursor.md](../procedure-git-cursor.md), [.cursor/rules/git-workflow.mdc](../../.cursor/rules/git-workflow.mdc).
 
 | Fichier | Role |
 |---------|------|
-| `2026-02-24_01_mission-agent-test-git-cursor.md` | Mission pour agent test (session Cursor vide) : init repo, tests, remplir rapport |
-| `2026-02-24_02_rapport-tests-git-cursor.md` | Rapport a remplir pendant les tests ; synthese credentials et recommandations |
-| `2026-02-24_03_mission-rediger-procedure-git.md` | Mission : rediger `references/procedure-git-cursor.md` a partir du rapport |
-| `2026-02-24_04_brief-create-subagent-git.md` | Brief pour Strophe : /create-subagent avec prompt Git |
-| `2026-02-24_05_mission-creer-regle-git-workflow.md` | Mission : creer `.cursor/rules/git-workflow.mdc` et mettre a jour l'index principal |
-
-Ordre d'execution : 01 → 02 (phase 1) ; puis 03 → 04 → 05 une fois le rapport valide. **Plan execute** : procedure, subagent (`.cursor/agents/git-specialist.md`) et regle (`.cursor/rules/git-workflow.mdc`) en place.
+| `archive/2026-02-24_01_mission-agent-test-git-cursor.md` | Mission pour agent test (session Cursor vide) : init repo, tests, remplir rapport |
+| `archive/2026-02-24_02_rapport-tests-git-cursor.md` | Rapport a remplir pendant les tests ; synthese credentials et recommandations |
+| `archive/2026-02-24_03_mission-rediger-procedure-git.md` | Mission : rediger `references/procedure-git-cursor.md` a partir du rapport |
+| `archive/2026-02-24_04_brief-create-subagent-git.md` | Brief pour Strophe : /create-subagent avec prompt Git |
+| `archive/2026-02-24_05_mission-creer-regle-git-workflow.md` | Mission : creer `.cursor/rules/git-workflow.mdc` et mettre a jour l'index principal |
 
 ---
 
@@ -26,10 +26,15 @@ Ordre d'execution : 01 → 02 (phase 1) ; puis 03 → 04 → 05 une fois le rapp
 |---------|------|
 | `2026-02-24_06_brainstorm-migration-paheko.md` | Brainstorm migration Paheko : contexte, themes, analyse critique, 10 idees Kanban, 7 todos, decisions posees. Point d'entree pour sessions suivantes. |
 | `2026-02-24_07_design-systeme-modules.md` | Design systeme de modules : decisions arbitrees, contrat ModuleBase, module.toml, loader, slots React, zones d'ombre residuelles. |
-| `2026-02-24_08_decision-architecture-max-paheko.md` | Decision architecture « max Paheko » : caisse native, saisie au poids, module correspondance, tensions, agenda recherche. |
+| `2026-02-24_08_decision-architecture-max-paheko.md` | Decision architecture « max Paheko » : caisse native, saisie au poids, module correspondance, tensions, agenda recherche. **Partiellement supersede** par 09 (cartographie), 04 (plugins/decisions push), 05 (grille) — voir ces artefacts pour l'etat actuel. |
 | `2026-02-24_09_cartographie-integration-paheko-core.md` | Cartographie 1re passe integration Paheko core : guides (archi, Docker, extensions), decisions 1re passe (version 1.3.19.x, un Compose), catalogue ; suite 2e passe. |
 | `2026-02-24_10_doc-officielle-paheko-integration-core.md` | Complement doc officielle Paheko (Extensions + API) ; inconnues et renvoi vers les 5 prompts Perplexity (API caisse, Saisie au poids, version, auth/SSO, catalogue). |
 | `2026-02-24_11_capacites-paheko-calendrier-fichiers-communication.md` | Synthese capacites natives Paheko : fichiers (oui), calendrier collaboratif (non — extension Agenda = individuel), communication (oui). Impact pour Recyclic. |
 | `2026-02-25_01_decision-agenda-recyclic-externe.md` | Decision agenda dans Recyclic + services externes ; utilisateur = ref Paheko ; multi-agendas ; v0.1.0 = placeholders. |
 | `2026-02-25_02_chantier-fichiers-politique-documentaire.md` | Chantier fichiers / politique documentaire : exploration, matrice vivante, backends, scan factures, upload, frontiere plugin/Recyclic ; scope versions futures. |
 | `2026-02-25_03_closure-1re-passe-spirale.md` | Cloture 1re passe spirale : synthese sujets traites, URL repo renseignee, suite 2e passe et Brief. |
+| `2026-02-25_04_analyse-plugins-caisse-decisions-push.md` | Analyse plugins Paheko (caisse + Saisie au poids), decisions push, vision RecyClique (offline, decla eco-organismes), confrontation a venir avec l'analyste. |
+| `2026-02-25_05_grille-confrontation-recyclic-paheko.md` | Grille confrontation RecyClique vs Paheko (agent-usable) : axes caisse, categories, poids, decla eco-organismes, offline, roles, securite, calendrier/fichiers ; a mettre a jour au fil des decisions. |
+| `2026-02-25_06_point-global-avant-prd.md` | Point global avant PRD : etat des lieux, ce qu'on sait de l'architecture, zones d'ombre, menage artefacts. |
+| `2026-02-25_07_decisions-push-redis-source-eee.md` | Decisions confrontation : push par ticket, Redis Streams, source EEE RecyClique, reception/poids, interfaces compta ; questions encore a trancher (mise a jour suite session 08). |
+| `2026-02-25_08_session-confrontation-recyclic-paheko.md` | Session de confrontation RecyClique vs Paheko : decisions prises (montants, categories, poids, decla, auth, securite), points laisses ouverts, mises a jour grille 05 ; livrable pour PRD. |

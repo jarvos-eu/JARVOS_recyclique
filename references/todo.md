@@ -10,19 +10,22 @@
 - [x] Lancer git clone du repo Recyclique 1.4.4 (`references/ancien-repo/repo/`)
 - [x] Lancer le workflow Document Project sur `references/ancien-repo/repo/` pour l'analyse brownfield
 - [ ] Decider de l'architecture technique du nouveau backend (recherche technique a faire)
-- [ ] Clarifier le perimetre v0.1.0 vs fonctionnalites a reporter
+- [x] Clarifier le perimetre v0.1.0 vs fonctionnalites a reporter — source de verite : references/versioning.md (v0.1.0 → v1.0.0) ; detail eventuel dans le Brief quand produit.
 - [ ] Explorer et formaliser politique fichiers (matrice, backends, scan factures, upload RecyClique→Paheko) — chantier versions futures
 - [x] Cataloguer modules Paheko — fait : reponse Perplexity + croisement artefact 09 (2026-02-25)
 - [x] Rechercher frameworks plugin Python (Pluggy, stevedore, manifeste declaratif) — fait : 3 reponses Perplexity + analyse + design arbitre (artefact 07)
 - [x] Verifier capacites natives Paheko : calendrier, fichiers, communication
 - [x] Rechercher version Paheko recommandee (stable, LTS, 1.3.x) pour integration — fait : reponse Perplexity ; decision 1.3.19.x (2026-02-25)
-- [ ] Rechercher auth/SSO Paheko avec app externe FastAPI (tokens, OpenID, bonnes pratiques) (prompt : 2026-02-24_auth-sso-paheko-app-externe_perplexity_prompt.md)
-- [~] Cartographier sync financiere : sessions de caisse Recyclic → ecritures Paheko (cartographie interne faite ; blocage sur recherche API Paheko)
-- [ ] Rechercher API Paheko caisse : endpoints, modeles, sessions, ventes, paiements — prerequis decision source de verite (prompt : 2026-02-24_api-paheko-caisse_perplexity_prompt.md)
-- [ ] Rechercher extension saisie au poids Paheko : modeles, import depuis caisse, API lecture/ecriture — prerequis architecture flux matiere (prompt : 2026-02-24_extension-saisie-poids-paheko_perplexity_prompt.md)
-- [ ] Decider source de verite caisse (Paheko seul vs miroir Recyclic) apres recherche API — bloquant architecture BDD
+- [x] Rechercher auth/SSO Paheko avec app externe FastAPI (tokens, OpenID, bonnes pratiques) — fait : reponse dans references/recherche/ (2026-02-25)
+- [x] Cartographier sync financiere : sessions de caisse Recyclic → ecritures Paheko — fait : decision push RecyClique → plugin PHP + syncAccounting ; artefact 2026-02-25_04
+- [x] Rechercher API Paheko caisse : endpoints, modeles, sessions, ventes, paiements — fait : reponse dans references/recherche/ (2026-02-25)
+- [x] Rechercher extension saisie au poids Paheko : modeles, import depuis caisse, API — fait : reponse dans references/recherche/ (2026-02-25)
+- [x] Decider source de verite caisse (Paheko seul vs miroir Recyclic) — fait : Paheko seul ; RecyClique pousse a la fermeture via plugin PHP (public/api.php), syncAccounting par le plugin
+- [x] Decider granularite push (par ticket vs session) et resilience (file d'attente) — fait : par ticket, Redis Streams (2026-02-25, artefact 07)
 - [ ] Monter en local BDD Recyclic + Paheko (dumps prod dans `references/dumps/`), puis analyser et cartographier correspondances reelles (2e passe)
-- [ ] Formaliser checklist "copy+consolidate+security" pour import code depuis 1.4.4
+- [ ] Instance Paheko dev (Docker local) : installer Paheko, activer plugins caisse + saisie au poids, tester API / schema ; pour dissection et validation avant PRD
+- [ ] Confronter RecyClique (categories, offline, decla eco-organismes) vs Paheko + plugins pour decision perimetre et mapping — a faire avec l'analyste en reflexion avancee, apres Brief
+- [x] Formaliser checklist "copy+consolidate+security" pour import code depuis 1.4.4 — fait : references/ancien-repo/checklist-import-1.4.4.md (appliquer à chaque pioche dans 1.4.4)
 - [x] Inventorier usages LLM actuels dans Recyclic 1.4.4 — fait : import Excel, categories non normees → rapprochement LLM (2026-02-25)
 - [ ] Definir strategie LLM/IA : hardcodé + placeholder Ganglion vs. JARVOS Nano/Mini — reportee apres brief (v0.1.0 = placeholder)
 - [x] Mise en place de la structure de travail (2026-02-24)

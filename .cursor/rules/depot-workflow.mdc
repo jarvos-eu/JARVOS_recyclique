@@ -1,0 +1,11 @@
+---
+description: Ventilation du depot JARVOS_recyclique — deleguer a @depot-specialist pour traiter references/_depot/
+alwaysApply: true
+---
+
+# Workflow depot — JARVOS_recyclique
+
+Traiter le depot (ventiler references/_depot/) :
+
+1. **Deleguer a @depot-specialist** (`.cursor/agents/depot-specialist.md`). Il applique le skill `.cursor/skills/traiter-depot/SKILL.md` en contexte isole.
+2. Ne pas traiter le depot dans le chat courant si l'utilisateur veut garder un contexte propre — proposer d'invoquer @depot-specialist.

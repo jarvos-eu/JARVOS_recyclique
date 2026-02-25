@@ -4,7 +4,7 @@
 
 ---
 
-## **EDIT 2026-02-24 : Agent Instruction : beaucoup de ces choses sont implémentées dans l’ancienne version 1.4.4, à vérifier)**
+## **EDIT 2026-02-24 : Agent Instruction : beaucoup de ces choses sont implémentées dans l'ancienne version 1.4.4, à vérifier)**
 
 ## 
 
@@ -511,37 +511,37 @@ Voici une synthèse prête à coller sur Discord, en Markdown, sans tableau.
 
 ---
 
-## **🔗 RecyClique \+ HelloAsso : ce qu’on gagne**
+## **🔗 RecyClique \+ HelloAsso : ce qu'on gagne**
 
 En connectant RecyClique à HelloAsso, on automatise la gestion des adhérents, des paiements et du crowdfunding, tout en gardant Paheko comme base de données métier et comptable.[centredaide.helloasso](https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso)​Paheko-RecyClique.md​  
-Résultat : moins de tâches manuelles, moins d’erreurs, plus de temps pour la ressourcerie et l’animation de la communauté.[info.helloasso+1](https://info.helloasso.com/solution/api)​
+Résultat : moins de tâches manuelles, moins d'erreurs, plus de temps pour la ressourcerie et l'animation de la communauté.[info.helloasso+1](https://info.helloasso.com/solution/api)​
 
 ---
 
 ## **🧑‍🤝‍🧑 Adhésions et membres**
 
-* Les adhérents s’inscrivent et payent leur cotisation directement sur HelloAsso (formulaire en ligne, paiement carte sécurisé, sans frais pour l’asso).[info.helloasso+1](https://info.helloasso.com/comparateurs/crowdfunding)​  
-* RecyClique peut récupérer automatiquement les données des adhérents (nom, email, coordonnées, montant, date, statut de paiement) via l’API HelloAsso et les pousser dans Paheko.[helloasso+1](https://dev.helloasso.com/docs/getting-started)​Paheko-RecyClique.md​  
+* Les adhérents s'inscrivent et payent leur cotisation directement sur HelloAsso (formulaire en ligne, paiement carte sécurisé, sans frais pour l'asso).[info.helloasso+1](https://info.helloasso.com/comparateurs/crowdfunding)​  
+* RecyClique peut récupérer automatiquement les données des adhérents (nom, email, coordonnées, montant, date, statut de paiement) via l'API HelloAsso et les pousser dans Paheko.[helloasso+1](https://dev.helloasso.com/docs/getting-started)​Paheko-RecyClique.md​  
 * On évite les doubles saisies : un adhérent qui paye sur HelloAsso se retrouve dans la base membres de Paheko, prête pour la compta, les listes de diffusion, etc.Paheko-RecyClique.md​[centredaide.helloasso](https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso)​  
   ---
 
   ## **💳 Paiements en ligne**
 
-* HelloAsso gère tous les paiements en ligne (adhésions, dons, billets, ventes) avec une API dédiée « checkout » qu’on peut intégrer dans les interfaces RecyClique.[info.helloasso+2](https://info.helloasso.com/solution/checkout)​  
-* Les transactions (montant, type, état, date) sont récupérables en temps réel via l’API pour mise à jour automatique dans Paheko (compta, reçus, rapports).[centredaide.helloasso+1](https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso)​Paheko-RecyClique.md​  
-* Avantage clé : 0 commission sur les montants encaissés, les contributeurs peuvent laisser un pourboire à HelloAsso mais l’asso reçoit 100% des sommes.[carilis+2](https://www.carilis.fr/helloasso-la-plateforme-de-crowdfunding-incontournable/)​  
+* HelloAsso gère tous les paiements en ligne (adhésions, dons, billets, ventes) avec une API dédiée « checkout » qu'on peut intégrer dans les interfaces RecyClique.[info.helloasso+2](https://info.helloasso.com/solution/checkout)​  
+* Les transactions (montant, type, état, date) sont récupérables en temps réel via l'API pour mise à jour automatique dans Paheko (compta, reçus, rapports).[centredaide.helloasso+1](https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso)​Paheko-RecyClique.md​  
+* Avantage clé : 0 commission sur les montants encaissés, les contributeurs peuvent laisser un pourboire à HelloAsso mais l'asso reçoit 100% des sommes.[carilis+2](https://www.carilis.fr/helloasso-la-plateforme-de-crowdfunding-incontournable/)​  
   ---
 
   ## **🚀 Crowdfunding (financement participatif)**
 
 * On crée les campagnes de crowdfunding directement sur HelloAsso (objectif, durée, visuels, contreparties) en quelques minutes.[tool-advisor+2](https://tool-advisor.fr/logiciel-association/comparatif/helloasso/)​  
-* L’API permet de suivre en direct le montant collecté, le nombre de contributeurs et l’avancement vers l’objectif, et d’afficher un compteur « live » dans RecyClique ou sur un site.[info.helloasso+2](https://info.helloasso.com/nos-fonctionnalites)​  
+* L'API permet de suivre en direct le montant collecté, le nombre de contributeurs et l'avancement vers l'objectif, et d'afficher un compteur « live » dans RecyClique ou sur un site.[info.helloasso+2](https://info.helloasso.com/nos-fonctionnalites)​  
 * Les données de collecte peuvent être rapatriées dans Paheko pour la partie compta et reporting (recettes par campagne, suivi des projets).[paheko+1](https://paheko.cloud/utiliser-paheko-comptabilite-entreprise)​Paheko-RecyClique.md​  
   ---
 
   ## **🔁 Rôle de RecyClique dans tout ça**
 
-* RecyClique joue le rôle de **middleware** : il parle à l’API HelloAsso d’un côté et à l’API/Base Paheko de l’autre.[frama](https://forum.frama.space/t/integration-paheko-et-gestion-utilisateurs/1070)​Paheko-RecyClique.md​  
+* RecyClique joue le rôle de **middleware** : il parle à l'API HelloAsso d'un côté et à l'API/Base Paheko de l'autre.[frama](https://forum.frama.space/t/integration-paheko-et-gestion-utilisateurs/1070)​Paheko-RecyClique.md​  
 * On peut :  
   * synchroniser les adhérents HelloAsso → membres Paheko,  
   * créer automatiquement des écritures comptables à partir des paiements HelloAsso,  
@@ -549,17 +549,17 @@ Résultat : moins de tâches manuelles, moins d’erreurs, plus de temps pour la
 
   ---
 
-  ## **✅ Les gros avantages pour l’asso**
+  ## **✅ Les gros avantages pour l'asso**
 
 * **Gain de temps** : plus de re-saisie Excel → Paheko, tout remonte automatiquement depuis HelloAsso.[info.helloasso+1](https://info.helloasso.com/comparateurs/crowdfunding)​Paheko-RecyClique.md​  
-* **Moins d’erreurs** : une seule source de vérité pour les membres et les flux financiers (Paheko), alimentée par HelloAsso.[paheko+1](https://paheko.cloud/a-propos/)​Paheko-RecyClique.md​  
-* **Gratuit côté paiement** : HelloAsso ne prend pas de commission, ce qui maximise ce qui arrive réellement à l’asso.[carilis+2](https://www.carilis.fr/helloasso-la-plateforme-de-crowdfunding-incontournable/)​  
+* **Moins d'erreurs** : une seule source de vérité pour les membres et les flux financiers (Paheko), alimentée par HelloAsso.[paheko+1](https://paheko.cloud/a-propos/)​Paheko-RecyClique.md​  
+* **Gratuit côté paiement** : HelloAsso ne prend pas de commission, ce qui maximise ce qui arrive réellement à l'asso.[carilis+2](https://www.carilis.fr/helloasso-la-plateforme-de-crowdfunding-incontournable/)​  
 * **Meilleure expérience pour les adhérents et donateurs** : formulaire simple, mobile-friendly, paiement en ligne sécurisé, campagnes de crowdfunding attractives.[info.helloasso+2](https://info.helloasso.com/solutions/crowdfunding)​  
 * **Vision globale** : RecyClique \+ Paheko \= vue complète sur les adhésions, dons, ventes et projets, avec une compta propre derrière.[paheko+1](https://paheko.cloud/utiliser-paheko-comptabilite-entreprise)​Paheko-RecyClique.md​
 
 Tu peux terminer sur un call-to-action type :
 
-« Si vous voulez des intégrations spécifiques (stats live, automatisations, etc.), dites-le sur ce canal, c’est justement ce qu’on construit avec RecyClique. »
+« Si vous voulez des intégrations spécifiques (stats live, automatisations, etc.), dites-le sur ce canal, c'est justement ce qu'on construit avec RecyClique. »
 
 1. [https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso](https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso)  
 2. [https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection\_9927adb1-ab68-46ea-a8de-5c2a07c19d49/05e4330a-5ef8-41b9-8f90-6ff4a8f45286/Paheko-RecyClique.md](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_9927adb1-ab68-46ea-a8de-5c2a07c19d49/05e4330a-5ef8-41b9-8f90-6ff4a8f45286/Paheko-RecyClique.md)  
@@ -586,7 +586,7 @@ Tu peux terminer sur un call-to-action type :
 
 Tu peux terminer sur un call-to-action type :
 
-« Si vous voulez des intégrations spécifiques (stats live, automatisations, etc.), dites-le sur ce canal, c’est justement ce qu’on construit avec RecyClique. »
+« Si vous voulez des intégrations spécifiques (stats live, automatisations, etc.), dites-le sur ce canal, c'est justement ce qu'on construit avec RecyClique. »
 
 1. [https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso](https://centredaide.helloasso.com/association?question=comment-fonctionne-l-api-helloasso)  
 2. [https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection\_9927adb1-ab68-46ea-a8de-5c2a07c19d49/05e4330a-5ef8-41b9-8f90-6ff4a8f45286/Paheko-RecyClique.md](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_9927adb1-ab68-46ea-a8de-5c2a07c19d49/05e4330a-5ef8-41b9-8f90-6ff4a8f45286/Paheko-RecyClique.md)  

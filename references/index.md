@@ -32,7 +32,7 @@ Refonte complete de Recyclique 1.4.4. Nouveau backend. Solo dev : Strophe. BMAD 
 - **`procedure-git-cursor.md`** — Procedure Git dans Cursor : ce que l'agent peut faire, ce que l'utilisateur fait, credentials, workflow et depannage.
   _(Charger si : operations Git, configuration, ou delegation au subagent Git.)_
 
-- **`versioning.md`** — Convention de versions et tags (v0.1.0 → v1.0.0). Ancien repo 1.4.4.
+- **`versioning.md`** — Convention de versions et tags (v0.1.0 → v1.0.0). Ancien repo 1.4.4. **Source de vérité pour le périmètre par version.**
   _(Charger si : release, tag Git, planification de version.)_
 
 - **Subagent @git-specialist** — Expert Git du projet. Workflow et limites : voir `procedure-git-cursor.md`. Fichier : `.cursor/agents/git-specialist.md`.
@@ -44,7 +44,7 @@ Refonte complete de Recyclique 1.4.4. Nouveau backend. Solo dev : Strophe. BMAD 
 
 Chaque dossier liste son contenu dans son propre **index** : `references/<dossier>/index.md`. Le detail ne figure pas ici.
 
-- **`artefacts/`** — Artefacts temporaires de handoff entre agents. Detail : **artefacts/index.md**.
+- **`artefacts/`** — Artefacts temporaires de handoff entre agents. Sous-dossier `artefacts/archive/` pour artefacts historiques (ex. plan Git execute). Detail : **artefacts/index.md**.
   _(Charger : si un artefact est mentionne dans `ou-on-en-est.md` ou selon le besoin de la session.)_
 
 - **`idees-kanban/`** — Kanban d'idees. Vue globale : **idees-kanban/index.md**. Gestion : skill idees-kanban.
@@ -68,7 +68,7 @@ Chaque dossier liste son contenu dans son propre **index** : `references/<dossie
 - **`vision-projet/`** — Matière pour la vision projet (Brief, roadmap, présentations, contexte RAG/JARVOS nano-mini). Detail : **vision-projet/index.md**.
   _(Charger : session sur vision projet, Brief BMAD, ou contexte "ou on va".)_
 
-- **`_depot/`** — Dépôt de fichiers en attente de ventilation vers les bons dossiers. Gestion : skill **traiter-depot** (`.cursor/skills/traiter-depot/`). Peut rester vide.
+- **`_depot/`** — Dépôt de fichiers en attente de ventilation vers les bons dossiers. Gestion : skill **traiter-depot** (`.cursor/skills/traiter-depot/`). Pour exécution en contexte isolé : déléguer à **@depot-specialist** (`.cursor/agents/depot-specialist.md`). Peut rester vide.
   _(Charger : session de tri / ventilation du depot.)_
 
 - **`dumps/`** — Dumps BDD sensibles (Paheko prod, Recyclic prod) pour analyse locale. Gitignore. Pas d'index. Déposer ici les sauvegardes SQLite/PostgreSQL ; 2e passe = monter les bases et cartographier les correspondances.

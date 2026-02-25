@@ -56,10 +56,10 @@ Convention des versions et tags : **references/versioning.md** (v0.1.0 → v1.0.
 
 ## Co-auteur Cursor (contributeur GitHub)
 
-Cursor ajoute automatiquement un trailer `Co-authored-by: Cursor <cursoragent@cursor.com>` aux commits faits par l'agent. GitHub affiche alors un contributeur supplementaire (ex. « Cursor Adjoint »).
+Cursor ajoute automatiquement un trailer `Co-authored-by: Cursor <cursoragent@cursor.com>` aux commits faits par l'agent. GitHub affiche alors un contributeur supplementaire (ex. « Cursor Adjoint » / « cursor-agent »).
 
 - **Desactiver pour les futurs commits** : Cursor > Parametres (Ctrl+,) > **Agents > Attribution** — desactiver l'option ; **redemarrer Cursor** pour que ce soit pris en compte. A verifier apres chaque mise a jour de Cursor (le reglage peut revenir).
-- **Retirer du passe** : reecrire l'historique pour supprimer le trailer des messages de commit (voir ci-dessous), puis force-push — uniquement avec validation explicite de Strophe.
+- **Retirer le contributeur de la liste GitHub** : la seule facon est de reecrire l'historique pour supprimer le trailer de tous les messages de commit, puis force-push. La liste des contributeurs est calculee par GitHub a partir des commits ; sans trailer, Cursor disparait. Voir ci-dessous (reecriture historique). **Ne faire le force-push qu'avec validation explicite de Strophe.**
 
 **Reecriture historique (retirer Co-authored-by)** — a faire en local, puis `git push --force origin master` apres validation utilisateur :
 ```powershell

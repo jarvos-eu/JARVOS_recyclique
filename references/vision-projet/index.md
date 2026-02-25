@@ -19,3 +19,4 @@ Les documents de l'ecosysteme JARVOS (references/ecosysteme/) sont **references*
 | `2026-01_archive_systeme-rag-intelligent.md` | Archive : dossier RAG intelligent (contexte depasse — JARVOS_nano / _mini prevus pour ce besoin) |
 | `2026-02-25_rag-recyclic-nano-mini.md` | Recyclic expose la base documentaire (Paheko + services tiers) a JARVOS Nano/Mini pour indexation RAG. |
 | `matiere_presentation-plateforme-recyclic.md` | **Matiere premiere** pour presentations / vision projet. Utiliser avec precaution ; a epurer avant envoi public (version epuree → doc/). |
+| `vision-module-decla-eco-organismes.md` | Vision module(s) decla eco-organismes : agnostique, categories boutique libres → mapping vers categories officielles par eco-organisme ; distinction avec Paheko Saisie au poids. |

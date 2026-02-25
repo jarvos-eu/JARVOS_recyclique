@@ -40,3 +40,4 @@
 - Idee sync financiere : `references/idees-kanban/a-rechercher/2026-02-24_sync-financiere-caisse-paheko.md`.
 - Idee integration core : `references/idees-kanban/a-rechercher/2026-02-24_integration-paheko-core.md`.
 - Nouvelle idee : module correspondance Paheko (`references/idees-kanban/a-conceptualiser/2026-02-24_module-correspondance-paheko.md`).
+- **Suite (decisions 2e passe)** : artefact [2026-02-25_04_analyse-plugins-caisse-decisions-push.md](2026-02-25_04_analyse-plugins-caisse-decisions-push.md) (analyse plugins caisse, architecture push, vision RecyClique, confrontation a venir avec l'analyste).

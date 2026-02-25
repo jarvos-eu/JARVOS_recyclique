@@ -12,13 +12,13 @@ Utilisable en interne, pour des partenaires et pour des **présentations auprès
 
 ---
 
-## 1. Qu’est-ce que RecyClique ?
+## 1. Qu'est-ce que RecyClique ?
 
-**RecyClique** (anciennement Recyclic) est une **plateforme open source de gestion pour ressourceries**, conçue pour les **associations de réemploi**. Elle couvre l’ensemble du flux : de la collecte des objets à la vente en magasin, en passant par la traçabilité réglementaire (EEE, éco-organismes).
+**RecyClique** (anciennement Recyclic) est une **plateforme open source de gestion pour ressourceries**, conçue pour les **associations de réemploi**. Elle couvre l'ensemble du flux : de la collecte des objets à la vente en magasin, en passant par la traçabilité réglementaire (EEE, éco-organismes).
 
 ### En une phrase
 
-RecyClique digitalise le quotidien des ressourceries : **moins de papier et d’Excel, plus de conformité et de temps pour la mission sociale**, grâce à une interface simple (caisse, enregistrement vocal via app) et à des exports vers les partenaires réglementaires.
+RecyClique digitalise le quotidien des ressourceries : **moins de papier et d'Excel, plus de conformité et de temps pour la mission sociale**, grâce à une interface simple (caisse, enregistrement vocal via app) et à des exports vers les partenaires réglementaires.
 
 ### Positionnement
 
@@ -26,7 +26,7 @@ RecyClique digitalise le quotidien des ressourceries : **moins de papier et d’
 - **Pensé pour le terrain** : bénévoles et salariés aux compétences numériques variables.
 - **Conformité intégrée** : obligations Ecologic et déclarations éco-organismes (Ecologic, Ecomaison, etc.) prises en compte dès la conception.
 - **Modulaire** : déploiement possible par étapes (caisse seule, puis dépôts, puis éco-organismes, etc.).
-- **Choix d’hébergement** : **cloud budget** (Jarvos) pour les non-tech, ou **installation open source** sur son propre serveur / VPS.
+- **Choix d'hébergement** : **cloud budget** (Jarvos) pour les non-tech, ou **installation open source** sur son propre serveur / VPS.
 
 ---
 
@@ -40,15 +40,15 @@ Les ressourceries françaises (150+ structures) sont confrontées à :
 |----------|--------|
 | **Saisie manuelle** (papier, Excel) pour dépôts et ventes | 2 à 3 h/jour perdues par structure |
 | **Rapports réglementaires** (Ecologic, éco-organismes) difficiles à produire | Charge administrative et stress |
-| **Outils inadaptés** : ERP type GDR trop chers (>200 €/mois), ERP génériques sans spécificité EEE | Frein à l’adoption et à la croissance |
+| **Outils inadaptés** : ERP type GDR trop chers (>200 €/mois), ERP génériques sans spécificité EEE | Frein à l'adoption et à la croissance |
 | **Perte de données** (Excel corrompus, synchronisation manuelle) | Perte de traçabilité et de soutiens financiers |
 
 Résultat : du **temps précieux détourné de la mission** (accueil, réemploi, insertion).
 
 ### La réponse RecyClique
 
-- **Réduire drastiquement le temps administratif** (objectif : de 3 h à moins d’1 h/jour).
-- **Garantir la conformité** : exports Ecologic et, à terme, déclarations éco-organismes **semi-automatisées** (pré-remplissage et exports ; pas d’API chez les éco-organismes à ce jour, saisie finale côté plateforme partenaire).
+- **Réduire drastiquement le temps administratif** (objectif : de 3 h à moins d'1 h/jour).
+- **Garantir la conformité** : exports Ecologic et, à terme, déclarations éco-organismes **semi-automatisées** (pré-remplissage et exports ; pas d'API chez les éco-organismes à ce jour, saisie finale côté plateforme partenaire).
 - **Rester simple** : interface « gros boutons », enregistrement vocal via app, PWA caisse qui fonctionne même hors ligne.
 - **Choix de déploiement** : **option cloud budget** (Jarvos) pour les structures non techniques, ou **installation open source** sur son propre serveur / VPS pour garder la maîtrise des données.
 
@@ -58,14 +58,14 @@ Résultat : du **temps précieux détourné de la mission** (accueil, réemploi,
 
 ### Pour les opérateurs de terrain (bénévoles, salariés)
 
-- Enregistrer les **dépôts** rapidement (idéalement par **vocal** via application, avec proposition de catégorie EEE par l’IA).
+- Enregistrer les **dépôts** rapidement (idéalement par **vocal** via application, avec proposition de catégorie EEE par l'IA).
 - Tenir la **caisse** sur tablette/PC : catégories EEE, poids, prix, dons, recyclage, avec totaux en temps réel.
 - Saisir même **hors ligne** : les données sont synchronisées dès que la connexion revient.
 
 ### Pour les responsables (présidents, trésoriers, coordinateurs)
 
 - **Conformité réglementaire** sans être expert technique : exports Ecologic conformes, traçabilité complète.
-- **Visibilité** sur les flux (dépôts, ventes, sessions de caisse) et sur l’historique.
+- **Visibilité** sur les flux (dépôts, ventes, sessions de caisse) et sur l'historique.
 - **Rapports** utilisables en AG et pour les financeurs (impact, volumes, conformité).
 
 ### Pour la structure dans son ensemble
@@ -89,7 +89,7 @@ Résultat : du **temps précieux détourné de la mission** (accueil, réemploi,
 | **Interface caisse (PWA)** | Ouverture/fermeture de session, ventes avec catégories EEE, presets (Don 0 €, Don -18, Recyclage, Déchèterie), totaux journaliers, mode hors ligne. |
 | **Sessions de caisse** | Gestion du fond de caisse, variance à la clôture, saisie différée (cahiers papier saisis a posteriori avec la date réelle). |
 | **Réception / dépôts** | Enregistrement des entrées (objets reçus), catégorisation, lien avec les flux pour les déclarations. |
-| **Dépôts via app (IA)** | Enregistrement vocal via application, **classification automatique EEE**, validation ou correction par l’utilisateur. |
+| **Dépôts via app (IA)** | Enregistrement vocal via application, **classification automatique EEE**, validation ou correction par l'utilisateur. |
 | **Utilisateurs et rôles** | Super Admin, Admin, Bénévole ; inscription, activation, historique des statuts. |
 | **Audit et traçabilité** | Journal des actions (ouvertures/fermetures de caisse, changements de rôle, etc.). |
 
@@ -106,10 +106,10 @@ Résultat : du **temps précieux détourné de la mission** (accueil, réemploi,
 
 ### Court terme (déjà en cours ou proche)
 
-- **Paiements multiples** à l’encaissement (espèces + chèques, etc.).
+- **Paiements multiples** à l'encaissement (espèces + chèques, etc.).
 - **Édition du poids** après validation (admin), avec recalcul des statistiques.
-- **Date des tickets** : distinguer date réelle du ticket et date d’enregistrement (`sale_date` vs `created_at`).
-- **Édition du prix** dans l’éditeur d’item (admin, avec log d’audit).
+- **Date des tickets** : distinguer date réelle du ticket et date d'enregistrement (`sale_date` vs `created_at`).
+- **Édition du prix** dans l'éditeur d'item (admin, avec log d'audit).
 
 ### Module éco-organismes (REP)
 
@@ -121,7 +121,7 @@ Un **module dédié** est prévu pour gérer les **déclarations trimestrielles*
 - Tracker les **trois flux** : objets reçus, objets recyclés, objets vendus/réemployés.
 - **Déclarations trimestrielles** : périodes T1–T4, fenêtres de déclaration, rappels.
 - **Mapping des catégories** : correspondance entre catégories RecyClique et catégories de chaque éco-organisme.
-- **Déclarations semi-automatisées** : calcul et pré-remplissage des données côté RecyClique ; pas d’API chez les éco-organismes à ce jour, la saisie finale reste sur les plateformes des partenaires.
+- **Déclarations semi-automatisées** : calcul et pré-remplissage des données côté RecyClique ; pas d'API chez les éco-organismes à ce jour, la saisie finale reste sur les plateformes des partenaires.
 - **Suivi financier** : soutiens validés, reçus, historique.
 
 **État actuel :** phase **études** terminée (besoins, fiche Ecomaison, modèle de données, spécifications fonctionnelles, guide de mapping). Prochaines étapes : validation technique et métier, analyse du code existant, prototypage, puis développement.
@@ -130,7 +130,7 @@ Un **module dédié** est prévu pour gérer les **déclarations trimestrielles*
 
 ### Partenariat Paheko
 
-**Paheko** est un logiciel de gestion d’association (comptabilité, adhérents, etc.). L’**intégration de Paheko** comme moteur backend pour RecyClique est **prévue dans la prochaine refonte** :
+**Paheko** est un logiciel de gestion d'association (comptabilité, adhérents, etc.). L'**intégration de Paheko** comme moteur backend pour RecyClique est **prévue dans la prochaine refonte** :
 
 - **Comptabilité** : flux compatibles avec la gestion associative.
 - **Utilisateurs et adhérents** : gestion des participants, bénévoles, usagers.
@@ -142,7 +142,7 @@ Un **module dédié** est prévu pour gérer les **déclarations trimestrielles*
 - **Recommandation de prix** : IA basée sur les données de marché.
 - **Écosystème élargi** : autres filières REP (textile, mobilier, jouets), collectivités, déchèteries, réseaux nationaux (Emmaüs, Envie, etc.).
 - **Plateforme territoriale** : interconnexion de ressourceries sur un territoire.
-- **Analytics** : tableaux de bord, prédictions de flux, démonstration d’impact pour les financeurs.
+- **Analytics** : tableaux de bord, prédictions de flux, démonstration d'impact pour les financeurs.
 
 ---
 
@@ -156,27 +156,27 @@ Un **module dédié** est prévu pour gérer les **déclarations trimestrielles*
 | **Conformité réglementaire** | 100 % des exports Ecologic acceptés sans retraitement |
 | **Adoption** | &gt; 80 % des dépôts saisis via RecyClique sous 2 semaines |
 | **Vitesse de saisie** | Dépôt en &lt; 15 secondes (vs 2–3 min en manuel) |
-| **Précision des données** | &lt; 5 % d’erreurs de classification (vs 15–20 % en manuel) |
+| **Précision des données** | &lt; 5 % d'erreurs de classification (vs 15–20 % en manuel) |
 
 ### Valeur pour une structure
 
-- **Gain de temps** : réaffectation des heures gagnées vers l’accueil, le tri, l’insertion.
+- **Gain de temps** : réaffectation des heures gagnées vers l'accueil, le tri, l'insertion.
 - **Sécurité juridique** : conformité Ecologic et traçabilité des opérations.
-- **Meilleure visibilité** : données fiables pour les AG, les rapports d’activité et les demandes de subventions.
+- **Meilleure visibilité** : données fiables pour les AG, les rapports d'activité et les demandes de subventions.
 - **Évolutivité** : capacité à augmenter les volumes sans surcharge administrative.
 - **Soutiens financiers** : module éco-organismes visant à **maximiser et sécuriser** les soutiens REP (Ecologic, Ecomaison, etc.).
 
 ### Alignement avec les enjeux sectoriels
 
 - **Loi AGEC** et renforcement des obligations REP : RecyClique aide à les respecter.
-- **ESS et réemploi** : outil adapté aux associations, open source, réutilisable par d’autres structures.
+- **ESS et réemploi** : outil adapté aux associations, open source, réutilisable par d'autres structures.
 - **Transition numérique** : passage du papier/Excel à une plateforme moderne sans dépendance à des solutions propriétaires coûteuses.
 
 ---
 
-## 7. À qui s’adresse ce document ?
+## 7. À qui s'adresse ce document ?
 
-- **Équipe projet et partenaires techniques** : vue d’ensemble de la plateforme et de la roadmap.
+- **Équipe projet et partenaires techniques** : vue d'ensemble de la plateforme et de la roadmap.
 - **Direction et responsables associatifs** : justification du projet, valeur, conformité, évolution.
 - **Financeurs et partenaires institutionnels** : présentation synthétique, objectifs, impact, vision (sections 1–3, 5–6 en priorité).
 - **Nouveaux arrivants** : compréhension rapide de RecyClique, de son rôle et de son écosystème.

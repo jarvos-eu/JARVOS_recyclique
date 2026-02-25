@@ -12,3 +12,8 @@ references/ancien-repo/repo/
 
 # Clone local du code source Paheko (reference pour integration)
 references/paheko/repo/
+dev-tampon/
+
+# Sorties normalisation typographique (skill normalize-typographic-chars)
+normalize_typographic_backup_*/
+normalize_typographic_chars_*.log
