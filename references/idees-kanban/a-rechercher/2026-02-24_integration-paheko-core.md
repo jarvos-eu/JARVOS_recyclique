@@ -26,4 +26,11 @@ Cartographie realisee : contenu des guides migration-paeco (architecture, Docker
 
 ## 2026-02-24 — Doc officielle Paheko + prompts recherche (Analyst)
 
-Artefact `references/artefacts/2026-02-24_10_doc-officielle-paheko-integration-core.md` : synthese doc officielle (Extensions + API 1.3.17.1), inconnues restantes. Cinq prompts Perplexity crees (reponses a venir) : `2026-02-24_api-paheko-caisse_perplexity_prompt.md`, `2026-02-24_extension-saisie-poids-paheko_perplexity_prompt.md`, `2026-02-24_version-paheko-stable_perplexity_prompt.md`, `2026-02-24_auth-sso-paheko-app-externe_perplexity_prompt.md`, `2026-02-24_catalogue-plugins-modules-paheko_perplexity_prompt.md`.
+Artefact `references/artefacts/2026-02-24_10_doc-officielle-paheko-integration-core.md` : synthese doc officielle (Extensions + API). Cinq prompts Perplexity crees ; version et catalogue faits (2026-02-25) ; reste a executer : API caisse, Saisie au poids, auth/SSO.
+
+---
+
+## 2026-02-25 — Decisions 1re passe + reponses Perplexity
+
+**Decisions** : Version Paheko v0.1.0 = 1.3.19.x (derniere stable). Un seul Compose monorepo (Recyclic + Paheko + Postgres/Redis) ; scripts deploiement / CI-CD a decider plus tard.  
+**Reponses enregistrees** : `2026-02-24_version-paheko-stable_perplexity_reponse.md`, `2026-02-24_catalogue-plugins-modules-paheko_perplexity_reponse.md`. Artefact 09 mis a jour (section « Decisions 1re passe », « Catalogue 1re passe »). Suite 2e passe inchangee (API caisse, Saisie au poids, dumps BDD dans `references/dumps/`).

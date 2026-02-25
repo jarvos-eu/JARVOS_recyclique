@@ -21,7 +21,7 @@ Sources : `references/migration-paeco/2025-11_paheko-recyclique-integration-firs
 - Compose propose : services `postgres`, `redis`, `paheko`, plus optionnel `middleware` (API Python).
 - Paheko : Dockerfile dedie, config via env (DB_*, PAHEKO_*), extensions preinstallables via scripts (`activate-extensions.php`, etc.).
 - Dossier `paheko/extensions/` pour modules a preinstaller.
-- A valider pour v0.1.0 : un seul compose monorepo (Recyclic + Paheko) vs. deux stacks separes ; version Paheko cible (guides en 1.3.17).
+- A valider pour v0.1.0 : un seul compose monorepo (Recyclic + Paheko) vs. deux stacks separes ; version Paheko cible (guides en 1.3.17). *(→ décidé 2026-02-25 : un seul Compose, version 1.3.19.x ; voir section « Décisions 1re passe ».)*
 
 ### Extensions / modules Paheko (listes dans les guides)
 
@@ -45,12 +45,18 @@ Modules custom evoques (a developper / adapter) : Declarations eco-organismes (B
 
 ---
 
-## A valider ou preciser (1re passe)
+## Decisions 1re passe (2026-02-25)
 
-- **Version Paheko** : 1.3.17 dans les guides ; quelle version pour v0.1.0 (derniere stable, LTS) ?
-- **Un seul Docker Compose** : Recyclic (FastAPI + front) + Paheko + Postgres/Redis dans le monorepo — confirmer ou adapter.
-- **Auth / users** : gestion users Paheko native ; comment SSO ou lien Recyclic ↔ Paheko (login unique, tokens) — a documenter en 2e passe.
-- **Agenda/calendrier** : extension « Agenda et contacts » — suffisante pour calendrier collaboratif ? A traiter dans sujet n°2 (calendar/fichiers).
+- **Version Paheko** : v0.1.0 cible = derniere stable (1.3.19.x). Refs et analyse brownfield deja sur 1.3.19.1.
+- **Docker / deploiement** : un seul Compose monorepo (Recyclic + Paheko + Postgres/Redis). Scripts deploiement (local dev, VPS staging/prod) et CI/CD Docker = a decider plus tard.
+- **Auth / users** : a documenter en 2e passe (SSO ou lien Recyclic–Paheko).
+- **Agenda/calendrier** : traite dans sujet n°2 (artefact 11) ; extension Agenda = individuel, pas collaboratif natif.
+
+---
+
+## Catalogue 1re passe
+
+Reponse Perplexity : `references/recherche/2026-02-24_catalogue-plugins-modules-paheko_perplexity_reponse.md`. Synthese : 14 extensions officielles livrees avec le core (Caisse, Saisie au poids, Reservations, Recus fiscaux, Gestion stock velos, etc.) ; versionnement lie au core (1.3.x) ; ordre d'activation recommande pour RecyClique : Caisse puis Saisie au poids puis Reservations. Croiser avec le tableau extensions de la section « Ce qui existe deja » ci-dessus ; todo « Cataloguer modules Paheko » fait.
 
 ---
 
@@ -58,8 +64,8 @@ Modules custom evoques (a developper / adapter) : Declarations eco-organismes (B
 
 1. API Paheko caisse : endpoints, modeles (sessions, ventes, paiements).  
 2. Extension Saisie au poids : fonctionnement, tables, API lecture/ecriture.  
-3. Catalogue modules Paheko optionnels : liste officielle, versions, compatibilite (todo « Cataloguer modules Paheko »).  
-4. Analyse dumps BDD Recyclic + Paheko (quand disponibles) pour correspondances reelles.
+3. ~~Catalogue modules Paheko optionnels~~ — fait (1re passe).  
+4. Analyse dumps BDD Recyclic + Paheko (dans `references/dumps/` quand disponibles) pour correspondances reelles.
 
 ---
 

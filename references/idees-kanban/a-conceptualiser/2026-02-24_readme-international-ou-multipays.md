@@ -13,3 +13,9 @@ Un encart en anglais indiquant que ce projet est destiné à des établissements
 Imaginer ensemble une approche multi-pays intégrée dès la conception (pas seulement « fork pour ton pays », mais support de plusieurs pays/régions dans le cœur du produit).
 
 Intention : a-conceptualiser (à trancher plus tard : encart simple vs. multi-pays natif).
+
+---
+
+## 2026-02-25 — 1re passe spirale
+
+Options A (encart EN) et B (multi-pays natif) posees ; a trancher au moment de la redaction du README.

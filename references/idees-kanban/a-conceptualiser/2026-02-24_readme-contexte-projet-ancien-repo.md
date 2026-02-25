@@ -17,3 +17,9 @@ Intention : a-conceptualiser.
 
 - **Figer / archiver l’ancien repo** : passer le repo GitHub La-Clique-qui-Recycle/RecyClique en mode « archivé » (read-only, plus de contributions). Tag ou release 1.4.4 comme référence figée.
 - **Nettoyer l’ancien repo** : avant ou au moment du figement, cleaner un maximum (fichiers en trop, déchets, doublons, etc.) pour laisser une base propre en 1.4.4.
+
+---
+
+## 2026-02-25 — 1re passe spirale
+
+Contenu identifie (La Clique, ABZenobre, lien ancien repo). URL repo renseignee dans `references/ancien-repo/README.md`. Reste : figer/archiver le repo + nettoyer avant archivage.

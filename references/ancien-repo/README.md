@@ -2,6 +2,8 @@
 
 Ce dossier sert a rapatrier et analyser le repo public Recyclique 1.4.4, le projet precurseur de JARVOS Recyclique.
 
+**URL du repo (public, figé 1.4.4) :** https://github.com/La-Clique-qui-Recycle/RecyClique
+
 ---
 
 ## Contenu du repo original

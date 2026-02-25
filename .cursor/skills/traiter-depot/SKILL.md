@@ -37,6 +37,7 @@ Si le **nom** du fichier évoque des idées (idees, ids, list d'idees, etc.) **o
 | Versions épurées prêtes à envoyer (présentation, modes d'emploi) | **doc/** (racine) | Communication publique uniquement |
 | Guides Paheko/RecyClique, TODO, CR réunion, decla éco-organismes | **references/migration-paeco/** | Dates + tirets, pas d’espaces |
 | Brownfield, API 1.4.x, architecture actuelle, liste endpoints | **references/ancien-repo/** | Conserver noms explicites (ex. architecture-brownfield.md) |
+| Dump BDD prod (Paheko SQLite, Recyclic PostgreSQL, sauvegardes sensibles) | **references/dumps/** | Nommer explicitement (ex. paheko-prod.sqlite, recyclic-prod.sql). Gitignore. |
 | Références écosystème JARVOS | **references/ecosysteme/** | Emplacement canonique ; une fois ventilé là, ne pas dupliquer ce contenu ailleurs |
 | Handoff entre agents, missions, briefs datés | **references/artefacts/** | `YYYY-MM-DD_NN_titre-court.md` |
 | Prompts / réponses recherche externe (IA) | **references/recherche/** | `YYYY-MM-DD_prompt_[IA]_titre.md` / `_reponse_` |
@@ -71,6 +72,7 @@ Pour chaque fichier dans _depot (récursif) :
 ## 6. Mise à jour des index
 
 - **Index du dossier cible** : ajouter une entrée (fichier + description permettant de décider sans ouvrir le fichier). Inclure une clause **« Charger si : … »** quand le format du dossier le prévoit (voir `references/INSTRUCTIONS-PROJET.md`).
+- **references/dumps/** : pas d'index (contenu gitignore). Ne pas créer ni mettre à jour d'index pour ce dossier.
 - **references/index.md** : modifier uniquement si nouveau sous-dossier ou changement de rôle de dossier.
 - **doc/index.md** : si un fichier va dans doc/, l'ajouter à la table.
 

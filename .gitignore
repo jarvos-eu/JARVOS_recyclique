@@ -1,6 +1,14 @@
 # Dossiers sensibles / confidentiels
 references/vrac/
 references/ecosysteme/
+references/dumps/
+
+# Contenu du depot (fichiers en attente de ventilation) — le dossier _depot reste visible
+references/_depot/*
+!references/_depot/.gitkeep
 
 # Clone local du repo Recyclique 1.4.4 (volumineux, local uniquement)
 references/ancien-repo/repo/
+
+# Clone local du code source Paheko (reference pour integration)
+references/paheko/repo/

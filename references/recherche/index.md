@@ -25,5 +25,7 @@ Prompts et reponses de recherche externe (Perplexity, Claude.ai, GPT, etc.).
 | 2026-02-24_api-paheko-caisse_perplexity_prompt.md | API caisse Paheko : endpoints, modèles, où documentée — prompt Perplexity |
 | 2026-02-24_extension-saisie-poids-paheko_perplexity_prompt.md | Extension Saisie au poids Paheko : fonctionnement, tables, API — prompt Perplexity |
 | 2026-02-24_version-paheko-stable_perplexity_prompt.md | Version Paheko recommandée (stable, LTS, 1.3.x) — prompt Perplexity |
+| 2026-02-24_version-paheko-stable_perplexity_reponse.md | Réponse Perplexity version Paheko recommandée (stable, 1.3.x) |
 | 2026-02-24_auth-sso-paheko-app-externe_perplexity_prompt.md | Auth / SSO Paheko avec app externe (FastAPI) — prompt Perplexity |
 | 2026-02-24_catalogue-plugins-modules-paheko_perplexity_prompt.md | Catalogue plugins et modules Paheko officiels — prompt Perplexity |
+| 2026-02-24_catalogue-plugins-modules-paheko_perplexity_reponse.md | Réponse Perplexity catalogue plugins/modules Paheko officiels |

@@ -62,11 +62,17 @@ Chaque dossier liste son contenu dans son propre **index** : `references/<dossie
 - **`migration-paeco/`** — Guides Paheko/RecyClique, TODO, comptes-rendus, decla eco-organismes. Detail : **migration-paeco/index.md**.
   _(Charger : session sur integration Paheko, decla eco-organismes ou historique decisions.)_
 
+- **`paheko/`** — Guide et reference Paheko : instructions de clone, lien doc officielle (Fossil). Clone du code source dans **paheko/repo/** (gitignore). Detail : **paheko/index.md**.
+  _(Charger : session sur integration Paheko, analyse API/extensions ou croisement avec migration-paeco.)_
+
 - **`vision-projet/`** — Matière pour la vision projet (Brief, roadmap, présentations, contexte RAG/JARVOS nano-mini). Detail : **vision-projet/index.md**.
   _(Charger : session sur vision projet, Brief BMAD, ou contexte "ou on va".)_
 
 - **`_depot/`** — Dépôt de fichiers en attente de ventilation vers les bons dossiers. Gestion : skill **traiter-depot** (`.cursor/skills/traiter-depot/`). Peut rester vide.
   _(Charger : session de tri / ventilation du depot.)_
+
+- **`dumps/`** — Dumps BDD sensibles (Paheko prod, Recyclic prod) pour analyse locale. Gitignore. Pas d'index. Déposer ici les sauvegardes SQLite/PostgreSQL ; 2e passe = monter les bases et cartographier les correspondances.
+  _(Charger : session analyse BDD ou 2e passe correspondances.)_
 
 - **`vrac/`** — Fichiers non classes. Sensible. Gitignore. Pas d'index.
   _(Charger : sur demande explicite uniquement.)_
