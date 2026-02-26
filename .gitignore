@@ -17,3 +17,6 @@ dev-tampon/
 # Sorties normalisation typographique (skill normalize-typographic-chars)
 normalize_typographic_backup_*/
 normalize_typographic_chars_*.log
+
+# Config locale (secrets)
+.env

@@ -6,6 +6,8 @@ Mis a jour : 2026-02-26
 
 ## Etat actuel
 
+**Epic 1 réalisé.** Toutes les stories du socle technique sont **done** (1-1 à 1-5) : frontend Vite React TS, API FastAPI (statics, health check), Docker Compose minimal, loader de modules (TOML, ModuleBase, EventBus/slots), déploiement effectif et vérification stack. **Stack JARVOS RecyClique complète** : RecyClique (port 8000), Paheko (port 8080), PostgreSQL, Redis. **Paheko à jour** : base SQLite en place (dump prod `references/dumps/paheko-prod-2026-02-25.sqlite` injecté dans le volume), accès en HTTP (correctif SSL local appliqué), **extensions Caisse et Saisie au poids activées** — prêt pour Epic 2 (auth) et Epic 3 (mapping, canal push).
+
 Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponible** dans `references/ancien-repo/`. **Analyse brownfield Paheko faite** : extensions (plugins/modules), API HTTP, gestion des fichiers et upload, WebDAV — voir [references/paheko/analyse-brownfield-paheko.md](paheko/analyse-brownfield-paheko.md) (index : [references/paheko/index.md](paheko/index.md)). Workflow Git en place. Aucun code source encore.
 
 **Framework de modules : design complet et arbitré.** Artefact : `references/artefacts/2026-02-24_07_design-systeme-modules.md`. Décisions finales posées : TOML, ModuleBase, EventBus Redis Streams (multi-workers), slots React, monorepo. **Product Brief v0.1.0 complété** (2026-02-25) : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`. **PRD complété** (2026-02-26) : `_bmad-output/planning-artifacts/prd.md` — exigences fonctionnelles (caisse, réception, compta, correspondance, auth, déploiement, vie asso, éco-organismes, extension points), NFR, scope v1 et hors scope (dont réception hors ligne = module complémentaire post-v1). **UX v1.0** : mêmes écrans que 1.4.4, copie du code des mises en page (copy+consolidate+security), pas de refonte écrans pour la v1.0.
@@ -23,6 +25,15 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 **Architecture complétée** (2026-02-26) : `_bmad-output/planning-artifacts/architecture.md` — décisions techniques, patterns, structure projet, validation ; statut READY FOR IMPLEMENTATION. Points à trancher en v0.1 : [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md).
 
 ## Derniere session
+
+2026-02-26 — Epic 1 réalisé, stack JARVOS RecyClique complète, Paheko opérationnel.
+
+Réalisé :
+- **Epic 1** : toutes les stories done (1-1 frontend Vite React TS, 1-2 API FastAPI + health, 1-3 Docker Compose, 1-4 loader modules TOML/ModuleBase/EventBus/slots, 1-5 déploiement effectif et vérification stack).
+- **Stack** : RecyClique (http://localhost:8000), Paheko (http://localhost:8080), PostgreSQL, Redis — une commande `docker compose up --build`.
+- **Paheko** : dump SQLite prod (`references/dumps/paheko-prod-2026-02-25.sqlite`) injecté dans le volume en `association.sqlite` ; correctif SSL local (SetEnv HTTPS off dans le conteneur) pour accès HTTP sans erreur ; **extensions Caisse et Saisie au poids activées** — instance prête pour la suite (Epic 2 auth, Epic 3 mapping/canal push).
+
+---
 
 2026-02-26 — Sprint Planning complété (workflow BMAD).
 
@@ -174,9 +185,9 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 
 ## Prochaine etape
 
-1. **Create Epics and Stories** (`/bmad-bmm-create-epics-and-stories`, agent PM John) : découper le PRD et l'architecture en épics et stories (fichier `epics.md`). Workflow en 4 étapes avec tours de réflexion et validation.
-2. **Check Implementation Readiness** (`/bmad-bmm-check-implementation-readiness`, agent Architect Winston) : valider la cohérence PRD / UX / Architecture / Épics & Stories avant le sprint.
-3. **Sprint Planning** (`/bmad-bmm-sprint-planning`, agent SM Bob) : produire `sprint-status.yaml` puis enchaîner le cycle Create Story → Dev Story → Code Review. **Fait (2026-02-26)** : `_bmad-output/implementation-artifacts/sprint-status.yaml` généré ; suite = créer des stories (fichiers .md) et lancer Dev Story / Code Review.
+1. **Run Epic 2** (`/run-epic epic-2` ou `/run-epic`) : lancer le cycle Create Story → Validate → Dev → Revision → Code Review sur l’epic Authentification et contrôle d’accès (JWT terrain, poste caisse/réception, PIN, mode caisse verrouillé). Epic 1 est terminé ; sprint-status : epic-2 en backlog.
+2. **Optionnel** : Check Implementation Readiness (`/bmad-bmm-check-implementation-readiness`) si pas encore fait avant de poursuivre les epics suivants.
+3. **Create Epics and Stories** / **Sprint Planning** : déjà faits (epics.md, sprint-status.yaml) ; cycle en cours via run-epic.
 
 **Points de vigilance v0.1** : loader modules (TOML, ModuleBase), slots, convention tests frontend, versions Dockerfile/README — voir [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md) et architecture.md (Gap Analysis).
 

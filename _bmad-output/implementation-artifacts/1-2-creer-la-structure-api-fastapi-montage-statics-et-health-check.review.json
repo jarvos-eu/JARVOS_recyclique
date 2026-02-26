@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Deuxième passage : les Review Follow-ups (MEDIUM + LOW) sont satisfaits. README api/ documente la traçabilité Git (api/ et requirements.txt à committer) et précise que StaticFiles monte frontend/dist/assets sur /assets ; health BDD unconfigured documenté en commentaire. AC #1 et toutes les tâches validés contre le code (structure, /api/*, health snake_case, config Pydantic, statics + catch-all, tests health + routers + catch-all). Aucun Critical/High restant. Story approuvée."
+}

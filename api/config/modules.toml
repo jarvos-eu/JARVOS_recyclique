@@ -1,0 +1,8 @@
+# Config des modules RecyClique (chargée au démarrage).
+# Voir modules.example.toml pour le schéma et les options.
+
+[modules]
+enabled = ["stub"]
+
+[stub]
+comment = "Module stub pour valider le loader"

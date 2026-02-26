@@ -12,7 +12,7 @@
 - **RecyClique** aujourd'hui dans les docs = **frontend** (React PWA) + **middleware/API** (FastAPI) qui orchestre, pousse vers Paheko, gere Redis Streams, etc.
 - La question : garder **deux containers** RecyClique (un pour le front, un pour l'API) ou **un seul container** qui sert a la fois le front (statics) et l'API (middleware) ?
 
-On ne parle pas de fusionner RecyClique et Paheko dans un seul container — Paheko reste un service a part. On parle uniquement de la frontiere *au sein de* RecyClique : front vs back.
+On ne parle pas de fusionner RecyClique et Paheko dans un seul container - Paheko reste un service a part. On parle uniquement de la frontiere *au sein de* RecyClique : front vs back.
 
 ---
 
@@ -74,7 +74,7 @@ Suite a la question « faut-il toujours communiquer en API ? » et « quelles pr
 
 ### 5.1 Communication front ↔ serveur : garder SPA + API en v1
 
-- Le **navigateur** execute le React ; le **serveur** execute FastAPI. Ils sont dans deux environnements — il faut donc un **canal** (HTTP, WebSocket, etc.). On ne peut pas « appeler une fonction Python depuis React » sans passer par le reseau.
+- Le **navigateur** execute le React ; le **serveur** execute FastAPI. Ils sont dans deux environnements - il faut donc un **canal** (HTTP, WebSocket, etc.). On ne peut pas « appeler une fonction Python depuis React » sans passer par le reseau.
 - Pour la **migration v1** : garder le modele **SPA + API REST** (comme en 1.4.4). Memes ecrans, copy + consolidate + security ; le design modules (slots React, routes par module) suppose deja des appels depuis le client vers l'API.
 - **Ne pas** introduire en v1 du rendu serveur (SSR) ou du full-page (formulaires POST + redirection) pour la meme app : cela ferait coexister deux facons de faire (SPA + SSR), plus de complexite pour un solo dev. Si plus tard certains ecrans (rapports, parametres) justifient du SSR, le faire de maniere ciblee apres v1.
 

@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "AC et tâches validés. 2 correctifs MEDIUM appliqués en review : (1) restriction du chemin modules_config_path au repo et extension .toml ; (2) normalisation du type de 'enabled' (liste) dans le loader TOML. Tests passants. Statut story → done."
+}

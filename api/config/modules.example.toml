@@ -1,0 +1,14 @@
+# Config des modules RecyClique (exemple).
+# Copier en modules.toml et adapter. Référence : FR24, FR25 ; architecture.md.
+#
+# [modules]
+# enabled = liste des identifiants de modules à charger au démarrage.
+#
+# Sections optionnelles par module : [<module_id>] pour passer de la config.
+
+[modules]
+enabled = ["stub"]
+
+[stub]
+# Config optionnelle du module stub (exemple)
+comment = "Module stub pour valider le loader"

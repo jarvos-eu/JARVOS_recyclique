@@ -24,8 +24,8 @@
 - ~~**Catégories caisse Paheko**~~ → **Tranché** : plugin recyclique crée/matche à la volée. Voir [artefact 08](2026-02-25_08_session-confrontation-recyclic-paheko.md).
 - ~~**Module Saisie au poids Paheko**~~ → **Tranché** : garder module Brindille ; plugin peut alimenter module_data_saisie_poids après push. Voir [artefact 08](2026-02-25_08_session-confrontation-recyclic-paheko.md).
 - ~~**Sécurité endpoint plugin**~~ → **Tranché** : secret partagé + HTTPS ; à figer en PRD v0.2. Voir [artefact 08](2026-02-25_08_session-confrontation-recyclic-paheko.md).
-- **Périmètre module correspondance** : champs et règles de mapping exacts — **à trancher lors de la confrontation BDD + instance dev + analyste** (prérequis : dumps BDD, correspondances cartographiées). Recommandation : documenter en PRD comme prérequis v0.2.
+- **Périmètre module correspondance** : champs et règles de mapping exacts - **à trancher lors de la confrontation BDD + instance dev + analyste** (prérequis : dumps BDD, correspondances cartographiées). Recommandation : documenter en PRD comme prérequis v0.2.
 - ~~**Auth v0.1 / SSO v0.2**~~ → **Tranché** : figer en PRD (auth séparée v0.1, SSO v0.2). Voir [artefact 08](2026-02-25_08_session-confrontation-recyclic-paheko.md).
 - ~~**Montants / devises**~~ → **Tranché** : alignement centimes ; à valider en BDD Recyclic. Voir [artefact 08](2026-02-25_08_session-confrontation-recyclic-paheko.md).
-- **Politique fichiers / chantier documents** : frontière RecyClique ↔ Paheko — **à trancher dans le chantier fichiers** (artefact 02), scope versions futures.
+- **Politique fichiers / chantier documents** : frontière RecyClique ↔ Paheko - **à trancher dans le chantier fichiers** (artefact 02), scope versions futures.
 - **Stratégie LLM/IA** : reportée après brief (v0.1 = placeholder).

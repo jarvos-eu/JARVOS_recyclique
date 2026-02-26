@@ -1,0 +1,5 @@
+/**
+ * Composants et utilitaires partagés entre les domaines.
+ * Convention : composants en PascalCase (ex. UserCard.tsx), hooks en camelCase (ex. useSessionCaisse).
+ */
+export {}

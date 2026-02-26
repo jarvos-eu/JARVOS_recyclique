@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Apostrophes typographiques
 
-**Erreur typo directe** (apostrophe typo `'`/`'`, search_replace qui ne matche pas, parsing qui casse) → **arrêt immédiat** de l’édition en cours. Exécuter tout de suite le script sur **le dossier concerné** (où se trouve le fichier en erreur), puis reprendre.
+**Erreur typo directe** (apostrophe typo `'`/`'`, search_replace qui ne matche pas, parsing qui casse) → **arrêt immédiat** de l'édition en cours. Exécuter tout de suite le script sur **le dossier concerné** (où se trouve le fichier en erreur), puis reprendre.
 
 ```bash
 python "C:\Users\Strophe\.cursor\skills\normalize-typographic-chars\scripts\normalize_typographic_chars.py" CHEMIN_DOSSIER --write --backup

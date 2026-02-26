@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Review adversarial exécuté. Un écart MEDIUM corrigé : README.md (section Déploiement, URLs) modifié pour la story mais absent de la File List — ajouté. AC1 et AC2 implémentés (doc/deployment.md + README). Toutes les tâches [x] justifiées par les Completion Notes et le contenu. Story mise à jour (File List, section Senior Developer Review, Change Log), statut → done, sprint-status synchronisé."
+}

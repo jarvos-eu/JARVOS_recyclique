@@ -12,6 +12,7 @@ Tout ce qui sert a la **communication publique** : presentations (partenaires, f
 
 | Fichier | Usage |
 |---------|--------|
+| [deployment.md](deployment.md) | Déploiement Docker Compose, prérequis, vérification de la stack (health, URLs), dépannage. |
 | *(a deposer si besoin)* | Versions **epurees** pretes a envoyer (presentations, modes d'emploi). Matiere premiere → **references/vision-projet/** (ex. `matiere_presentation-plateforme-recyclic.md`). |
 
 ---

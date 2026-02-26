@@ -1,4 +1,4 @@
-# Mission : Agent test Git / Cursor — environnement local
+# Mission : Agent test Git / Cursor - environnement local
 
 **Destinataire** : Un agent Cursor en session **vide** (sans BMAD) qui executera les tests dans l'environnement local du projet JARVOS_recyclique.  
 **Objectif** : Determiner ce qui marche / ne marche pas avec Git dans Cursor (credentials, tokens, push, revert, etc.) et documenter la meilleure maniere de fonctionner.
@@ -8,13 +8,13 @@
 ## Contexte
 
 - **Projet** : JARVOS_recyclique (racine du workspace).
-- **Repo GitHub** : Deja cree par Strophe. L'URL sera fournie en session — remplacer `[URL_À_REMPLACER]` dans les commandes ou demander a Strophe.
+- **Repo GitHub** : Deja cree par Strophe. L'URL sera fournie en session - remplacer `[URL_À_REMPLACER]` dans les commandes ou demander a Strophe.
 - **Environnement** : Windows, Cursor. Les agents n'ont pas toujours acces aux credentials (SSH, token).
 - **Suite aux recherches** : MCP Git non recommande pour le quotidien ; CLI + execution manuelle ou subagent. On valide en conditions reelles ici.
 
 ---
 
-## Phase 1 — Connexion du repo
+## Phase 1 - Connexion du repo
 
 1. Verifier si un depot Git est deja initialise (`git status` ou presence de `.git`).
 2. Si non : `git init`.
@@ -26,7 +26,7 @@
 
 ---
 
-## Phase 2 — Batterie de tests (reversibles)
+## Phase 2 - Batterie de tests (reversibles)
 
 Tous les tests doivent etre **reversibles** : branche dediee ou commits de test ensuite annules (revert / reset), pour ne pas polluer l'historique principal.
 
@@ -45,7 +45,7 @@ Pour **chaque test** : executer, noter le resultat dans le rapport `references/a
 
 ---
 
-## Phase 3 — Synthese dans l'Artefact B
+## Phase 3 - Synthese dans l'Artefact B
 
 Renseigner dans le fichier **rapport** : `references/artefacts/2026-02-24_02_rapport-tests-git-cursor.md`
 
@@ -60,7 +60,7 @@ Renseigner dans le fichier **rapport** : `references/artefacts/2026-02-24_02_rap
 
 - Ne pas committer de secrets (tokens, cles) dans le repo.
 - Commandes destructrices (force push, reset hard) uniquement sur branche de test, et annuler apres.
-- Pas de boucle de retry sur les commandes qui echouent — proposer les commandes a l'utilisateur.
+- Pas de boucle de retry sur les commandes qui echouent - proposer les commandes a l'utilisateur.
 
 ---
 

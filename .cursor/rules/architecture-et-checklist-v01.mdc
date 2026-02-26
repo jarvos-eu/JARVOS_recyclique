@@ -1,0 +1,23 @@
+---
+description: Charger checklist v0.1 et architecture (Gap, Readiness) pour toute story ou code socle / modules / frontend — eviter la derive entre agents
+alwaysApply: false
+globs: api/**, frontend/**, _bmad-output/implementation-artifacts/**, _bmad-output/planning-artifacts/architecture.md
+---
+
+# Architecture et checklist v0.1 — alignement agents
+
+Quand tu travailles sur du **code socle**, des **modules** (loader, slots, workers) ou du **frontend** (structure, tests), ou sur des stories / artifacts d’implementation :
+
+1. **Charger en entrée** (pour éviter les décisions en roue libre) :
+   - `references/artefacts/2026-02-26_03_checklist-v0.1-architecture.md`
+   - `_bmad-output/planning-artifacts/architecture.md` au moins : **Gap Analysis Results**, **Implementation Readiness Validation**, **Implementation Handoff**
+
+2. **Respecter** :
+   - Convention tests frontend : **co-locés** `*.test.tsx` (voir `frontend/README.md`)
+   - Outil tests : **Vitest + React Testing Library + jsdom** ; pas de Jest ni autre runner ; E2E hors v0.1, si E2E plus tard = Playwright
+   - Styling / UI frontend : **Mantine** (alignement 1.4.4) ; pas de Tailwind ni autre lib UI sans décision
+   - Versions : Python 3.12, Node 20 LTS (Dockerfile, README)
+   - Structure loader/slots : `api/config/modules.toml`, `api/core/modules/`, `api/workers/`, `frontend/src/shared/slots/`
+   - FR13b (module correspondance) : reporté à l’Epic 3 — ne pas trancher ici
+
+Référence rétro Epic 1 : `_bmad-output/implementation-artifacts/epic-1-retro-2026-02-26.md`.

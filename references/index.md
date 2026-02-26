@@ -35,6 +35,9 @@ Refonte complete de Recyclique 1.4.4. Nouveau backend. Solo dev : Strophe. BMAD 
 - **`versioning.md`** — Convention de versions et tags (v0.1.0 → v1.0.0). Ancien repo 1.4.4. **Source de vérité pour le périmètre par version.**
   _(Charger si : release, tag Git, planification de version.)_
 
+- **Décisions architecturales (v0.1)** — Checklist : `references/artefacts/2026-02-26_03_checklist-v0.1-architecture.md` ; architecture : `_bmad-output/planning-artifacts/architecture.md` (sections Gap Analysis, Implementation Readiness, Implementation Handoff). Résumé aussi en tête de `_bmad-output/planning-artifacts/epics.md`. À charger pour toute session sur epics, stories ou implémentation socle/modules.
+  _(Charger si : travail sur epics, stories, code socle, loader, slots, tests frontend, ou alignement agents.)_
+
 - **Subagent @git-specialist** — Expert Git du projet. Workflow et limites : voir `procedure-git-cursor.md`. Fichier : `.cursor/agents/git-specialist.md`.
   _(Charger si : delegation d'operations Git a l'agent specialise.)_
 

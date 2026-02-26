@@ -1,4 +1,4 @@
-# Cloture 1re passe spirale — JARVOS Recyclique
+# Cloture 1re passe spirale - JARVOS Recyclique
 
 **Date :** 2026-02-25  
 **Contexte :** Plan de cloture complete de la 1re passe (decouverte / cartographie sur tous les sujets Kanban + todo).

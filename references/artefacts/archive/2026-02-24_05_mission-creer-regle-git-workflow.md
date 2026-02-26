@@ -14,11 +14,11 @@ Creer le fichier avec le format Cursor rules (frontmatter YAML + contenu).
 
 ```markdown
 ---
-description: Workflow Git pour JARVOS_recyclique — delegation au subagent ou commandes a l'utilisateur
+description: Workflow Git pour JARVOS_recyclique - delegation au subagent ou commandes a l'utilisateur
 alwaysApply: true
 ---
 
-# Workflow Git — JARVOS_recyclique
+# Workflow Git - JARVOS_recyclique
 
 Pour toute operation Git (commit, push, PR) dans ce projet :
 
@@ -42,7 +42,7 @@ Ajouter une ligne dans la section **Conventions et regles** (apres l'entree `pro
 Exemple d'entree au meme format que les autres :
 
 ```markdown
-- **Subagent @git-specialist** — Expert Git du projet. Workflow et limites : voir `procedure-git-cursor.md`. Fichier : `.cursor/agents/` (selon version Cursor).
+- **Subagent @git-specialist** - Expert Git du projet. Workflow et limites : voir `procedure-git-cursor.md`. Fichier : `.cursor/agents/` (selon version Cursor).
   _(Charger si : delegation d'operations Git a l'agent specialise.)_
 ```
 

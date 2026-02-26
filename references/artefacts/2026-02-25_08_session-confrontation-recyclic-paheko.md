@@ -1,7 +1,7 @@
 # Session de confrontation RecyClique vs Paheko
 
 **Date :** 2026-02-25  
-**Contexte :** Exécution de la session de confrontation (analyste) : remplir les cases « — » de la grille, trancher ou documenter les questions ouvertes de l'artefact 07, produire un artefact réutilisable pour le PRD.  
+**Contexte :** Exécution de la session de confrontation (analyste) : remplir les cases « - » de la grille, trancher ou documenter les questions ouvertes de l'artefact 07, produire un artefact réutilisable pour le PRD.  
 **Références :** [grille 05](2026-02-25_05_grille-confrontation-recyclic-paheko.md), [décisions 07](2026-02-25_07_decisions-push-redis-source-eee.md), [point global 06](2026-02-25_06_point-global-avant-prd.md), [versioning](../versioning.md), [analyse plugins 04](2026-02-25_04_analyse-plugins-caisse-decisions-push.md).
 
 ---
@@ -33,13 +33,13 @@
 
 ## 3. Mises à jour effectuées sur la grille (artefact 05)
 
-- **Axe 1 (Caisse)** : Montants/devises — colonne « À creuser / décision » remplie ; statut → **décidé**.
-- **Axe 2 (Catégories)** : Catégories boutique — décision « plugin à la volée » ; statut → **décidé**.
-- **Axe 3 (Poids)** : Stockage — RecyClique source de vérité, rôle Paheko optionnel ; statut → **décidé**.
-- **Axe 4 (Décla)** : Données déclaratives — RecyClique produit et conserve ; statut → **décidé**.
-- **Axe 6 (Rôles)** : Utilisateurs/auth — v0.1 et v0.2 documentés ; statut → **décidé**. Module correspondance — périmètre documenté, dépendance dumps BDD + analyste ; statut → **en cours**.
-- **Axe 7 (Sécurité)** : Canal push — secret partagé + HTTPS ; Données sensibles — bonnes pratiques ; statuts → **décidé**.
-- **Axe 8 (Calendrier/fichiers)** : Fichiers/politique documentaire — renvoi chantier 02 ; statut → **en cours**.
+- **Axe 1 (Caisse)** : Montants/devises - colonne « À creuser / décision » remplie ; statut → **décidé**.
+- **Axe 2 (Catégories)** : Catégories boutique - décision « plugin à la volée » ; statut → **décidé**.
+- **Axe 3 (Poids)** : Stockage - RecyClique source de vérité, rôle Paheko optionnel ; statut → **décidé**.
+- **Axe 4 (Décla)** : Données déclaratives - RecyClique produit et conserve ; statut → **décidé**.
+- **Axe 6 (Rôles)** : Utilisateurs/auth - v0.1 et v0.2 documentés ; statut → **décidé**. Module correspondance - périmètre documenté, dépendance dumps BDD + analyste ; statut → **en cours**.
+- **Axe 7 (Sécurité)** : Canal push - secret partagé + HTTPS ; Données sensibles - bonnes pratiques ; statuts → **décidé**.
+- **Axe 8 (Calendrier/fichiers)** : Fichiers/politique documentaire - renvoi chantier 02 ; statut → **en cours**.
 
 ---
 

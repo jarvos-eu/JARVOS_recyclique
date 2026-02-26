@@ -1,0 +1,80 @@
+# Docker Compose minimal — RecyClique, Paheko, PostgreSQL, Redis
+# Projet : jarvos_recyclique (stratégie d'isolation, voir doc/deployment.md)
+# Usage : docker compose up --build (depuis la racine du repo)
+
+name: jarvos_recyclique
+
+services:
+  recyclic:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://recyclic:${POSTGRES_PASSWORD:-recyclic}@postgres:5432/recyclic
+      REDIS_URL: redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - jarvos_net
+
+  paheko:
+    image: paheko/paheko
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - paheko_data:/var/www/paheko/data
+    networks:
+      - jarvos_net
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: recyclic
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-recyclic}
+      POSTGRES_DB: recyclic
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recyclic -d recyclic"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - jarvos_net
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - jarvos_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  paheko_data:
+
+networks:
+  jarvos_net:
+    driver: bridge

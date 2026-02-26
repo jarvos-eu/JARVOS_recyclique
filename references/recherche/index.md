@@ -32,3 +32,6 @@ Prompts et reponses de recherche externe (Perplexity, Claude.ai, GPT, etc.).
 | 2026-02-24_api-paheko-caisse_perplexity_reponse.md | Réponse Perplexity API caisse Paheko (endpoints, modèles, sessions) |
 | 2026-02-24_extension-saisie-poids-paheko_perplexity_reponse.md | Réponse Perplexity extension Saisie au poids Paheko |
 | 2026-02-24_auth-sso-paheko-app-externe_perplexity_reponse.md | Réponse Perplexity auth/SSO Paheko avec app externe FastAPI |
+| 2026-02-26_cursor-autopilot-phase0-subagents-commands-agents_perplexity_prompt.md | **Phase 0 BMAD Autopilot** : prompt Perplexity Pro — invocation subagents (tool, params), commandes slash (format, lien orchestrateur), fichiers agents (.cursor/agents/), hooks Windows. À utiliser dans une discussion Perplexity existante avec contexte prérequis Cursor. |
+| 2026-02-26_cursor-autopilot-phase0-subagents-commands-agents_perplexity_reponse.md | Réponse Perplexity à coller après envoi du prompt Phase 0 ci-dessus. |
+| 2026-02-26_paheko-ssl-localhost-et-sqlite-dump-docker_perplexity_prompt.md | **Paheko** : pourquoi ERR_SSL_PROTOCOL_ERROR sur localhost:8080 (et pas sur 8000) ; comment démarrer le conteneur avec un fichier SQLite existant (dump) pour éviter refaire l’onboarding. |

@@ -42,7 +42,7 @@ Si Cursor cree un fichier dans `.cursor/agents/` (ex. `git-specialist.md`) que t
 - Workflow : status, diff staged, commit Conventional Commits, push ou proposition de commandes.
 - Contrainte : ne jamais modifier (push, force, etc.) sans approbation utilisateur.
 
-Ne pas dupliquer toute la procedure dans le subagent — le subagent s'y refere.
+Ne pas dupliquer toute la procedure dans le subagent - le subagent s'y refere.
 
 ---
 
