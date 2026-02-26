@@ -1,0 +1,10 @@
+# RecyClique API — Python 3.12
+# Story 1.2+2.1: FastAPI, health, DB, sites CRUD
+
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic-settings>=2.6.0
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+alembic>=1.14.0
+redis>=5.0.0

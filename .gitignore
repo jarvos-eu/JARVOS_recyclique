@@ -20,3 +20,8 @@ normalize_typographic_chars_*.log
 
 # Config locale (secrets)
 .env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

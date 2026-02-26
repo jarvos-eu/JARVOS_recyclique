@@ -1,8 +1,9 @@
 # generated: 2026-02-26
+# updated: 2026-02-26 (Correct Course — alignement refonte epics.md 10 epics, Epic 1 livré)
 # project: JARVOS_recyclique
 # project_key: NOKEY
 # tracking_system: file-system
-# story_location: d:\users\Strophe\Documents\1-IA\La Clique Qui Recycle\JARVOS_recyclique\_bmad-output\implementation-artifacts
+# story_location: _bmad-output/implementation-artifacts
 
 # STATUS DEFINITIONS:
 # ==================
@@ -10,10 +11,6 @@
 #   - backlog: Epic not yet started
 #   - in-progress: Epic actively being worked on
 #   - done: All stories in epic completed
-#
-# Epic Status Transitions:
-#   - backlog → in-progress: Automatically when first story is created (via create-story)
-#   - in-progress → done: Manually when all stories reach 'done' status
 #
 # Story Status:
 #   - backlog: Story only exists in epic file
@@ -25,13 +22,6 @@
 # Retrospective Status:
 #   - optional: Can be completed but not required
 #   - done: Retrospective has been completed
-#
-# WORKFLOW NOTES:
-# ===============
-# - Epic transitions to 'in-progress' automatically when first story is created
-# - Stories can be worked in parallel if team capacity allows
-# - SM typically creates next story after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: "2026-02-26"
 project: JARVOS_recyclique
@@ -40,51 +30,69 @@ tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
 development_status:
-  epic-1: backlog
-  1-1-initialiser-le-frontend-vite-react-ts-et-la-structure-des-dossiers-par-domaine: backlog
-  1-2-creer-la-structure-api-fastapi-montage-statics-et-health-check: backlog
-  1-3-docker-compose-minimal-et-deploiement-d-une-instance: backlog
-  1-4-squelette-du-loader-de-modules-toml-modulebase-et-place-pour-eventbus-slots: backlog
-  epic-1-retrospective: optional
+  epic-1: done
+  1-1-initialiser-le-frontend-vite-react-ts-et-la-structure-des-dossiers-par-domaine: done
+  1-2-creer-la-structure-api-fastapi-montage-statics-et-health-check: done
+  1-3-docker-compose-minimal-et-deploiement-d-une-instance: done
+  1-4-squelette-du-loader-de-modules-toml-modulebase-et-place-pour-eventbus-slots: done
+  1-5-deploiement-effectif-et-verification-de-la-stack-docker: done
+  epic-1-retrospective: done
 
-  epic-2: backlog
-  2-1-authentification-jwt-fastapi-pour-les-utilisateurs-terrain: backlog
-  2-2-demarrer-un-poste-caisse-ou-reception-avec-un-compte-administrateur: backlog
-  2-3-gestion-des-pin-operateur-caisse-et-deverrouillage-de-session: backlog
-  2-4-mode-caisse-verrouille-restriction-du-menu-a-la-caisse-uniquement: backlog
-  2-5-phase-ulterieure-sso-recyclique-paheko-documentation-et-objectif: backlog
+  epic-2: done
+  2-1-sites-modele-bdd-api-crud: done
+  2-2-postes-de-caisse-modele-bdd-api-crud: done
+  2-3-categories-modele-bdd-api-crud-hierarchie-et-visibilite: done
+  2-4-presets-boutons-rapides-caisse-modele-bdd-api-crud: done
   epic-2-retrospective: optional
 
   epic-3: backlog
-  3-1-configuration-du-canal-push-endpoint-secret-resilience: backlog
-  3-2-modele-et-stockage-du-mapping-recyclique-paheko-moyens-de-paiement-categories-caisse-sites: backlog
-  3-3-interface-ou-api-d-administration-du-mapping: backlog
+  3-1-users-jwt-et-gestion-de-compte-terrain: backlog
+  3-2-groupes-permissions-et-rbac: backlog
+  3-3-gestion-des-pin-operateur-caisse-et-deverrouillage-de-session: backlog
+  3-4-demarrer-un-poste-caisse-ou-reception-avec-un-compte-administrateur: backlog
+  3-5-mode-caisse-verrouille-restriction-du-menu-a-la-caisse-uniquement: backlog
+  3-6-phase-ulterieure-sso-recyclique-paheko-documentation-et-objectif: backlog
   epic-3-retrospective: optional
 
   epic-4: backlog
-  4-1-ouverture-et-fermeture-de-session-de-caisse-avec-fond-de-caisse-multi-sites-multi-caisses: backlog
-  4-2-enregistrement-des-ventes-lignes-categories-quantites-prix-poids-paiements-multi-moyens: backlog
-  4-3-push-par-ticket-vers-paheko-file-redis-streams-worker-plugin: backlog
-  4-4-cloture-de-session-comptage-physique-totaux-ecart-et-controle-syncaccounting: backlog
-  4-5-optionnel-v1-saisie-caisse-hors-ligne-et-synchronisation-au-retour: backlog
+  4-1-configuration-du-canal-push-endpoint-secret-resilience: backlog
+  4-2-worker-redis-streams-consumer-plugin-paheko: backlog
   epic-4-retrospective: optional
 
   epic-5: backlog
-  5-1-ouverture-de-poste-de-reception-et-creation-de-tickets-de-depot: backlog
-  5-2-saisie-des-lignes-de-reception-poids-categorie-destination: backlog
+  5-1-ouverture-et-fermeture-de-session-de-caisse-multi-sites-multi-caisses: backlog
+  5-2-enregistrement-des-ventes-et-push-par-ticket-vers-paheko: backlog
+  5-3-cloture-de-session-comptage-physique-totaux-ecart-et-syncaccounting: backlog
+  5-4-optionnel-v1-saisie-caisse-hors-ligne-et-synchronisation-au-retour: backlog
   epic-5-retrospective: optional
 
   epic-6: backlog
-  6-1-acces-et-documentation-pour-l-administration-compta-via-paheko-v1: backlog
-  6-2-ecrans-ou-placeholders-vie-associative-dans-recyclique: backlog
+  6-1-ouverture-de-poste-de-reception-et-creation-de-tickets-de-depot: backlog
+  6-2-saisie-des-lignes-de-reception-poids-categorie-destination: backlog
+  6-3-export-csv-et-stats-live-reception: backlog
   epic-6-retrospective: optional
 
   epic-7: backlog
-  7-1-modele-et-persistance-des-donnees-declaratives-poids-flux-categories-periodes: backlog
-  7-2-post-mvp-module-decla-eco-organismes-exports-et-multi-eco-organismes: backlog
+  7-1-modele-et-stockage-du-mapping-recyclique-paheko: backlog
+  7-2-interface-ou-api-d-administration-du-mapping: backlog
   epic-7-retrospective: optional
 
   epic-8: backlog
-  8-1-interfaces-et-stubs-layoutconfigservice-visualprovider-v1: backlog
-  8-2-post-mvp-fonds-documentaire-recyclique-stockage-et-frontiere-avec-paheko: backlog
+  8-1-administration-complete-des-utilisateurs: backlog
+  8-2-administration-sites-postes-sessions-et-rapports-caisse: backlog
+  8-3-import-export-categories-et-admin-avance: backlog
+  8-4-reception-admin-sante-audit-log-logs-email-parametres: backlog
+  8-5-bdd-export-purge-import-et-import-legacy: backlog
+  8-6-acces-et-documentation-pour-l-administration-compta-via-paheko-v1: backlog
+  8-7-ecrans-ou-placeholders-vie-associative-dans-recyclique: backlog
   epic-8-retrospective: optional
+
+  epic-9: backlog
+  9-1-modele-et-persistance-des-donnees-declaratives: backlog
+  9-2-post-mvp-module-decla-eco-organismes: backlog
+  epic-9-retrospective: optional
+
+  epic-10: backlog
+  10-1-interfaces-et-stubs-layoutconfigservice-visualprovider-v1: backlog
+  10-2-post-mvp-fonds-documentaire-recyclique: backlog
+  epic-10-retrospective: optional

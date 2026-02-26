@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Revue adversarial effectuée : tous les AC sont implémentés (migration cash_registers avec FK et index, CRUD + GET /status, ordre des routes correct, validation site_id à la création, conventions snake_case et format erreur). Les 17 tests couvrent listes, filtres, status, 404, création 201, site non trouvé 404, PATCH dont body vide sans mise à jour de updated_at, DELETE 204/404. Chaîne de migrations 001→002 vérifiée. Améliorations optionnelles (LOW) : ordre de tri non spécifié sur GET list et GET /status ; schéma CashRegisterStatusItem pourrait utiliser Literal['free','occupied'] et inclure site_id pour éviter un aller-retour client."
+}

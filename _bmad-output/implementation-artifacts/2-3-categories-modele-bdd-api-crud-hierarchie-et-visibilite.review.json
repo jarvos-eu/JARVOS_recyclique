@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Review adversarial terminé. AC 1–4 et toutes les tâches vérifiées et conformes. Corrections appliquées pendant la review : (1) HIGH — PUT /v1/categories/{id} rejetait pas parent_id=soi : ajout rejet 400 « Parent cannot be self » ; (2) MEDIUM — risque de cycle hiérarchie : ajout _get_descendant_ids et rejet 400 « Parent would create a cycle » si parent_id est un descendant. 2 tests ajoutés (parent_self_rejected, parent_cycle_rejected). 24 tests passent. Recommandations optionnelles : optimisation N+1 sur GET /hierarchy (eager load ou requête plate), et commit des fichiers de la story."
+}

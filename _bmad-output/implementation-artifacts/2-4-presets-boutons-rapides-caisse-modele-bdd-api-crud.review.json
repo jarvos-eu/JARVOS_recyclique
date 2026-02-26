@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Review adversarial exécutée. Tous les AC et tâches sont implémentés : migration 004 preset_buttons (colonnes, index, FK SET NULL), modèle PresetButton, schémas Pydantic, router CRUD + GET /active (ordre /active avant /{id}), validation category_id (400 si inexistant). Tests 18/18 passants (CRUD, GET /active, filtre category_id, format detail). Un correctif a été appliqué en review : PATCH /v1/presets/{id} ne permettait pas de remettre category_id à null ; le handler utilise désormais model_dump(exclude_unset=True) pour mettre à jour uniquement les champs envoyés et accepte category_id: null. Test test_patch_preset_category_id_unset_null ajouté. Aucun écart critique entre File List et fichiers modifiés. Story approuvée, statut → done."
+}
