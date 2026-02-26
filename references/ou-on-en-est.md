@@ -24,6 +24,13 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
 ## Derniere session
 
+2026-02-26 — Sprint Planning complété (workflow BMAD).
+
+Réalisé :
+- **Sprint Status** : `_bmad-output/implementation-artifacts/sprint-status.yaml` généré à partir de `epics.md`. Inventaire : 8 epics, 22 stories, 8 rétrospectives ; tous les éléments en `backlog` (aucun fichier story dans implementation-artifacts pour l’instant). Prochaine étape : lancer le cycle Create Story → Dev Story → Code Review (ou Check Implementation Readiness si pas encore fait).
+
+---
+
 2026-02-26 — Create Architecture complété (workflow BMAD).
 
 Réalisé :
@@ -169,7 +176,7 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 
 1. **Create Epics and Stories** (`/bmad-bmm-create-epics-and-stories`, agent PM John) : découper le PRD et l'architecture en épics et stories (fichier `epics.md`). Workflow en 4 étapes avec tours de réflexion et validation.
 2. **Check Implementation Readiness** (`/bmad-bmm-check-implementation-readiness`, agent Architect Winston) : valider la cohérence PRD / UX / Architecture / Épics & Stories avant le sprint.
-3. **Sprint Planning** (`/bmad-bmm-sprint-planning`, agent SM Bob) : produire `sprint-status.yaml` puis enchaîner le cycle Create Story → Dev Story → Code Review.
+3. **Sprint Planning** (`/bmad-bmm-sprint-planning`, agent SM Bob) : produire `sprint-status.yaml` puis enchaîner le cycle Create Story → Dev Story → Code Review. **Fait (2026-02-26)** : `_bmad-output/implementation-artifacts/sprint-status.yaml` généré ; suite = créer des stories (fichiers .md) et lancer Dev Story / Code Review.
 
 **Points de vigilance v0.1** : loader modules (TOML, ModuleBase), slots, convention tests frontend, versions Dockerfile/README — voir [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md) et architecture.md (Gap Analysis).
 
