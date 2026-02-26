@@ -20,7 +20,16 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
 **Track BMAD : Enterprise** (securite, conformite, DevOps ; multi-utilisateur ; une instance par ressourcerie). Detail : [artefact 2026-02-26_02](artefacts/2026-02-26_02_track-enterprise-multi-utilisateur.md).
 
+**Architecture complétée** (2026-02-26) : `_bmad-output/planning-artifacts/architecture.md` — décisions techniques, patterns, structure projet, validation ; statut READY FOR IMPLEMENTATION. Points à trancher en v0.1 : [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md).
+
 ## Derniere session
+
+2026-02-26 — Create Architecture complété (workflow BMAD).
+
+Réalisé :
+- **Architecture** : `_bmad-output/planning-artifacts/architecture.md` complété (steps 1 à 8). Décisions : Paheko SQLite / RecyClique PostgreSQL, un container (front + middleware), JWT + PIN + RBAC, EventBus Redis Streams + file push, audit log, patterns (nommage, structure, formats), arborescence cible, mapping FR → structure. Validation : READY FOR IMPLEMENTATION. Checklist v0.1 extraite dans [artefact 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md). Prochaine étape : Create Epics and Stories.
+
+---
 
 2026-02-26 — PRD complété et clarifications (session domaine).
 
@@ -158,5 +167,10 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 
 ## Prochaine etape
 
-1. **Épics / stories** : découper le PRD en épics et stories (BMAD ou backlog projet) ; ou lancer la recherche technique architecture backend si prioritaire.
-2. **Create Brief** : complété 2026-02-25.
+1. **Create Epics and Stories** (`/bmad-bmm-create-epics-and-stories`, agent PM John) : découper le PRD et l'architecture en épics et stories (fichier `epics.md`). Workflow en 4 étapes avec tours de réflexion et validation.
+2. **Check Implementation Readiness** (`/bmad-bmm-check-implementation-readiness`, agent Architect Winston) : valider la cohérence PRD / UX / Architecture / Épics & Stories avant le sprint.
+3. **Sprint Planning** (`/bmad-bmm-sprint-planning`, agent SM Bob) : produire `sprint-status.yaml` puis enchaîner le cycle Create Story → Dev Story → Code Review.
+
+**Points de vigilance v0.1** : loader modules (TOML, ModuleBase), slots, convention tests frontend, versions Dockerfile/README — voir [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md) et architecture.md (Gap Analysis).
+
+**En cas de dérive** : si en cours de route une décision d'architecture ou de périmètre doit être revue (mauvaise architecture sur un point, changement de scope), utiliser le workflow **Correct Course** (`/bmad-bmm-correct-course`, agent SM Bob). Il analyse la situation et peut recommander : mise à jour du PRD, révision de l'architecture, mise à jour des épics/stories (`epics.md`), ou replanification du sprint (`sprint-status.yaml`). Les changements remontent depuis la base (décision) puis se propagent aux documents ; on peut ainsi remodifier et faire remonter même si une partie des stories est déjà réalisée.

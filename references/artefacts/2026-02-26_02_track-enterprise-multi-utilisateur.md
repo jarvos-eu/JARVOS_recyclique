@@ -9,7 +9,7 @@ Date : 2026-02-26
 
 ## Livrables Enterprise
 
-D’après la doc BMAD, le track Enterprise produit : PRD + Architecture + Security + DevOps. Dans l’install actuelle, il n’y a pas de workflow dédié « Create Security » ou « Create DevOps » — ces thèmes sont couverts dans le PRD (NFR Security, Compliance) et dans le workflow **Create Architecture** (catégories Authentication & Security, Infrastructure & Deployment). L’architecture et le PRD doivent les traiter explicitement.
+D'après la doc BMAD, le track Enterprise produit : PRD + Architecture + Security + DevOps. Dans l'install actuelle, il n'y a pas de workflow dédié « Create Security » ou « Create DevOps » — ces thèmes sont couverts dans le PRD (NFR Security, Compliance) et dans le workflow **Create Architecture** (catégories Authentication & Security, Infrastructure & Deployment). L'architecture et le PRD doivent les traiter explicitement.
 
 ## Référence
 

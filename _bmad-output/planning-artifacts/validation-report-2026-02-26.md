@@ -80,7 +80,7 @@ overallStatus: Pass
 
 **Severity Assessment:** Pass
 
-**Recommendation:** Le PRD présente une bonne densité d’information ; les formulations « Le système peut » dans les FR correspondent au format capacité attendu (prd-purpose).
+**Recommendation:** Le PRD présente une bonne densité d'information ; les formulations « Le système peut » dans les FR correspondent au format capacité attendu (prd-purpose).
 
 ## Product Brief Coverage
 

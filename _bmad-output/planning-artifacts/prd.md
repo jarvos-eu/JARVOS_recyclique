@@ -35,6 +35,8 @@ editHistory:
     changes: Track BMAD Enterprise. Frontmatter bmadTrack; sections Modèle de déploiement / tenancy, Rôles et permissions (matrice RBAC), Compliance (track Enterprise) avec référence NFR-S.
   - date: '2026-02-26'
     changes: Post-validation (rapport 2026-02-26). NFR-P2 borné à 10 s ; FR13b précision périmètre module correspondance (figé quand BDD/instance dev stabilisées) ; nouvelle section Traçabilité FR → Parcours (tableau annexe).
+  - date: '2026-02-26'
+    changes: Ajout FR27 — Gestion documentaire RecyClique (statutaire, com, prise de notes, stockage K-Drive ou volume dédié, évolution JARVOS Nano/Mini pour recherche et édition intelligentes).
 ---
 
 # Product Requirements Document - JARVOS_recyclique
@@ -103,7 +105,7 @@ JARVOS Recyclique est la refonte complète de RecyClique (v1.4.4) au service des
 - **Compta en v1** : tant que les interfaces compta ne sont pas dans RecyClique, l'administration de la compta peut se faire **via l'interface Paheko** ; cette répartition pourra évoluer au fil du développement.
 - **Roadmap v0.1.0 → v1.0.0** : premier découpage (socle, caisse, réception, auth/users/admin, éco-organismes, prod) ; à **revoir** avec la technique actuelle (ex. backend RecyClique existant). Développement **couche par couche** jusqu'à v1, en un même long run.
 - **Structure de livraison** : les versions (v0.1, v0.2, …) sont des **grandes étapes** ; chacune peut contenir **plusieurs epics** et **nombreuses stories** ; stories complexes à **sous-découper** ; identifier le **parallélisable**.
-- **UX v1** : mêmes écrans que 1.4.4 (copy + consolidate + security), pas de refonte UX pour la v1.
+- **UX v1** : mêmes écrans que 1.4.4 (copy + consolidate + security), pas de refonte UX pour la v1. Référence : `_bmad-output/planning-artifacts/ux-design-specification.md`.
 - **Hors périmètre v1** : fonctionnalités Paheko non couvertes en RecyClique 1.4.4 (ardoises, porte-monnaie membre, code-barres produit, produits liés, gestion stock, reçu PDF, etc.) — à ignorer en v1 ou à traiter en v0.2+ selon priorisation. **Réception hors ligne** (saisie différée, template CSV, etc.) : module complémentaire à développer après v1, pas dans le scope initial. Source : `references/migration-paeco/audits/matrice-correspondance-caisse-poids.md` section 4.
 
 ### Growth Features (Post-MVP)
@@ -249,7 +251,7 @@ Ce projet suit le **track BMAD Enterprise** : la couverture Security et DevOps e
 
 ### Detected Innovation Areas
 
-- **Absence de concurrence directe** : Les plateformes existantes sont soit anciennes (Windows, orientées legacy), soit récentes mais centrées sur le shop. Aucune n’offre la combinaison **caisse + réception + compta + vie associative + pilotage** dans une interface unique avec double moteur (RecyClique terrain + Paheko association).
+- **Absence de concurrence directe** : Les plateformes existantes sont soit anciennes (Windows, orientées legacy), soit récentes mais centrées sur le shop. Aucune n'offre la combinaison **caisse + réception + compta + vie associative + pilotage** dans une interface unique avec double moteur (RecyClique terrain + Paheko association).
 - **Périmètre intégré** : Gestion simultanée de la compta, de toutes les activités de la vie associative et de tout ce qui sert à organiser la ressourcerie, depuis une seule interface (RecyClique), sans ouvrir Paheko au quotidien.
 - **Surcouche cognitive (JARVOS Nano puis Mini)** : Pilotage plus efficace, meilleure utilisation de la communication et de la rédaction ; moteur de site internet Paheko activable pour rendre les contenus dynamiques (flux sortants, compta ouverte, etc.). Combinaison inédite par rapport aux plateformes existantes.
 - **Double écosystème** : Plugins Paheko et modules RecyClique qui fonctionnent ensemble pour activer de nouvelles fonctionnalités ; trajectoire open core.
@@ -266,7 +268,7 @@ Ce projet suit le **track BMAD Enterprise** : la couverture Security et DevOps e
 
 ### Risk Mitigation
 
-- **Innovation non adoptée** : Livrer d’abord la parité 1.4.4 + sync (v1.0) pour prouver la valeur sans dépendre des briques les plus novatrices.
+- **Innovation non adoptée** : Livrer d'abord la parité 1.4.4 + sync (v1.0) pour prouver la valeur sans dépendre des briques les plus novatrices.
 - **Surcouche cognitive retardée** : Architecture modulaire et extension points (ex. recherche technique Peintre/layout) déjà prévus en v1 ; branchement Nano/Mini possible plus tard sans refonte.
 
 ## Web Application & API Specific Requirements
@@ -404,6 +406,10 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 - **FR25** : Le système peut faire coexister des plugins Paheko et des modules RecyClique pour activer de nouvelles fonctionnalités (combinaison des deux écosystèmes).
 - **FR26** : Le système peut exposer des points d'extension (interfaces type LayoutConfigService, VisualProvider) avec implémentations stub en v1, pour brancher ultérieurement affichage dynamique et service Peintre (JARVOS Mini) ; détail dans la recherche technique `_bmad-output/planning-artifacts/research/technical-affichage-dynamique-peintre-extension-points-research-2026-02-25.md`.
 
+### Gestion documentaire RecyClique
+
+- **FR27** : (Post-MVP) Le système peut gérer un fonds documentaire RecyClique (statutaire, communication interne et externe, documentation de la ressourcerie, prise de notes — idées, transcriptions de réunions, etc.) distinct de la gestion documentaire compta/factures Paheko. Le stockage peut s'appuyer sur un drive externe (ex. K-Drive) ou sur un espace de fichiers dédié (ex. volume dédié dans l'instance). L'évolution vers JARVOS Nano puis Mini permettra la recherche intelligente, l'édition intelligente et l'assistance à la rédaction. Périmètre détaillé et frontière avec Paheko à préciser (voir politique fichiers, artefact 2026-02-25_02).
+
 ## Non-Functional Requirements
 
 ### Performance
@@ -438,7 +444,7 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 | J3 (Compta / admin) | FR11–FR13, FR16, FR17 |
 | J4 (Admin technique) | FR18–FR20 |
 | J5 (Vie asso) | FR21 |
-| Domaine / scope | FR13b, FR22–FR26 |
+| Domaine / scope | FR13b, FR22–FR27 |
 
 *Source :* tableau Journey Requirements Summary, matrice RBAC, Product Scope.
 
@@ -452,3 +458,4 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 - **Extension points / Peintre (recherche)** : `_bmad-output/planning-artifacts/research/technical-affichage-dynamique-peintre-extension-points-research-2026-02-25.md`.
 - **Décision déploiement RecyClique + préconisations migration v1** : `references/artefacts/2026-02-26_01_analyse-separation-frontend-backend-recyclic.md`.
 - **Track BMAD Enterprise (multi-utilisateur, une instance par ressourcerie)** : `references/artefacts/2026-02-26_02_track-enterprise-multi-utilisateur.md`.
+- **Spécification UX v1 (stratégie, périmètre écrans, extension points)** : `_bmad-output/planning-artifacts/ux-design-specification.md`.

@@ -10,7 +10,8 @@
 - [x] Lancer git clone du repo Recyclique 1.4.4 (`references/ancien-repo/repo/`)
 - [x] Lancer le workflow Document Project sur `references/ancien-repo/repo/` pour l'analyse brownfield
 - [x] Rédiger le PRD (s'appuyer sur grille 05, artefact 08, matrice et audits migration-paeco/audits/)
-- [ ] Decider de l'architecture technique du nouveau backend (recherche technique a faire)
+- [x] Decider de l'architecture technique du nouveau backend — fait : architecture.md complété (2026-02-26), READY FOR IMPLEMENTATION
+- [ ] v0.1 — Checklist architecture : intégrer loader modules (TOML, ModuleBase) + slots dans les premières stories modulaires ; trancher convention tests frontend ; figer versions Python/Node dans Dockerfile et README (détail : [artefact 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md))
 - [x] Clarifier le perimetre v0.1.0 vs fonctionnalites a reporter — source de verite : references/versioning.md (v0.1.0 → v1.0.0) ; detail eventuel dans le Brief quand produit.
 - [ ] Explorer et formaliser politique fichiers (matrice, backends, scan factures, upload RecyClique→Paheko) — chantier versions futures
 - [ ] Étudier presets / boutons rapides (Don, Recyclage, Déchèterie, etc.) : correspondances éco vs non-éco ou reste RecyClique — à documenter (matrice ou spec dédiée)

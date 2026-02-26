@@ -59,13 +59,13 @@ Refonte complète (v0.1.0 → v1.0.0) avec **double back-end** : RecyClique (Fas
 
 - **Opérateurs terrain (caisse et réception)** — Responsables et bénévoles à la caisse et au dépôt / réception des objets. Besoin principal : saisie fluide, éventuellement offline, sync automatique vers la compta sans double saisie. Ce sont les utilisateurs les plus fréquents au quotidien.
 - **Bénévoles et responsables (vie associative)** — Gestion du calendrier, des événements et des activités (v0.1 = placeholders ; à dérouler dans les versions suivantes). Besoin : un seul lieu pour planifier et suivre la vie de la ressourcerie.
-- **Responsables compta, admin et communication** — Ceux qui font la compta, l’administration et la communication. Besoin : tout au même endroit (RecyClique pour les vues et workflows compta, Paheko en backend), moins de bascule entre outils, déclarations éco-organismes intégrées.
+- **Responsables compta, admin et communication** — Ceux qui font la compta, l'administration et la communication. Besoin : tout au même endroit (RecyClique pour les vues et workflows compta, Paheko en backend), moins de bascule entre outils, déclarations éco-organismes intégrées.
 
-**Qui tire le plus de valeur** : La Clique au quotidien aujourd’hui ; les futures ressourceries qui adopteront la plateforme de la même façon.
+**Qui tire le plus de valeur** : La Clique au quotidien aujourd'hui ; les futures ressourceries qui adopteront la plateforme de la même façon.
 
 ### Secondary Users
 
-- **Admin technique / déploiement** — Configuration, maintenance, déploiement (ex. Strophe aujourd’hui). Accès Paheko super-admin si besoin ; objectif à terme = tout pilotable depuis RecyClique.
+- **Admin technique / déploiement** — Configuration, maintenance, déploiement (ex. Strophe aujourd'hui). Accès Paheko super-admin si besoin ; objectif à terme = tout pilotable depuis RecyClique.
 - **Éco-organismes** — En lecture ou export des données déclaratives (versions ultérieures, module décla).
 
 ### User Journey
@@ -80,7 +80,7 @@ Refonte complète (v0.1.0 → v1.0.0) avec **double back-end** : RecyClique (Fas
 
 ## Success Metrics
 
-**Succès utilisateurs** : plus de double saisie caisse–compta ; clôtures de caisse sans erreur ; déclarations éco-organismes produites dans l’outil ; interface simple et facile ; gains de temps importants et moins d’erreurs. Ce qui fait dire « ça valait le coup » : gain de temps, moins d’erreurs, interface simple, énormément de gains de temps.
+**Succès utilisateurs** : plus de double saisie caisse–compta ; clôtures de caisse sans erreur ; déclarations éco-organismes produites dans l'outil ; interface simple et facile ; gains de temps importants et moins d'erreurs. Ce qui fait dire « ça valait le coup » : gain de temps, moins d'erreurs, interface simple, énormément de gains de temps.
 
 ### Business Objectives
 
@@ -97,7 +97,7 @@ Refonte complète (v0.1.0 → v1.0.0) avec **double back-end** : RecyClique (Fas
 
 ## MVP Scope
 
-**Objectif MVP** : **v1.0.0 en prod chez La Clique sans rupture** — caisse qui tourne, clôture sans double saisie, tout ce qui doit être saisi l’est, sync caisse → Paheko opérationnelle. Pour le porteur du projet : **nouvelle architecture modulaire** en place (double back-end, TOML, ModuleBase, EventBus Redis Streams, slots React, monorepo), base propre et sécurisée.
+**Objectif MVP** : **v1.0.0 en prod chez La Clique sans rupture** — caisse qui tourne, clôture sans double saisie, tout ce qui doit être saisi l'est, sync caisse → Paheko opérationnelle. Pour le porteur du projet : **nouvelle architecture modulaire** en place (double back-end, TOML, ModuleBase, EventBus Redis Streams, slots React, monorepo), base propre et sécurisée.
 
 ### Core Features (MVP = v1.0.0)
 
@@ -111,7 +111,7 @@ Refonte complète (v0.1.0 → v1.0.0) avec **double back-end** : RecyClique (Fas
 
 ### Design / UX (v1.0)
 
-Pour la v1.0, **conservation des mêmes écrans** que RecyClique 1.4.4 : pas de refonte UX à ce stade. **Copie du code d’origine** pour les mises en page et les écrans (copy + consolidate + security, comme pour tout import depuis 1.4.4 — voir `references/ancien-repo/checklist-import-1.4.4.md`). Refactoring éventuel des écrans plus tard, dans le cadre modulaire. À préciser dans le PRD et à rappeler en phase Create UX Design si un workflow est lancé.
+Pour la v1.0, **conservation des mêmes écrans** que RecyClique 1.4.4 : pas de refonte UX à ce stade. **Copie du code d'origine** pour les mises en page et les écrans (copy + consolidate + security, comme pour tout import depuis 1.4.4 — voir `references/ancien-repo/checklist-import-1.4.4.md`). Refactoring éventuel des écrans plus tard, dans le cadre modulaire. À préciser dans le PRD et à rappeler en phase Create UX Design si un workflow est lancé.
 
 ### Out of Scope for MVP (v1.0.0)
 
@@ -130,7 +130,7 @@ Pour la v1.0, **conservation des mêmes écrans** que RecyClique 1.4.4 : pas de 
 
 ### Future Vision
 
-- **Plusieurs ressourceries** en production (adoption par une 2e puis d’autres).
+- **Plusieurs ressourceries** en production (adoption par une 2e puis d'autres).
 - **Module décla éco-organismes** complet (déclarations, exports, multi-éco-organismes).
 - **Vie associative complète** (calendrier, événements, activités).
 - **Surcouche IA** : intégration JARVOS Nano puis JARVOS Mini (IA, RAG, documents).
