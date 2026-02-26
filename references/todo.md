@@ -9,10 +9,12 @@
 - [x] Renseigner l'URL du repo GitHub public Recyclique 1.4.4 dans `references/ancien-repo/README.md`
 - [x] Lancer git clone du repo Recyclique 1.4.4 (`references/ancien-repo/repo/`)
 - [x] Lancer le workflow Document Project sur `references/ancien-repo/repo/` pour l'analyse brownfield
-- [ ] Rédiger le PRD (s'appuyer sur grille 05, artefact 08, matrice et audits migration-paeco/audits/)
+- [x] Rédiger le PRD (s'appuyer sur grille 05, artefact 08, matrice et audits migration-paeco/audits/)
 - [ ] Decider de l'architecture technique du nouveau backend (recherche technique a faire)
 - [x] Clarifier le perimetre v0.1.0 vs fonctionnalites a reporter — source de verite : references/versioning.md (v0.1.0 → v1.0.0) ; detail eventuel dans le Brief quand produit.
 - [ ] Explorer et formaliser politique fichiers (matrice, backends, scan factures, upload RecyClique→Paheko) — chantier versions futures
+- [ ] Étudier presets / boutons rapides (Don, Recyclage, Déchèterie, etc.) : correspondances éco vs non-éco ou reste RecyClique — à documenter (matrice ou spec dédiée)
+- [ ] Affiner détail module correspondance (champs, règles) après confrontation BDD + instance dev + analyste
 - [x] Cataloguer modules Paheko — fait : reponse Perplexity + croisement artefact 09 (2026-02-25)
 - [x] Rechercher frameworks plugin Python (Pluggy, stevedore, manifeste declaratif) — fait : 3 reponses Perplexity + analyse + design arbitre (artefact 07)
 - [x] Verifier capacites natives Paheko : calendrier, fichiers, communication

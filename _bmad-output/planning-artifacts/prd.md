@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation, step-07-project-type, step-08-scoping, step-09-functional, step-10-nonfunctional, step-11-polish, step-12-complete]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation, step-07-project-type, step-08-scoping, step-09-functional, step-10-nonfunctional, step-11-polish, step-12-complete, step-e-01-discovery, step-e-02-review, step-e-03-edit]
 inputDocuments:
   - _bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md
   - _bmad-output/planning-artifacts/research/technical-affichage-dynamique-peintre-extension-points-research-2026-02-25.md
@@ -12,6 +12,8 @@ inputDocuments:
   - references/artefacts/2026-02-25_07_decisions-push-redis-source-eee.md
   - references/artefacts/2026-02-25_08_session-confrontation-recyclic-paheko.md
   - references/migration-paeco/audits/matrice-correspondance-caisse-poids.md
+  - references/artefacts/2026-02-26_01_analyse-separation-frontend-backend-recyclic.md
+  - references/artefacts/2026-02-26_02_track-enterprise-multi-utilisateur.md
 workflowType: 'prd'
 briefCount: 1
 researchCount: 1
@@ -22,8 +24,17 @@ classification:
   domain: ressourcerie_economie_circulaire
   complexity: high
   projectContext: brownfield
+bmadTrack: enterprise
 date: 2026-02-26
 author: Strophe
+lastEdited: '2026-02-26'
+editHistory:
+  - date: '2026-02-26'
+    changes: Intégration décision un container RecyClique (front + middleware), préconisations migration v1 (artefact 2026-02-26_01). Sections mises à jour : Project Classification, Technical Success, Implementation Considerations, nouvelle sous-section Déploiement et préconisations, FR18, Références.
+  - date: '2026-02-26'
+    changes: Track BMAD Enterprise. Frontmatter bmadTrack; sections Modèle de déploiement / tenancy, Rôles et permissions (matrice RBAC), Compliance (track Enterprise) avec référence NFR-S.
+  - date: '2026-02-26'
+    changes: Post-validation (rapport 2026-02-26). NFR-P2 borné à 10 s ; FR13b précision périmètre module correspondance (figé quand BDD/instance dev stabilisées) ; nouvelle section Traçabilité FR → Parcours (tableau annexe).
 ---
 
 # Product Requirements Document - JARVOS_recyclique
@@ -48,6 +59,12 @@ JARVOS Recyclique est la refonte complète de RecyClique (v1.4.4) au service des
 - **Domaine** : gestion ressourcerie / économie circulaire.
 - **Complexité** : élevée (double backend, flux financiers, conformité éco-organismes, brownfield).
 - **Contexte** : brownfield (refonte RecyClique 1.4.4, même usage, nouvelle architecture).
+- **Déploiement RecyClique** : un seul container (front + middleware) ; build React servi en statics par FastAPI, routes API dans le même processus ; Paheko en service séparé. Pas de séparation front/back en déploiement côté RecyClique.
+
+## Modèle de déploiement / tenancy
+
+- **Une instance par ressourcerie** : chaque ressourcerie déploie sa propre instance (RecyClique + Paheko). Pas de multi-tenant ; aucune instance partagée entre plusieurs organisations.
+- **Multi-utilisateur** : plusieurs rôles coexistent sur la même instance (opérateur caisse, opérateur réception, responsable compta/admin, admin technique, bénévole). Voir section Rôles et permissions (matrice RBAC).
 
 ## Success Criteria
 
@@ -67,7 +84,7 @@ JARVOS Recyclique est la refonte complète de RecyClique (v1.4.4) au service des
 ### Technical Success
 
 - **Architecture modulaire** en place et documentée : TOML, ModuleBase, EventBus Redis Streams, slots React, monorepo.
-- **Double back-end** opérationnel : RecyClique (FastAPI) + Paheko (1.3.19.x), un seul Compose.
+- **RecyClique** : un seul container (front + middleware) ; Paheko en service séparé. Pas de séparation front/back en déploiement côté RecyClique.
 - **Résilience** : push par ticket, file Redis Streams, retry sans perte si Paheko indisponible.
 - **Qualité** : import 1.4.4 selon checklist (copy + consolidate + security) ; base propre et sécurisée.
 
@@ -177,7 +194,23 @@ JARVOS Recyclique est la refonte complète de RecyClique (v1.4.4) au service des
 
 *Note* : Le détail du workflow POS (multi-sites, multi-caisses, habilitations, PIN) pourra faire l'objet d'un brainstorming technique ou d'une spec dédiée pour affiner les exigences.
 
+## Rôles et permissions (matrice RBAC)
+
+| Rôle | Caisse (session, ventes, clôture) | Réception (postes, tickets, lignes) | Compta (v1 via Paheko) | Admin technique / déploiement | Vie asso |
+|------|-----------------------------------|-------------------------------------|-------------------------|-------------------------------|----------|
+| Opérateur caisse | Oui (mode verrouillé, PIN propre) | Non | Non | Non | Non |
+| Opérateur réception | Non | Oui | Non | Non | Non |
+| Responsable compta / admin | Déverrouillage / accès selon config | Selon config | Oui (v1 via Paheko) | Accès admin Paheko si besoin | Selon config |
+| Admin technique | Non (config seulement) | Non | Non | Oui (Docker, plugin, monitoring) | Non |
+| Bénévole | Non | Non | Non | Non | Oui (placeholders v1) |
+
+*Source* : parcours J1–J5, FR4, FR5, FR14, FR15, FR16. Démarrer un poste (caisse ou réception) nécessite un compte administrateur (ou équivalent) ; le mode caisse est verrouillé sur le menu caisse seul, déverrouillage par PIN par opérateur habilité.
+
 ## Domain-Specific Requirements
+
+### Compliance (track Enterprise)
+
+Ce projet suit le **track BMAD Enterprise** : la couverture Security et DevOps est assurée dans le PRD et sera détaillée dans le document d'architecture (catégories Authentication & Security, Infrastructure & Deployment). Les exigences ci-dessous regroupent conformité réglementaire, sécurité (voir aussi NFR-S1 à NFR-S4 en section Non-Functional Requirements) et traçabilité.
 
 ### Compliance & réglementation
 
@@ -268,9 +301,25 @@ Application web en SPA/PWA (RecyClique, React-Vite-TS) avec API FastAPI et backe
 
 ### Implementation Considerations
 
-- **Monorepo ; Docker Compose** : RecyClique Frontend, RecyClique Backend, Paheko, PostgreSQL, Redis.
+- **Monorepo ; Docker Compose** : RecyClique en un seul container (front + middleware : build React servi par FastAPI + routes API), Paheko, PostgreSQL, Redis. Séparation **logique** dans le code : dossiers `frontend/` et `api/` (ou `backend/`), contrat API clair ; une seule image Docker « recyclic ». Surcouche cognitive (JARVOS Nano/Mini) : routes et logique dans le même FastAPI (même container).
 - **Auth** : compte admin pour démarrage poste ; PIN par opérateur (mode caisse).
 - **API** : JSON ; montants en centimes ; poids en kg (réception) / conversion vers Paheko (g si besoin).
+
+### Déploiement RecyClique et préconisations migration v1
+
+RecyClique est déployé en **un seul container** (front + middleware). Paheko reste un service séparé. Dans le code : séparation logique nette (`frontend/`, `api/`), contrat API clair ; pas de duplication de cette frontière en déploiement.
+
+**Préconisations migration v1** (refonte 1.4.4, stack cible) :
+
+| Sujet | Préconisation |
+|--------|----------------|
+| **Containers** | Un seul container RecyClique (front + middleware), Paheko à part. |
+| **Front ↔ serveur en v1** | Garder **SPA + API REST** ; pas de bascule SSR/full-page pour v1. |
+| **Forme de l'API** | REST structuré, contrat et types partagés (monorepo), routes par module. |
+| **Événements** | EventBus / Redis Streams côté serveur uniquement ; le front passe par l'API. |
+| **Import 1.4.4** | Checklist copy + consolidate + security ; séparation logique front/back dans le code. |
+| **Surcouche cognitive** | Routes et logique dans le même FastAPI (même container). |
+| **À éviter en v1** | GraphQL, mélange SSR + SPA, deuxième stack de rendu. |
 
 ## Project Scoping & Phased Development
 
@@ -324,7 +373,7 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 
 ### Correspondance / mapping RecyClique ↔ Paheko
 
-- **FR13b** : Le système peut gérer un mapping prédéfini entre RecyClique et Paheko (moyens de paiement, catégories caisse, sites/emplacements, etc.) pour la v1 ; tout est configurable à l'avance même si certains éléments ne sont pas encore utilisés ou mappés. Le détail des champs et règles (module correspondance) s'appuie sur la recherche déjà réalisée (matrice, grille confrontation, dumps BDD) et sera affiné après confrontation BDD + instance dev + analyste.
+- **FR13b** : Le système peut gérer un mapping prédéfini entre RecyClique et Paheko (moyens de paiement, catégories caisse, sites/emplacements, etc.) pour la v1 ; tout est configurable à l'avance même si certains éléments ne sont pas encore utilisés ou mappés. Le détail des champs et règles (module correspondance) s'appuie sur la recherche déjà réalisée (matrice, grille confrontation, dumps BDD) et sera affiné après confrontation BDD + instance dev + analyste. Le périmètre exact sera figé lorsque la BDD et l'instance dev sont stabilisées.
 - **Presets / boutons rapides (Don, Recyclage, Déchèterie, etc.)** : selon les cas, correspondance vers catégories Paheko ou conservation dans RecyClique uniquement (flux non éco) ; l'étude (éco vs non-éco, règles de mapping) reste à faire et sera documentée (matrice ou spec dédiée).
 
 ### Utilisateurs & authentification
@@ -336,7 +385,7 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 
 ### Administration & déploiement
 
-- **FR18** : Un admin technique peut déployer et configurer l'instance (RecyClique Frontend, Backend, Paheko, PostgreSQL, Redis) via Docker Compose.
+- **FR18** : Un admin technique peut déployer et configurer l'instance (RecyClique en un container : front + middleware, Paheko, PostgreSQL, Redis) via Docker Compose.
 - **FR19** : Un admin technique peut configurer le canal push RecyClique → Paheko (endpoint, secret, résilience).
 - **FR20** : Le système peut conserver les tickets non poussés en file (Redis Streams) et les repousser après indisponibilité de Paheko (retry sans perte).
 
@@ -360,7 +409,7 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 ### Performance
 
 - **NFR-P1** : L'enregistrement d'une vente (saisie + envoi) se termine en moins de 2 secondes dans des conditions normales.
-- **NFR-P2** : La clôture de session ne bloque pas l'opérateur plus de quelques secondes ; le push et la sync comptable peuvent s'achever en arrière-plan.
+- **NFR-P2** : La clôture de session ne bloque pas l'opérateur plus de 10 secondes ; le push et la sync comptable peuvent s'achever en arrière-plan.
 
 ### Security
 
@@ -380,6 +429,19 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 
 *Scalability* : Non détaillée en v1 (une instance par ressourcerie ; 2e ressourcerie = objectif de validation).
 
+## Traçabilité FR → Parcours
+
+| Parcours | FR couverts |
+|----------|-------------|
+| J1 (Opérateur caisse) | FR1–FR7, FR11, FR14, FR15, FR18–FR20 |
+| J2 (Réception) | FR8–FR10 |
+| J3 (Compta / admin) | FR11–FR13, FR16, FR17 |
+| J4 (Admin technique) | FR18–FR20 |
+| J5 (Vie asso) | FR21 |
+| Domaine / scope | FR13b, FR22–FR26 |
+
+*Source :* tableau Journey Requirements Summary, matrice RBAC, Product Scope.
+
 ## Références projet
 
 - **Versioning** : `references/versioning.md` (v0.1.0 → v1.0.0).
@@ -388,3 +450,5 @@ Cette section détaille la stratégie MVP et le découpage en phases, en cohére
 - **Checklist import 1.4.4** : `references/ancien-repo/checklist-import-1.4.4.md` (copy, consolidate, security à chaque pioche).
 - **Vision module décla éco-organismes** : `references/vision-projet/vision-module-decla-eco-organismes.md`.
 - **Extension points / Peintre (recherche)** : `_bmad-output/planning-artifacts/research/technical-affichage-dynamique-peintre-extension-points-research-2026-02-25.md`.
+- **Décision déploiement RecyClique + préconisations migration v1** : `references/artefacts/2026-02-26_01_analyse-separation-frontend-backend-recyclic.md`.
+- **Track BMAD Enterprise (multi-utilisateur, une instance par ressourcerie)** : `references/artefacts/2026-02-26_02_track-enterprise-multi-utilisateur.md`.

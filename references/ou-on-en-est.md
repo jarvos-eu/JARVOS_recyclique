@@ -1,6 +1,6 @@
 # Ou on en est — JARVOS Recyclique
 
-Mis a jour : 2026-02-25
+Mis a jour : 2026-02-26
 
 **Perimetre par version** : voir [references/versioning.md](versioning.md) (v0.1.0 → v1.0.0).
 
@@ -8,7 +8,7 @@ Mis a jour : 2026-02-25
 
 Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponible** dans `references/ancien-repo/`. **Analyse brownfield Paheko faite** : extensions (plugins/modules), API HTTP, gestion des fichiers et upload, WebDAV — voir [references/paheko/analyse-brownfield-paheko.md](paheko/analyse-brownfield-paheko.md) (index : [references/paheko/index.md](paheko/index.md)). Workflow Git en place. Aucun code source encore.
 
-**Framework de modules : design complet et arbitré.** Artefact : `references/artefacts/2026-02-24_07_design-systeme-modules.md`. Décisions finales posées : TOML, ModuleBase, EventBus Redis Streams (multi-workers), slots React, monorepo. **Product Brief v0.1.0 complété** (2026-02-25) : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md` ; détails PRD à venir. **UX v1.0** : mêmes écrans que 1.4.4, copie du code des mises en page (copy+consolidate+security), pas de refonte écrans pour la v1.0.
+**Framework de modules : design complet et arbitré.** Artefact : `references/artefacts/2026-02-24_07_design-systeme-modules.md`. Décisions finales posées : TOML, ModuleBase, EventBus Redis Streams (multi-workers), slots React, monorepo. **Product Brief v0.1.0 complété** (2026-02-25) : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`. **PRD complété** (2026-02-26) : `_bmad-output/planning-artifacts/prd.md` — exigences fonctionnelles (caisse, réception, compta, correspondance, auth, déploiement, vie asso, éco-organismes, extension points), NFR, scope v1 et hors scope (dont réception hors ligne = module complémentaire post-v1). **UX v1.0** : mêmes écrans que 1.4.4, copie du code des mises en page (copy+consolidate+security), pas de refonte écrans pour la v1.0.
 
 **Strategie de recherche : spirale.** 1re passe = decouverte / cartographie sur tous les sujets (Kanban + todo) ; 2e passe = recherches detaillees (API Paheko caisse, extension saisie au poids, analyse dumps, etc.). **1re passe spirale clôturée** (2026-02-25) : tous les sujets Kanban et todo ont eu au moins une passe decouverte ; URL repo 1.4.4 renseignee.
 
@@ -18,7 +18,16 @@ Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponibl
 
 BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
+**Track BMAD : Enterprise** (securite, conformite, DevOps ; multi-utilisateur ; une instance par ressourcerie). Detail : [artefact 2026-02-26_02](artefacts/2026-02-26_02_track-enterprise-multi-utilisateur.md).
+
 ## Derniere session
+
+2026-02-26 — PRD complété et clarifications (session domaine).
+
+Réalisé :
+- **PRD** rédigé et mis à jour : `_bmad-output/planning-artifacts/prd.md`. Clarifications intégrées : **FR11** — « session » = session de **caisse**, une session RecyClique = une session Paheko **par caisse** (en multi-caisses, chaque caisse a sa propre session). **Réception hors ligne** : module complémentaire à développer après v1 (hors scope initial). **Module correspondance (FR13b)** : phrase ajoutée — détail des champs et règles à affiner après confrontation BDD + instance dev + analyste. **Presets / boutons rapides** (Don, Recyclage, Déchèterie, etc.) : note ajoutée — étude à faire (correspondances éco vs non-éco ou conservation RecyClique), à documenter (matrice ou spec dédiée).
+
+---
 
 2026-02-25 — Product Brief JARVOS Recyclique complété (workflow Create Product Brief).
 
@@ -149,5 +158,5 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 
 ## Prochaine etape
 
-1. **PRD** : rédiger le PRD en s'appuyant sur le Brief (`_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`), les artefacts (grille 05, artefact 08, point global 06), les schémas (schema-recyclic-dev.md, schema-paheko-dev.md) et le versioning ; préciser les points encore ouverts (périmètre module correspondance, politique fichiers) comme à affiner pendant ou après le PRD.
+1. **Épics / stories** : découper le PRD en épics et stories (BMAD ou backlog projet) ; ou lancer la recherche technique architecture backend si prioritaire.
 2. **Create Brief** : complété 2026-02-25.
