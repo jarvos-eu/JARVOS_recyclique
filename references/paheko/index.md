@@ -28,7 +28,7 @@ Guide et reference pour **Paheko** (gestion d'association) dans le cadre de l'in
 
 | `liste-endpoints-api-paheko.md` | Liste detaillee des endpoints API Paheko : methode, chemin sous /api, utilite, niveau min. (read/write/admin) ; reference pour confrontation RecyClique vs Paheko et PRD. |
 
-| **Schéma BDD** | **references/dumps/schema-paheko-dev.md** — Tables extraites de l'instance Paheko dev (SQLite Docker) : api_credentials, users, users_categories, acc_* (compta), files, plugins, modules, module_data_* ; structure attendue plugin_caisse_* et module_data_saisie_poids (quand extensions activées). Pour correspondances avec RecyClique. |
+| **Schéma BDD** | **references/dumps/schema-paheko-dev.md** — Tables extraites de l'instance Paheko dev (SQLite Docker, plugins Caisse et Saisie au poids activés) : core (api_credentials, users, acc_*, files, etc.) + tables réelles du plugin Caisse (plugin_pos_*) et du module Saisie au poids (module_data_saisie_poids). Pour correspondances avec RecyClique. |
 
 | `repo/` | Contenu de l'archive de distribution Paheko (gitignore). Contient modules/ (ex. saisie_poids), plugins/, etc. |
 

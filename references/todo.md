@@ -9,6 +9,7 @@
 - [x] Renseigner l'URL du repo GitHub public Recyclique 1.4.4 dans `references/ancien-repo/README.md`
 - [x] Lancer git clone du repo Recyclique 1.4.4 (`references/ancien-repo/repo/`)
 - [x] Lancer le workflow Document Project sur `references/ancien-repo/repo/` pour l'analyse brownfield
+- [ ] Rédiger le PRD (s'appuyer sur grille 05, artefact 08, matrice et audits migration-paeco/audits/)
 - [ ] Decider de l'architecture technique du nouveau backend (recherche technique a faire)
 - [x] Clarifier le perimetre v0.1.0 vs fonctionnalites a reporter — source de verite : references/versioning.md (v0.1.0 → v1.0.0) ; detail eventuel dans le Brief quand produit.
 - [ ] Explorer et formaliser politique fichiers (matrice, backends, scan factures, upload RecyClique→Paheko) — chantier versions futures
@@ -22,9 +23,9 @@
 - [x] Rechercher extension saisie au poids Paheko : modeles, import depuis caisse, API — fait : reponse dans references/recherche/ (2026-02-25)
 - [x] Decider source de verite caisse (Paheko seul vs miroir Recyclic) — fait : Paheko seul ; RecyClique pousse a la fermeture via plugin PHP (public/api.php), syncAccounting par le plugin
 - [x] Decider granularite push (par ticket vs session) et resilience (file d'attente) — fait : par ticket, Redis Streams (2026-02-25, artefact 07)
-- [ ] Monter en local BDD Recyclic + Paheko (dumps prod dans `references/dumps/`), puis analyser et cartographier correspondances reelles (2e passe)
-- [ ] Instance Paheko dev (Docker local) : installer Paheko, activer plugins caisse + saisie au poids, tester API / schema ; pour dissection et validation avant PRD
-- [ ] Confronter RecyClique (categories, offline, decla eco-organismes) vs Paheko + plugins pour decision perimetre et mapping — a faire avec l'analyste en reflexion avancee, apres Brief
+- [x] Monter en local BDD Recyclic + Paheko (dumps prod dans `references/dumps/`), puis analyser et cartographier correspondances reelles (2e passe) — fait 2026-02-25 (accès BDD dev, schémas documentés).
+- [x] Instance Paheko dev (Docker local) : installer Paheko, activer plugins caisse + saisie au poids, tester API / schema ; pour dissection et validation avant PRD — fait 2026-02-25 (dev-tampon/paheko/, BDD prod migrée, plugins installés).
+- [x] Confronter RecyClique (categories, offline, decla eco-organismes) vs Paheko + plugins pour decision perimetre et mapping — fait 2026-02-25 (artefact 2026-02-25_08, grille 05 mise à jour).
 - [x] Formaliser checklist "copy+consolidate+security" pour import code depuis 1.4.4 — fait : references/ancien-repo/checklist-import-1.4.4.md (appliquer à chaque pioche dans 1.4.4)
 - [x] Inventorier usages LLM actuels dans Recyclic 1.4.4 — fait : import Excel, categories non normees → rapprochement LLM (2026-02-25)
 - [ ] Definir strategie LLM/IA : hardcodé + placeholder Ganglion vs. JARVOS Nano/Mini — reportee apres brief (v0.1.0 = placeholder)

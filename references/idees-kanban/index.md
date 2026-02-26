@@ -18,3 +18,4 @@ Une ligne par idée. Mise à jour par le skill `idees-kanban` à chaque créatio
 | 2026-02-24_jarvos-ports-nano-mini-peintre.md | JARVOS Ports Nano Mini Peintre | a-creuser | 2026-02-24 | 2026-02-25 |
 | 2026-02-24_ia-llm-modules-intelligents.md | IA LLM modules intelligents | a-creuser | 2026-02-24 | 2026-02-25 |
 | 2026-02-24_module-correspondance-paheko.md | Module correspondance Paheko | a-conceptualiser | 2026-02-24 | 2026-02-24 |
+| 2026-02-26_parcours-ouverture-caisse-postes-acces-pin.md | Parcours ouverture caisse, postes et accès PIN | a-conceptualiser | 2026-02-26 | 2026-02-26 |

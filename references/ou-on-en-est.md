@@ -8,17 +8,35 @@ Mis a jour : 2026-02-25
 
 Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponible** dans `references/ancien-repo/`. **Analyse brownfield Paheko faite** : extensions (plugins/modules), API HTTP, gestion des fichiers et upload, WebDAV — voir [references/paheko/analyse-brownfield-paheko.md](paheko/analyse-brownfield-paheko.md) (index : [references/paheko/index.md](paheko/index.md)). Workflow Git en place. Aucun code source encore.
 
-**Framework de modules : design complet et arbitré.** Artefact : `references/artefacts/2026-02-24_07_design-systeme-modules.md`. Décisions finales posées : TOML, ModuleBase, EventBus Redis Streams (multi-workers), slots React, monorepo. Prêt pour le Brief ; détails PRD à venir.
+**Framework de modules : design complet et arbitré.** Artefact : `references/artefacts/2026-02-24_07_design-systeme-modules.md`. Décisions finales posées : TOML, ModuleBase, EventBus Redis Streams (multi-workers), slots React, monorepo. **Product Brief v0.1.0 complété** (2026-02-25) : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md` ; détails PRD à venir. **UX v1.0** : mêmes écrans que 1.4.4, copie du code des mises en page (copy+consolidate+security), pas de refonte écrans pour la v1.0.
 
 **Strategie de recherche : spirale.** 1re passe = decouverte / cartographie sur tous les sujets (Kanban + todo) ; 2e passe = recherches detaillees (API Paheko caisse, extension saisie au poids, analyse dumps, etc.). **1re passe spirale clôturée** (2026-02-25) : tous les sujets Kanban et todo ont eu au moins une passe decouverte ; URL repo 1.4.4 renseignee.
 
-**Donnees production :** dumps BDD dans `references/dumps/` (gitignore) — Paheko deja present ; Recyclic a deposer si besoin. **Schéma BDD Recyclic dev documenté** : [references/dumps/schema-recyclic-dev.md](dumps/schema-recyclic-dev.md) (tables et colonnes, correspondances Paheko à préciser). **Schéma BDD Paheko dev documenté** : [references/dumps/schema-paheko-dev.md](dumps/schema-paheko-dev.md) — tables core (API, membres, compta, fichiers), structure attendue plugin_caisse_* et module_data_saisie_poids ; pour correspondances avec RecyClique. Objectif 2e passe = monter Paheko + Recyclic en local et deduire les correspondances.
+**Donnees production :** dumps BDD dans `references/dumps/` (gitignore) — Paheko deja present ; Recyclic a deposer si besoin. **Schéma BDD Recyclic dev documenté** : [references/dumps/schema-recyclic-dev.md](dumps/schema-recyclic-dev.md) (tables et colonnes, correspondances Paheko à préciser). **Schéma BDD Paheko dev documenté** : [references/dumps/schema-paheko-dev.md](dumps/schema-paheko-dev.md) — tables core + **tables réelles** du plugin Caisse (plugin_pos_*) et du module Saisie au poids (module_data_saisie_poids), extraites de l'instance avec plugins installés ; pour correspondances avec RecyClique. **2e passe réalisée** : instance Paheko + accès BDD Recyclic en local, schémas et confrontation (artefact 08).
 
 **Decisions 2026-02-25** : push par ticket, Redis Streams pour file push Paheko, source officielle EEE dans RecyClique, reception/poids RecyClique sans sync manuelle, objectif interfaces compta dans RecyClique. Voir [artefact 2026-02-25_07](artefacts/2026-02-25_07_decisions-push-redis-source-eee.md).
 
 BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
 ## Derniere session
+
+2026-02-25 — Product Brief JARVOS Recyclique complété (workflow Create Product Brief).
+
+Brief disponible : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`. Sections : Executive Summary, Core Vision (problem, solution, differentiators), Target Users (terrain, compta/admin, bénévoles, journey), Success Metrics (v1.0 livrée en prod, adoption 2e ressourcerie), MVP Scope (v0.1→v1.0, hors scope, future vision). Prochaine étape logique : PRD.
+
+---
+
+2026-02-25 — Décisions matrice caisse/poids (session=session, manques v0.2+, compatibilité Paheko).
+
+Matrice [references/migration-paeco/audits/matrice-correspondance-caisse-poids.md](migration-paeco/audits/matrice-correspondance-caisse-poids.md) mise à jour : 1 session RecyClique = 1 session Paheko (ouverture → clôture) ; clôture RecyClique déclenche clôture Paheko (contrôle totaux + syncAccounting) ; section 2.5 unité de poids (kg ↔ g, convention PRD) ; section 4 fonctionnalités Paheko absentes (v0.1 ignorer, v0.2+ à développer) ; section 5 principe de compatibilité Paheko (config Paheko = référence). Grille 05 axe 6 (module correspondance) → statut décidé.
+
+---
+
+2026-02-25 — Schéma Paheko dev : plugins Caisse et Saisie au poids (tables réelles).
+
+Plugins Caisse (POS) et Saisie au poids installés sur l'instance dev. Ré-extraction du schéma : [references/dumps/schema-paheko-dev.md](dumps/schema-paheko-dev.md) mis à jour avec les tables réelles plugin_pos_* et module_data_saisie_poids.
+
+---
 
 2026-02-25 — Schéma BDD Paheko dev (exploration instance Docker, documentation correspondances).
 
@@ -131,6 +149,5 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 
 ## Prochaine etape
 
-1. **2e passe** (suite) : instance Paheko dev (Docker local) ; monter BDD Recyclic + Paheko en local, analyser correspondances.
-2. **Confronter** capacites RecyClique + besoins a venir avec Paheko (core + caisse + saisie_poids) pour decision claire (perimetre, categories, securite) — a faire en reflexion avancee avec l'analyste, apres Brief / maturite spec. Grille preparatoire : [references/artefacts/2026-02-25_05_grille-confrontation-recyclic-paheko.md](artefacts/2026-02-25_05_grille-confrontation-recyclic-paheko.md). Questions encore a trancher : [artefact 07](artefacts/2026-02-25_07_decisions-push-redis-source-eee.md).
-3. **Quand assez de matiere** : Create Brief JARVOS Recyclique v0.1.0 (`/bmad-bmm-create-product-brief`), puis PRD.
+1. **PRD** : rédiger le PRD en s'appuyant sur le Brief (`_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`), les artefacts (grille 05, artefact 08, point global 06), les schémas (schema-recyclic-dev.md, schema-paheko-dev.md) et le versioning ; préciser les points encore ouverts (périmètre module correspondance, politique fichiers) comme à affiner pendant ou après le PRD.
+2. **Create Brief** : complété 2026-02-25.

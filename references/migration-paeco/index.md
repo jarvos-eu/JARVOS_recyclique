@@ -1,8 +1,15 @@
 # Index — references/migration-paeco/
 
-Matiere de travail sur la migration Paheko / RecyClique : guides, presentations, TODO, comptes-rendus, decla eco-organismes. Contexte pour le refactor JARVOS Recyclique.
+Matiere de travail sur la migration Paheko / RecyClique : guides, presentations, TODO, comptes-rendus, decla eco-organismes, **audits**. Contexte pour le refactor JARVOS Recyclique.
 
 > Charger si : session sur integration Paheko, vision plateforme, decla eco-organismes, ou historique decisions RecyClique.
+
+---
+
+## Sous-dossier audits/
+
+- **`audits/`** — Audits pour correspondances RecyClique ↔ Paheko : mode d'emploi synthétique, traçabilité workflow/options → UI, tables BDD, références plugin. Contient les audits caisse et saisie au poids (Paheko + RecyClique 1.4.4) et la **matrice de correspondance** caisse/poids. Détail : **audits/index.md**.
+  _(Charger si : correspondances caisse / saisie au poids, mapping BDD caisse Paheko, module de correspondance, ou revue des workflows pour le module RecyClique→Paheko.)_
 
 ---
 
