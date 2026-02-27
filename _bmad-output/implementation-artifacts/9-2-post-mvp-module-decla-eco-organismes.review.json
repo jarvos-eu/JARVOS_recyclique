@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "AC1–AC3 et toutes les tâches validés. Tests 16/16 passent. Deux corrections MEDIUM appliquées pendant le review : centralisation des constantes (VALID_FLOW_TYPES, YEAR_MIN/MAX) dans declarative_service ; suppression de la double lecture TOML dans main.py via get_enabled_modules() dans le loader. Story et sprint-status mis à jour (9-2 done, epic-9 done)."
+}

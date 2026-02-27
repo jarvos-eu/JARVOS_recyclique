@@ -14,13 +14,13 @@ from api.services.declarative_service import (
     FLOW_RECEPTION,
     compute_and_persist_aggregates,
     get_aggregates,
+    VALID_FLOW_TYPES,
+    YEAR_MIN,
+    YEAR_MAX,
 )
 
 router = APIRouter(prefix="/declarative", tags=["declarative"])
 _Admin = Depends(require_permissions("admin"))
-
-VALID_FLOW_TYPES = frozenset({FLOW_CAISSE, FLOW_RECEPTION})
-YEAR_MIN, YEAR_MAX = 1900, 2100
 
 
 class ComputeAggregatesBody(BaseModel):

@@ -18,13 +18,14 @@ from api.services.declarative_service import (
     FLOW_CAISSE,
     FLOW_RECEPTION,
     get_aggregates,
+    VALID_FLOW_TYPES,
+    YEAR_MIN,
+    YEAR_MAX,
 )
 
 router = APIRouter(prefix="/declarative", tags=["declarative"])
 _Admin = Depends(require_permissions("admin"))
 
-VALID_FLOW_TYPES = frozenset({FLOW_CAISSE, FLOW_RECEPTION})
-YEAR_MIN, YEAR_MAX = 1900, 2100
 EXPORT_FORMAT_CSV = "csv"
 EXPORT_FORMAT_JSON = "json"
 VALID_EXPORT_FORMATS = frozenset({EXPORT_FORMAT_CSV, EXPORT_FORMAT_JSON})

@@ -18,11 +18,18 @@ logger = logging.getLogger(__name__)
 
 # Registre des modules chargés (nom -> instance) pour diagnostic et lifespan
 _loaded_modules: dict[str, ModuleBase] = {}
+# Liste des identifiants activés (d'après le dernier chargement TOML)
+_enabled_module_ids: list[str] = []
 
 
 def get_loaded_modules() -> dict[str, ModuleBase]:
     """Retourne le registre des modules actuellement chargés (lecture seule)."""
     return dict(_loaded_modules)
+
+
+def get_enabled_modules() -> list[str]:
+    """Retourne la liste des identifiants de modules activés (d'après le dernier chargement TOML)."""
+    return list(_enabled_module_ids)
 
 
 def _parse_toml(path: Path) -> dict[str, Any]:
@@ -100,6 +107,9 @@ def load_modules_from_toml(app: FastAPI) -> None:
     if not enabled:
         logger.info("Config modules sans entrée 'enabled' — pas de modules chargés.")
         return
+
+    _enabled_module_ids.clear()
+    _enabled_module_ids.extend(str(m).strip().lower() for m in enabled if isinstance(m, str))
 
     for module_id in enabled:
         if not isinstance(module_id, str):

@@ -2,7 +2,7 @@
 
 
 
-Status: review
+Status: done
 
 
 
@@ -171,3 +171,23 @@ afin de brancher plus tard l'affichage dynamique et le service Peintre (FR26) sa
 - frontend/src/main.tsx
 - frontend/src/shared/slots/README.md
 
+
+## Senior Developer Review (AI)
+
+
+- **Date** : 2026-02-27
+- **Résultat** : Approved
+- **Git vs File List** : Fichiers story (frontend shared + main) présents dans les changements ; pas d'écart bloquant pour le périmètre 10-1.
+- **AC** : AC1 (interfaces + stubs utilisables) et AC2 (structure extensible v2+) validés.
+- **Tâches** : Toutes les tâches [x] vérifiées (interfaces, stubs, bootstrap, hooks, tests, slots README).
+- **Constats mineurs (non bloquants)** :
+  1. Story mentionne « useVisual(context) » alors que le hook est useVisual() et le contexte est passé à getVisual(context).
+  2. Config v2+ uniquement commentée (VITE_USE_REAL_DISPLAY_SERVICES), pas de lecture env — acceptable pour « prévoir » en v1.
+  3. Pas de test pour useDisplayServices() hors DisplayServicesProvider.
+  4. Tests : import du stub tantôt via barrel (../visual) tantôt direct (./visual-provider.stub) — cohérence mineure.
+
+
+## Change Log
+
+
+- 2026-02-27 : Code review adversarial (BMAD QA) — approved. Status → done.

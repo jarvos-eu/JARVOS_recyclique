@@ -93,7 +93,7 @@ development_status:
   9-2-post-mvp-module-decla-eco-organismes: done
   epic-9-retrospective: optional
 
-  epic-10: in-progress
+  epic-10: done
   10-1-interfaces-et-stubs-layoutconfigservice-visualprovider-v1: done
-  10-2-post-mvp-fonds-documentaire-recyclique: review
+  10-2-post-mvp-fonds-documentaire-recyclique: done
   epic-10-retrospective: optional

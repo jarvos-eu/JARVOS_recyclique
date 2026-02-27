@@ -1,1 +1,9 @@
-{"epicId":"epic-8","currentStoryKey":null,"status":"paused","startedAt":"2026-02-27","completedAt":"2026-02-27","lastStoryCompleted":"8-7-ecrans-ou-placeholders-vie-associative-dans-recyclique","summary":"Epic 8 entierement livre. 8-3 remise en course (Code Review apres DEV, code en git), approved. 8-4 a 8-7 : Create, Validate, Dev, Revision, Code Review. Toutes les stories 8-1 a 8-7 sont done."}
+{
+  "epicId": "epic-10",
+  "currentStoryKey": null,
+  "status": "paused",
+  "startedAt": "2026-02-27",
+  "completedAt": "2026-02-27",
+  "lastStoryCompleted": "10-2-post-mvp-fonds-documentaire-recyclique",
+  "summary": "Epic 10 entierement livre. 10-1 : interfaces et stubs LayoutConfigService/VisualProvider v1 (shared/layout, shared/visual, DisplayServicesProvider, hooks, tests) — approved. 10-2 : fonds documentaire RecyClique post-MVP (spec + doc fonds-documentaire-recyclique.md, matrice qui depose quoi ou, epic-10 done)."
+}

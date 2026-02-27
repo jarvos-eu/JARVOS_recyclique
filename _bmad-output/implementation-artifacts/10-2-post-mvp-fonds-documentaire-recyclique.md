@@ -1,6 +1,6 @@
 # Story 10.2: (Post-MVP) Fonds documentaire RecyClique
 
-Status: review
+Status: done
 
 <!-- Story post-MVP. Validation optionnelle avant dev-story. -->
 
@@ -78,6 +78,14 @@ afin de **centraliser la doc et préparer l'évolution JARVOS Nano/Mini**.
 - references/artefacts/2026-02-25_02_chantier-fichiers-politique-documentaire.md (modifié — matrice qui dépose quoi où)
 - _bmad-output/implementation-artifacts/10-2-post-mvp-fonds-documentaire-recyclique.md (modifié — tasks, Dev Agent Record, File List, Status)
 
+## Senior Developer Review (AI)
+
+- **Date :** 2026-02-27  
+- **Reviewer :** bmad-qa (code review adversarial)  
+- **Résultat :** Approved  
+- **Vérifications :** Story post-MVP, livrable = spec + documentation (pas de code). Les trois livrables ont été lus et validés : `doc/fonds-documentaire-recyclique.md` (périmètre §1, stockage §2, API cible §3), `doc/index.md` (entrée fonds documentaire), `references/artefacts/2026-02-25_02_chantier-fichiers-politique-documentaire.md` (matrice « qui dépose quoi où »). AC1 et AC2 implémentés au sens spec ; toutes les tasks [x] réalisées. Aucun écart File List. Amélioration mineure possible : date en en-tête du doc fonds-documentaire (non bloquante).
+
 ## Change Log
 
+- 2026-02-27 : Code review (bmad-qa) : approved. Livrables doc et matrice validés ; story post-MVP sans code, AC1/AC2 et tasks conformes. Status → done, epic-10 → done.
 - 2026-02-27 : Story 10.2 implémentée (spec uniquement, post-MVP). Ajout doc fonds documentaire, matrice dans artefact politique fichiers, API cible documentée.

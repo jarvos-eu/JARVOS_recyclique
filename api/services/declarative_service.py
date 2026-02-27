@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 FLOW_CAISSE = "caisse"
 FLOW_RECEPTION = "reception"
+VALID_FLOW_TYPES = frozenset({FLOW_CAISSE, FLOW_RECEPTION})
+YEAR_MIN, YEAR_MAX = 1900, 2100
 
 
 def _quarter_bounds(year: int, quarter: int) -> Tuple[datetime, datetime]:
