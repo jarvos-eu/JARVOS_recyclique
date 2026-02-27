@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Second passage : toutes les corrections demandées sont en place. HIGH : routes /v1/sites, /v1/cash-registers, /v1/categories, /v1/presets protégées par require_permissions (admin, caisse.access, reception.access selon endpoint) ; tests TestAdminGroupLiaisons couvrent POST/DELETE groups/{id}/permissions et groups/{id}/users (200/204 et effet sur GET détail). MEDIUM : GET /v1/users/me/permissions a response_model=list[str] ; CASCADE documenté dans delete_permission (permissions.py). AC 1-4 et tasks validés. Seul point ouvert : LOW alignement File List / commits (non bloquant)."
+}

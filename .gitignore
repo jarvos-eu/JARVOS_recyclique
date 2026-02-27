@@ -25,3 +25,5 @@ normalize_typographic_chars_*.log
 __pycache__/
 *.pyc
 *.pyo
+test_recyclic.db
+recyclic.sqlite

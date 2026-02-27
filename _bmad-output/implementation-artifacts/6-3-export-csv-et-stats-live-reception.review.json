@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Second passage : tous les follow-ups du premier review sont traités. (1) Tests API avec auth + contenu : 3 tests ajoutés (test_export_ticket_csv_with_auth_contains_lines, test_export_lignes_csv_with_auth_and_period, test_stats_live_returns_coherent_json) avec fixture reception_user_with_ticket_and_lignes ; assertions sur contenu CSV (lignes, destinations, poids) et JSON stats (tickets_today, total_weight_kg, lines_count). (2) Commentaires limitation streaming/tokens : présents dans reception.py (_download_tokens multi-worker, export ticket/lignes mémoire). (3) Nom fichier export lignes avec plage : reception-lignes-YYYY-MM-DD_YYYY-MM-DD.csv. AC 1-5 et tâches validés. 9 tests API passent."
+}

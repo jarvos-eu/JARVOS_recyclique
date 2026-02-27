@@ -13,6 +13,8 @@ Tout ce qui sert a la **communication publique** : presentations (partenaires, f
 | Fichier | Usage |
 |---------|--------|
 | [deployment.md](deployment.md) | Déploiement Docker Compose, prérequis, vérification de la stack (health, URLs), dépannage. |
+| [canal-push.md](canal-push.md) | Canal push RecyClique → Paheko : configuration (endpoint, secret), résilience (tentatives, backoff), comportement en cas d’échec. |
+| [admin-compta-paheko-v1.md](admin-compta-paheko-v1.md) | Accès admin compta via Paheko (v1) : URL (règle de construction), rôle requis, contexte v1. Story 8.6 — FR12. |
 | *(a deposer si besoin)* | Versions **epurees** pretes a envoyer (presentations, modes d'emploi). Matiere premiere → **references/vision-projet/** (ex. `matiere_presentation-plateforme-recyclic.md`). |
 
 ---

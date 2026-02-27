@@ -1,4 +1,4 @@
-"""Router presets — CRUD + GET /active (Story 2.4). Boutons rapides caisse."""
+"""Router presets — CRUD + GET /active (Story 2.4). Boutons rapides caisse. Protégé RBAC (Story 3.2) : GET = caisse.access | admin, write = admin."""
 
 from datetime import datetime, timezone
 from uuid import UUID
@@ -7,11 +7,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from api.core.deps import require_permissions
 from api.db import get_db
-from api.models import Category, PresetButton
+from api.models import Category, PresetButton, User
 from api.schemas.preset import PresetCreate, PresetResponse, PresetUpdate
 
 router = APIRouter(prefix="/presets", tags=["presets"])
+
+_CaisseOrAdmin = Depends(require_permissions("caisse.access", "admin"))
+_Admin = Depends(require_permissions("admin"))
 
 
 def _get_preset_or_404(db: Session, preset_id: UUID) -> PresetButton | None:
@@ -36,6 +40,7 @@ def _get_category_or_404(db: Session, category_id: UUID) -> Category | None:
 def list_presets(
     category_id: UUID | None = None,
     db: Session = Depends(get_db),
+    current_user: User = _CaisseOrAdmin,
 ) -> list[PresetButton]:
     """GET /v1/presets — liste (filtre optionnel category_id)."""
     q = select(PresetButton)
@@ -46,7 +51,10 @@ def list_presets(
 
 
 @router.get("/active", response_model=list[PresetResponse])
-def list_presets_active(db: Session = Depends(get_db)) -> list[PresetButton]:
+def list_presets_active(
+    db: Session = Depends(get_db),
+    current_user: User = _CaisseOrAdmin,
+) -> list[PresetButton]:
     """GET /v1/presets/active — presets actifs pour la caisse (is_active=true, tri sort_order)."""
     q = (
         select(PresetButton)
@@ -62,6 +70,7 @@ def list_presets_active(db: Session = Depends(get_db)) -> list[PresetButton]:
 def get_preset(
     preset_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = _CaisseOrAdmin,
 ) -> PresetButton:
     """GET /v1/presets/{id} — détail (404 si absent)."""
     preset = _get_preset_or_404(db, preset_id)
@@ -71,7 +80,11 @@ def get_preset(
 
 
 @router.post("", response_model=PresetResponse, status_code=201)
-def create_preset(body: PresetCreate, db: Session = Depends(get_db)) -> PresetButton:
+def create_preset(
+    body: PresetCreate,
+    db: Session = Depends(get_db),
+    current_user: User = _Admin,
+) -> PresetButton:
     """POST /v1/presets — création. category_id optionnel mais doit exister si fourni."""
     if body.category_id is not None:
         cat = _get_category_or_404(db, body.category_id)
@@ -99,6 +112,7 @@ def update_preset(
     preset_id: UUID,
     body: PresetUpdate,
     db: Session = Depends(get_db),
+    current_user: User = _Admin,
 ) -> PresetButton:
     """PATCH /v1/presets/{id} — mise à jour partielle. category_id doit exister si fourni ; peut être remis à null."""
     preset = _get_preset_or_404(db, preset_id)
@@ -135,6 +149,7 @@ def update_preset(
 def delete_preset(
     preset_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = _Admin,
 ) -> None:
     """DELETE /v1/presets/{id} — suppression définitive (pas de soft delete)."""
     preset = _get_preset_or_404(db, preset_id)

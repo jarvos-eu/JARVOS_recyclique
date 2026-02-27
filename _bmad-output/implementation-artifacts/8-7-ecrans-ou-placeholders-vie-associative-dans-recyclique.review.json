@@ -1,0 +1,17 @@
+{
+  "storyKey": "8-7-ecrans-ou-placeholders-vie-associative-dans-recyclique",
+  "reviewResult": "approved",
+  "reviewedAt": "2026-02-27",
+  "reviewPass": 1,
+  "adversarial": false,
+  "summary": "Entrée menu « Vie associative » (permission admin ou vie_asso.access), route /admin/vie-associative, page placeholder Mantine, VieAssociativeGuard cohérent. Tests co-locés présents. Conforme critères d'acceptation FR21.",
+  "findings": [],
+  "verified": [
+    "AppNav : entrée « Vie associative » avec permissionCodes ['admin', 'vie_asso.access'], filtre permissionCodes.some dans FULL_NAV_ITEMS",
+    "Route /admin/vie-associative dans App.tsx avec VieAssociativeGuard > AdminVieAssociativePage",
+    "AdminVieAssociativePage : Stack, Title, Text @mantine/core, titre « Vie associative », texte « Contenu vie associative à venir », data-testid page-vie-associative",
+    "VieAssociativeGuard : VIE_ASSO_PERMISSIONS ['admin', 'vie_asso.access'], redirect login si !user, message « Accès réservé » si !hasAccess",
+    "Permission backend vie_asso.access dans seed (2026_02_27_002), groupe benevole",
+    "Tests : VieAssociativeGuard.test.tsx (admin, vie_asso.access, forbidden, redirect login), AdminVieAssociativePage.test.tsx (titre + placeholder), AppNav.test.tsx (Vie associative link visibility)"
+  ]
+}

@@ -1,4 +1,5 @@
-"""
-Workers API RecyClique — EventBus (Redis Streams).
-Point d'entrée pour les consumers ; détails dans README.md (nommage streams, payload, idempotence).
-"""
+# Workers — consommateurs Redis Streams (Story 4.2, Epic 4).
+
+from api.workers.push_consumer import run_push_consumer
+
+__all__ = ["run_push_consumer"]

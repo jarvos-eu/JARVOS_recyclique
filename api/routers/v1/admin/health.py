@@ -1,0 +1,59 @@
+# Story 8.4 — GET /v1/admin/health (agrégé), /health/database, /health/scheduler, /health/anomalies.
+# Protégé par permission admin.
+
+from fastapi import APIRouter, Depends
+
+from api.core.deps import require_permissions
+from api.models import User
+from api.services.health_checks import check_database, check_redis, check_push_worker
+from api.workers.push_consumer import get_push_worker_state
+
+router = APIRouter(prefix="/health", tags=["admin-health"])
+_Admin = Depends(require_permissions("admin"))
+
+
+@router.get("")
+def admin_health(current_user: User = _Admin) -> dict:
+    """GET /v1/admin/health — agrégé (status, database, redis, push_worker)."""
+    db = check_database()
+    redis_status = check_redis()
+    push_worker_status = check_push_worker()
+    status = "ok" if (db == "ok" and redis_status == "ok") else "degraded"
+    return {
+        "status": status,
+        "database": db,
+        "redis": redis_status,
+        "push_worker": push_worker_status,
+    }
+
+
+@router.get("/database")
+def admin_health_database(current_user: User = _Admin) -> dict:
+    """GET /v1/admin/health/database."""
+    return {"status": check_database()}
+
+
+@router.get("/scheduler")
+def admin_health_scheduler(current_user: User = _Admin) -> dict:
+    """GET /v1/admin/health/scheduler — état du worker push (scheduler)."""
+    s = check_push_worker()
+    state = get_push_worker_state()
+    return {
+        "status": s,
+        "configured": state.get("configured", False),
+        "running": state.get("running", False),
+        "last_error": state.get("last_error"),
+        "last_success_at": state.get("last_success_at"),
+    }
+
+
+@router.get("/anomalies")
+def admin_health_anomalies(current_user: User = _Admin) -> dict:
+    """GET /v1/admin/health/anomalies — stub v1 (liste vide)."""
+    return {"items": [], "count": 0}
+
+
+@router.post("/test-notifications")
+def admin_health_test_notifications(current_user: User = _Admin) -> dict:
+    """POST /v1/admin/health/test-notifications — envoi test selon config (stub v1)."""
+    return {"message": "Test notifications envoyé (stub v1)"}

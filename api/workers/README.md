@@ -1,31 +1,24 @@
-# Workers API RecyClique — EventBus (Redis Streams)
+# Workers — consommateurs Redis Streams (Event System)
 
-Point d'entrée pour les **consumers EventBus** (Redis Streams). Pas d'implémentation métier complète dans la story 1.4 ; uniquement la structure et la documentation.
+Ce dossier contient les **points d'entrée** des consumers Redis Streams. En v1 : file push caisse → plugin Paheko (worker `push_consumer`).
 
-## Rôle
+## Conventions (architecture § Event System)
 
-- **Consommateurs** des streams Redis (push caisse → Paheko, événements métier).
-- Exécutés dans le même processus ou en tâches de fond (à définir selon déploiement).
-- Référence : architecture.md — API & Communication Patterns, Event System.
-
-## Nommage des streams et événements
-
-- **Nom d'événement** : **dot.lowercase** ou **snake_case** (ex. `pos.ticket.created`, `reception.ticket.closed`).
-- **Payload** : JSON, champs en **snake_case**.
-- **Évolution** : prévoir `event_type` et `payload_version` dans le payload pour compatibilité future.
-
-Exemples :
-
-- `pos.ticket.created` → `{ "ticket_id": "...", "session_id": "...", "total_cents": 1000, "event_type": "pos.ticket.created", "payload_version": "1" }`
-- `reception.ticket.closed` → `{ "ticket_id": "...", "event_type": "reception.ticket.closed", "payload_version": "1" }`
-
-## Idempotence et acks
-
-- Traiter les messages de façon **idempotente** si possible.
-- **Ack** après traitement réussi.
-- **Retry** avec backoff en cas d'échec (aligné NFR-I1, aucun ticket perdu).
+- **Nommage des événements** : **dot.lowercase** (ex. `pos.ticket.created`, `reception.ticket.closed`). Payload JSON en **snake_case**.
+- **Consommateurs** : idempotence si possible ; **ACK après traitement réussi uniquement** ; retry avec backoff en cas d'échec (NFR-I1).
+- **Streams** : un stream dédié par flux métier (ex. push caisse). Nom du stream configuré dans `api/config/settings.py` (ex. `redis_stream_push_caisse`).
 
 ## Structure
 
-- Les consumers concrets (ex. `pos_push_consumer.py`) seront ajoutés dans les stories métier (caisse, réception).
-- Ce dossier contient pour l'instant uniquement ce README et le `__init__.py` pour réserver la place.
+- `push_consumer.py` : consumer du stream push caisse ; lit les événements (type `pos.ticket.created` ou équivalent), appelle le plugin Paheko en HTTPS avec secret partagé, ACK après succès 2xx ; en échec : pas d'ACK, retry selon config (résilience FR19/FR20).
+- Config : `api/config/settings.py` (URL plugin, secret, retry/backoff, nom du stream). Réutiliser `get_settings()`, pas de config dupliquée.
+
+## Démarrage
+
+Le worker est lancé avec l'application FastAPI (même process) au startup ; sa santé est exposée dans le health check (`GET /health` → indicateur `push_worker`).
+
+## Références
+
+- Architecture : `_bmad-output/planning-artifacts/architecture.md` (Event System, Redis, Workers).
+- Canal push : `doc/canal-push.md`.
+- Story 4.1 (config), Story 4.2 (worker).

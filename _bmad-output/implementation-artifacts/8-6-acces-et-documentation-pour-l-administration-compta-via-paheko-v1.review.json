@@ -1,0 +1,18 @@
+{
+  "storyKey": "8-6-acces-et-documentation-pour-l-administration-compta-via-paheko-v1",
+  "reviewResult": "approved",
+  "reviewedAt": "2026-02-27",
+  "reviewPass": 2,
+  "adversarial": false,
+  "summary": "Code review Story 8.6 : (1) Doc doc/admin-compta-paheko-v1.md conforme — URL (règle origine PAHEKO_PLUGIN_URL + /admin/), rôle read/write Paheko, référence Accounting, contexte v1, lien optionnel décrit. (2) GET /v1/admin/paheko-compta-url implémenté (admin only, 404 si non configuré). (3) Lien « Comptabilité (Paheko) » sur dashboard Admin, affiché si URL configurée, target=_blank, réservé admin. FR12 couvert. Approved.",
+  "findings": [],
+  "verified": [
+    "doc/admin-compta-paheko-v1.md : URL (règle + exemple), rôle read/write Paheko, référence liste-endpoints-api-paheko.md, contexte v1, section lien optionnel",
+    "GET /v1/admin/paheko-compta-url : api/routers/v1/admin/paheko_compta.py, require_permissions(admin), 404 si PAHEKO_PLUGIN_URL absent, response url",
+    "Route montée sous /v1/admin (api/routers/v1/admin/__init__.py include_router paheko_compta_router)",
+    "frontend AdminDashboardPage : getPahekoComptaUrl(), lien « Comptabilité (Paheko) » si pahekoComptaUrl, target=_blank rel=noopener noreferrer, isAdmin",
+    "api/tests/routers/test_admin_paheko_compta.py : test 404 sans config, test 200 avec PAHEKO_PLUGIN_URL et url attendue"
+  ],
+  "correctionsAppliedAt": null,
+  "readyForReviewPass": 2
+}

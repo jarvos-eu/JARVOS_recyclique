@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Code review adversarial BMAD exécuté. AC1–AC3 et toutes les tâches [x] vérifiés et implémentés. Deux correctifs appliqués : (1) HIGH — health push_worker prend en compte state.running (après shutdown → error au lieu de ok) ; (2) MEDIUM — pas de retry sur HTTP 4xx (FR20 : échec temporaire 5xx/réseau uniquement). Suivis optionnels ajoutés en story (mock httpx, tests ACK/retry, last_success_at optionnel dans /health). Aucune escalade HITL."
+}

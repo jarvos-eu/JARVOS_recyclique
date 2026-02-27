@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Livrable spec uniquement (references/artefacts/2026-02-27_01_sso-recyclique-paheko-spec.md). AC verifies : objectif (SSO admin/compta, benefices, perimetre phase ulterieure) present §1 ; options techniques (A OIDC, B auth separee, C LDAP, D JWT/proxy) et synthese §2 ; contraintes Paheko (API HTTP Basic, Paheko pas IdP, OIDC consommateur 1.3.16+, Paheko.cloud) §3 ; pas de code, spec redactionnelle uniquement ; index artefacts a jour (entree 2026-02-27_01_sso-recyclique-paheko-spec.md). Story 3.6 approved, sprint-status 3-6 mis a jour done."
+}

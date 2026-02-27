@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Revue adversarial (bmad-qa) : Routes /v1/admin/mapping (GET list, GET /{id}, POST, PATCH /{id}, DELETE /{id}) presentes pour payment_methods, categories et locations. RBAC require_permissions(\"admin\", \"compta.responsable\") sur tous les endpoints. write_audit_event appele apres chaque create/update/delete avec actions mapping.payment_method.*, mapping.category.*, mapping.location.* et resource_type/resource_id coherents. Reutilisation stricte des modeles, schemas et mapping_service 7-1. Tests api/tests/routers/test_admin_mapping_*.py (16 tests). Conforme aux criteres d'acceptation et au livrable 7-2."
+}

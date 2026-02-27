@@ -1,5 +1,8 @@
 # RecyClique API — FastAPI app (socle Epic 1 + sites Story 2.1).
+# Story 4.2 : lifespan pour démarrer le worker push (même process).
 
+import threading
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -8,13 +11,32 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from api.core.modules.loader import load_modules_from_toml
 from api.routers import auth_router, pos_router, reception_router, admin_router
+from api.routers.v1 import v1_auth_router, v1_users_router, v1_reception_router
+from api.routers.v1.admin import router as v1_admin_router
 from api.routers.admin.health import router as health_router
 from api.routers.sites import router as sites_router
 from api.routers.cash_registers import router as cash_registers_router
+from api.routers.cash_sessions import router as cash_sessions_router
 from api.routers.categories import router as categories_router
 from api.routers.presets import router as presets_router
+from api.routers.sales import router as sales_router
+from api.routers.mapping import router as mapping_router
+from api.workers.push_consumer import run_push_consumer, set_shutdown_event
 
-app = FastAPI(title="RecyClique API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Démarre le worker push en arrière-plan ; arrêt propre au shutdown."""
+    shutdown = threading.Event()
+    set_shutdown_event(shutdown)
+    thread = threading.Thread(target=run_push_consumer, daemon=True)
+    thread.start()
+    yield
+    shutdown.set()
+    thread.join(timeout=10)
+
+
+app = FastAPI(title="RecyClique API", lifespan=lifespan)
 
 # Chargement des modules (TOML, ModuleBase) — Story 1.4
 load_modules_from_toml(app)
@@ -28,16 +50,28 @@ app.include_router(pos_router, prefix="/api/pos")
 app.include_router(reception_router, prefix="/api/reception")
 app.include_router(admin_router, prefix="/api/admin")
 
+# API v1 : auth (login, refresh, logout, signup, forgot/reset password, pin)
+app.include_router(v1_auth_router, prefix="/v1/auth")
+# API v1 : users (me, me/password, me/pin, me/permissions)
+app.include_router(v1_users_router, prefix="/v1")
+# API v1 : reception (postes/open) — Story 3.4
+app.include_router(v1_reception_router, prefix="/v1")
+# API v1 : admin (groupes, permissions)
+app.include_router(v1_admin_router, prefix="/v1")
 # API v1 : sites CRUD (GET/POST/PATCH/DELETE /v1/sites)
 app.include_router(sites_router, prefix="/v1")
 # API v1 : postes de caisse CRUD + GET /status (Story 2.2)
 app.include_router(cash_registers_router, prefix="/v1")
+# API v1 : sessions de caisse ouverture/fermeture/lecture (Story 5.1)
+app.include_router(cash_sessions_router, prefix="/v1")
 # API v1 : categories CRUD, hierarchy, visibilité, ordre, soft delete (Story 2.3)
 app.include_router(categories_router, prefix="/v1")
 # API v1 : presets CRUD + GET /active (Story 2.4)
 app.include_router(presets_router, prefix="/v1")
-
-# Statics SPA (frontend/dist)
+# API v1 : sales POST/GET/PUT/PATCH (Story 5.2)
+app.include_router(sales_router, prefix="/v1")
+# API mapping RecyClique -> Paheko (Story 7.1) : GET/POST/PATCH /api/mapping/*
+app.include_router(mapping_router, prefix="/api/mapping")
 dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 if dist.exists() and (dist / "index.html").exists():
     app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")

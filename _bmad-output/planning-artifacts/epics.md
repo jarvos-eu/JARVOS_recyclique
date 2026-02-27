@@ -718,7 +718,7 @@ Permettre l'administration complète de l'application (utilisateurs, sites, post
 |---|--------|-----------------|
 | **HITL-8.0** | Avant de lancer l'Epic 8 | **Optionnel** : confirmer que caisse (Epic 5) et réception (Epic 6) sont en place. |
 | **HITL-8.1** | Après Story 8.1 (users admin complet) | **Optionnel** : valider le niveau de détail des écrans admin. |
-| **HITL-8.2** | Après Story 8.3 (placeholders vie asso) | **Optionnel** : valider le niveau de détail des placeholders. |
+| **HITL-8.2** | Après Story 8.7 (placeholders vie asso) | **Optionnel** : valider le niveau de détail des placeholders. |
 
 ### Story 8.1: Administration complète des utilisateurs
 
@@ -796,7 +796,7 @@ afin de faire la compta pendant que les interfaces RecyClique ne sont pas encore
 **Étant donné** une instance avec RecyClique et Paheko déployés et la caisse synchronisée (Epic 5)  
 **Quand** je consulte la documentation ou l'aide RecyClique  
 **Alors** l'accès à l'interface Paheko pour la compta est documenté (URL, rôle requis) (FR12)  
-**Et** un lien ou une redirection depuis RecyClique peut être ajouté si pertinent.
+**Et** un lien ou une redirection depuis RecyClique peuvent être ajoutés si pertinent.
 
 ### Story 8.7: Écrans ou placeholders « vie associative » dans RecyClique
 

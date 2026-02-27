@@ -1,0 +1,224 @@
+/**
+ * App — Story 3.5, 8.1.
+ * Structure minimale pour AC1/AC2 : BrowserRouter, CashRegisterGuard, AppNav, Routes.
+ * Routes /admin/users protégées par AdminGuard (permission admin).
+ */
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CashRegisterGuard, AppNav, CaisseDashboardPage, CAISSE_PIN_PATH } from './caisse';
+import { CashRegisterPinPage } from './caisse/CashRegisterPinPage';
+import { CashRegisterSessionOpenPage } from './caisse/CashRegisterSessionOpenPage';
+import { CashRegisterSessionClosePage } from './caisse/CashRegisterSessionClosePage';
+import { CashRegisterSalePage } from './caisse/CashRegisterSalePage';
+import { ReceptionAccueilPage } from './reception/ReceptionAccueilPage';
+import { ReceptionTicketDetailPage } from './reception/ReceptionTicketDetailPage';
+import { PlaceholderPage } from './PlaceholderPage';
+import { AdminGuard } from './admin/AdminGuard';
+import { AdminUsersListPage } from './admin/AdminUsersListPage';
+import { AdminUserDetailPage } from './admin/AdminUserDetailPage';
+import { AdminUserCreatePage } from './admin/AdminUserCreatePage';
+import { AdminDashboardPage } from './admin/AdminDashboardPage';
+import { AdminSitesPage } from './admin/AdminSitesPage';
+import { AdminCashRegistersPage } from './admin/AdminCashRegistersPage';
+import { AdminSessionManagerPage } from './admin/AdminSessionManagerPage';
+import { AdminReportsPage } from './admin/AdminReportsPage';
+import { AdminCashSessionDetailPage } from './admin/AdminCashSessionDetailPage';
+import { AdminCategoriesPage } from './admin/AdminCategoriesPage';
+import { AdminReceptionPage } from './admin/AdminReceptionPage';
+import { AdminReceptionTicketDetailPage } from './admin/AdminReceptionTicketDetailPage';
+import { AdminHealthPage } from './admin/AdminHealthPage';
+import { AdminAuditLogPage } from './admin/AdminAuditLogPage';
+import { AdminEmailLogsPage } from './admin/AdminEmailLogsPage';
+import { AdminSettingsPage } from './admin/AdminSettingsPage';
+import { AdminDbPage } from './admin/AdminDbPage';
+import { AdminImportLegacyPage } from './admin/AdminImportLegacyPage';
+import { VieAssociativeGuard } from './admin/VieAssociativeGuard';
+import { AdminVieAssociativePage } from './admin/AdminVieAssociativePage';
+
+export function App() {
+  return (
+    <BrowserRouter>
+      <CashRegisterGuard>
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+          <aside style={{ padding: '1rem', borderRight: '1px solid #ccc' }}>
+            <AppNav />
+          </aside>
+          <main style={{ flex: 1, padding: '1rem' }}>
+            <Routes>
+              <Route path="/caisse" element={<CaisseDashboardPage />} />
+              <Route path="/cash-register/session/open" element={<CashRegisterSessionOpenPage />} />
+              <Route path="/cash-register/sale" element={<CashRegisterSalePage />} />
+              <Route path="/cash-register/session/close" element={<CashRegisterSessionClosePage />} />
+              <Route path={CAISSE_PIN_PATH} element={<CashRegisterPinPage />} />
+              <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route
+                path="/admin/sites"
+                element={
+                  <AdminGuard>
+                    <AdminSitesPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/sites-and-registers"
+                element={
+                  <AdminGuard>
+                    <AdminSitesPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/cash-registers"
+                element={
+                  <AdminGuard>
+                    <AdminCashRegistersPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/session-manager"
+                element={
+                  <AdminGuard>
+                    <AdminSessionManagerPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/reports"
+                element={
+                  <AdminGuard>
+                    <AdminReportsPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/reports/cash-sessions"
+                element={
+                  <AdminGuard>
+                    <AdminReportsPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/cash-sessions/:id"
+                element={
+                  <AdminGuard>
+                    <AdminCashSessionDetailPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <AdminGuard>
+                    <AdminUsersListPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/users/new"
+                element={
+                  <AdminGuard>
+                    <AdminUserCreatePage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/users/:id"
+                element={
+                  <AdminGuard>
+                    <AdminUserDetailPage />
+                  </AdminGuard>
+                }
+              />
+              <Route path="/reception" element={<ReceptionAccueilPage />} />
+              <Route path="/reception/tickets/:ticketId" element={<ReceptionTicketDetailPage />} />
+              <Route path="/profil" element={<PlaceholderPage title="Profil" testId="page-profil" />} />
+              <Route
+                path="/admin/categories"
+                element={
+                  <AdminGuard>
+                    <AdminCategoriesPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/reception"
+                element={
+                  <AdminGuard>
+                    <AdminReceptionPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/reception-tickets/:id"
+                element={
+                  <AdminGuard>
+                    <AdminReceptionTicketDetailPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/health"
+                element={
+                  <AdminGuard>
+                    <AdminHealthPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/audit-log"
+                element={
+                  <AdminGuard>
+                    <AdminAuditLogPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/email-logs"
+                element={
+                  <AdminGuard>
+                    <AdminEmailLogsPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/settings"
+                element={
+                  <AdminGuard>
+                    <AdminSettingsPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/db"
+                element={
+                  <AdminGuard>
+                    <AdminDbPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/import/legacy"
+                element={
+                  <AdminGuard>
+                    <AdminImportLegacyPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/vie-associative"
+                element={
+                  <VieAssociativeGuard>
+                    <AdminVieAssociativePage />
+                  </VieAssociativeGuard>
+                }
+              />
+              <Route path="/" element={<PlaceholderPage title="Accueil" testId="page-home" />} />
+            </Routes>
+          </main>
+        </div>
+      </CashRegisterGuard>
+    </BrowserRouter>
+  );
+}

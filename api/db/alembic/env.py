@@ -1,31 +1,32 @@
+# Alembic env — RecyClique API (api/db).
+# S'exécute avec PYTHONPATH incluant la racine du repo (pour import api.*).
+
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from alembic import context
-
 from api.config import get_settings
-from api.models import Base
+from api.models.base import Base
 
-# this is the Alembic Config object
+# Import all models so that Base.metadata contains every table (for autogenerate).
+import api.models  # noqa: F401
+
 config = context.config
-
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
 
 
-def get_url() -> str:
-    """Database URL from settings (env) or alembic.ini."""
+def get_url():
     settings = get_settings()
-    if settings.database_url:
-        return settings.database_url
-    return config.get_main_option("sqlalchemy.url", "sqlite:///./recyclic.sqlite")
+    return settings.database_url or "sqlite:///./recyclic.sqlite"
 
 
 def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode."""
     url = get_url()
     context.configure(
         url=url,
@@ -33,25 +34,21 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
 
 def run_migrations_online() -> None:
-    configuration = config.get_section(config.config_ini_section, {})
+    """Run migrations in 'online' mode."""
+    configuration = config.get_section(config.config_ini_section, {}) or {}
     configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
-
+        context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
 

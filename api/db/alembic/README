@@ -1,1 +1,5 @@
-Generic single-database configuration.
+# Alembic migrations — RecyClique API (api/db).
+# Exécuter depuis la racine du repo :
+#   PYTHONPATH=. alembic -c api/db/alembic.ini upgrade head
+# Créer une nouvelle révision :
+#   PYTHONPATH=. alembic -c api/db/alembic.ini revision -m "description"

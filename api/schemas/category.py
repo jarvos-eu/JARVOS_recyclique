@@ -71,3 +71,42 @@ class CategoryDisplayOrderUpdate(BaseModel):
 
     display_order: int | None = None
     display_order_entry: int | None = None
+
+
+class CategoryBreadcrumbItem(BaseModel):
+    """Element du fil d'Ariane pour GET /categories/{id}/breadcrumb."""
+
+    id: UUID
+    name: str
+
+    model_config = {"from_attributes": True}
+
+
+class CategoryImportAnalyzeRow(BaseModel):
+    """Ligne analysee (valide ou erreur)."""
+
+    row_index: int
+    name: str | None = None
+    parent_id: UUID | None = None
+    official_name: str | None = None
+    is_visible_sale: bool = True
+    is_visible_reception: bool = True
+    display_order: int = 0
+    display_order_entry: int = 0
+    valid: bool = True
+    error: str | None = None
+
+
+class CategoryImportAnalyzeResponse(BaseModel):
+    """Reponse POST /categories/import/analyze."""
+
+    total_rows: int
+    valid_rows: int
+    error_rows: int
+    rows: list[CategoryImportAnalyzeRow] = Field(default_factory=list)
+
+
+class CategoryImportExecuteBody(BaseModel):
+    """Body POST /categories/import/execute — lignes a importer (apres analyse)."""
+
+    rows: list[CategoryImportAnalyzeRow] = Field(default_factory=list, max_length=5000)

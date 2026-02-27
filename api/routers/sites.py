@@ -1,4 +1,4 @@
-"""Router sites — CRUD /v1/sites (Story 2.1)."""
+"""Router sites — CRUD /v1/sites (Story 2.1). Protégé RBAC (Story 3.2) : admin."""
 
 from datetime import datetime, timezone
 from uuid import UUID
@@ -7,17 +7,21 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from api.core.deps import require_permissions
 from api.db import get_db
-from api.models import Site
+from api.models import Site, User
 from api.schemas.site import SiteCreate, SiteResponse, SiteUpdate
 
 router = APIRouter(prefix="/sites", tags=["sites"])
+
+_Admin = Depends(require_permissions("admin"))
 
 
 @router.get("", response_model=list[SiteResponse])
 def list_sites(
     is_active: bool | None = None,
     db: Session = Depends(get_db),
+    current_user: User = _Admin,
 ) -> list[Site]:
     """GET /v1/sites — liste des sites (filtre optionnel is_active)."""
     q = select(Site)
@@ -27,7 +31,11 @@ def list_sites(
 
 
 @router.get("/{site_id}", response_model=SiteResponse)
-def get_site(site_id: UUID, db: Session = Depends(get_db)) -> Site:
+def get_site(
+    site_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = _Admin,
+) -> Site:
     """GET /v1/sites/{site_id} — détail d'un site (404 si absent)."""
     row = db.execute(select(Site).where(Site.id == site_id)).scalars().one_or_none()
     if row is None:
@@ -36,7 +44,11 @@ def get_site(site_id: UUID, db: Session = Depends(get_db)) -> Site:
 
 
 @router.post("", response_model=SiteResponse, status_code=201)
-def create_site(body: SiteCreate, db: Session = Depends(get_db)) -> Site:
+def create_site(
+    body: SiteCreate,
+    db: Session = Depends(get_db),
+    current_user: User = _Admin,
+) -> Site:
     """POST /v1/sites — création (body : name, is_active optionnel)."""
     site = Site(name=body.name, is_active=body.is_active)
     db.add(site)
@@ -50,6 +62,7 @@ def update_site(
     site_id: UUID,
     body: SiteUpdate,
     db: Session = Depends(get_db),
+    current_user: User = _Admin,
 ) -> Site:
     """PATCH /v1/sites/{site_id} — mise à jour partielle (name, is_active)."""
     site = db.execute(select(Site).where(Site.id == site_id)).scalars().one_or_none()
@@ -70,7 +83,11 @@ def update_site(
 
 
 @router.delete("/{site_id}", status_code=204)
-def delete_site(site_id: UUID, db: Session = Depends(get_db)) -> None:
+def delete_site(
+    site_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = _Admin,
+) -> None:
     """DELETE /v1/sites/{site_id} — suppression (204 ou 404)."""
     site = db.execute(select(Site).where(Site.id == site_id)).scalars().one_or_none()
     if site is None:

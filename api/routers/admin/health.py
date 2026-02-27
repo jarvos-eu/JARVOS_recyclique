@@ -1,49 +1,34 @@
-"""Health check — GET /health (status, database, redis). Réponse snake_case."""
+"""Health check — GET /health (status, database, redis, push_worker). Réponse snake_case."""
 
 from fastapi import APIRouter
 
-from api.config import get_settings
+from api.services.health_checks import check_database, check_redis, check_push_worker
 
 router = APIRouter(tags=["health"])
 
 
 def _check_database() -> str:
-    """Retourne 'ok', 'unconfigured' ou 'error'."""
-    settings = get_settings()
-    if not settings.database_url:
-        return "unconfigured"
-    try:
-        from sqlalchemy import text
-        from api.db.session import engine
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return "ok"
-    except Exception:
-        return "error"
+    return check_database()
 
 
 def _check_redis() -> str:
-    """Retourne 'ok', 'unconfigured' ou 'error'."""
-    settings = get_settings()
-    if not settings.redis_url:
-        return "unconfigured"
-    try:
-        import redis
-        r = redis.from_url(settings.redis_url)
-        r.ping()
-        return "ok"
-    except Exception:
-        return "error"
+    return check_redis()
+
+
+def _check_push_worker() -> str:
+    return check_push_worker()
 
 
 @router.get("/health")
 def health() -> dict:
-    """Health check : status, database, redis (snake_case)."""
+    """Health check : status, database, redis, push_worker (snake_case)."""
     db = _check_database()
     redis_status = _check_redis()
+    push_worker_status = _check_push_worker()
     status = "ok" if (db == "ok" and redis_status == "ok") else "degraded"
     return {
         "status": status,
         "database": db,
         "redis": redis_status,
+        "push_worker": push_worker_status,
     }

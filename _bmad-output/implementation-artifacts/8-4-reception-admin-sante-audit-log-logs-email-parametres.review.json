@@ -1,0 +1,18 @@
+{
+  "storyKey": "8-4-reception-admin-sante-audit-log-logs-email-parametres",
+  "reviewResult": "approved",
+  "reviewedAt": "2026-02-27",
+  "reviewPass": 3,
+  "adversarial": false,
+  "summary": "Revue pass 3 : corrections du pass 2 vérifiées et présentes. (1) POST /v1/admin/health/test-notifications implémenté (api/routers/v1/admin/health.py), bouton « Test notifications » sur AdminHealthPage.tsx et postAdminHealthTestNotifications dans adminHealthAudit.ts. (2) POST /v1/admin/reports/reception-tickets/export-bulk implémenté (api/routers/v1/admin/reports_reception.py, monté sous /reports/reception-tickets), bouton Export bulk sur AdminReceptionPage.tsx et postAdminReceptionTicketsExportBulk dans adminHealthAudit.ts. (3) POST /v1/admin/settings/email/test implémenté (api/routers/v1/admin/settings.py), bouton « Test email » dans AdminSettingsPage.tsx et postAdminSettingsEmailTest dans adminHealthAudit.ts. Story 8-4 approuvée.",
+  "findings": [],
+  "verified": [
+    "POST /v1/admin/health/test-notifications (backend + frontend + bouton)",
+    "POST /v1/admin/reports/reception-tickets/export-bulk (backend + frontend + bouton)",
+    "POST /v1/admin/settings/email/test (backend + frontend + bouton)",
+    "Routes front /admin/reception, /admin/health, /admin/audit-log, /admin/email-logs, /admin/settings",
+    "Backend health, audit-log, email-logs, settings, reports_reception avec require_permissions(admin)",
+    "AdminGuard et permissionCode admin sur toutes les routes 8.4",
+    "Pages Mantine (Stack, Title, Card, Table, Tabs, etc.)"
+  ]
+}

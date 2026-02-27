@@ -45,46 +45,47 @@ development_status:
   2-4-presets-boutons-rapides-caisse-modele-bdd-api-crud: done
   epic-2-retrospective: optional
 
-  epic-3: backlog
-  3-1-users-jwt-et-gestion-de-compte-terrain: backlog
-  3-2-groupes-permissions-et-rbac: backlog
-  3-3-gestion-des-pin-operateur-caisse-et-deverrouillage-de-session: backlog
-  3-4-demarrer-un-poste-caisse-ou-reception-avec-un-compte-administrateur: backlog
-  3-5-mode-caisse-verrouille-restriction-du-menu-a-la-caisse-uniquement: backlog
-  3-6-phase-ulterieure-sso-recyclique-paheko-documentation-et-objectif: backlog
+  epic-3: done
+  3-1-users-jwt-et-gestion-de-compte-terrain: done
+  3-2-groupes-permissions-et-rbac: done
+  3-3-gestion-des-pin-operateur-caisse-et-deverrouillage-de-session: done
+  3-4-demarrer-un-poste-caisse-ou-reception-avec-un-compte-administrateur: done
+  3-5-mode-caisse-verrouille-restriction-du-menu-a-la-caisse-uniquement: done
+  3-6-phase-ulterieure-sso-recyclique-paheko-documentation-et-objectif: done
   epic-3-retrospective: optional
 
-  epic-4: backlog
-  4-1-configuration-du-canal-push-endpoint-secret-resilience: backlog
-  4-2-worker-redis-streams-consumer-plugin-paheko: backlog
+  epic-4: done
+  4-1-configuration-du-canal-push-endpoint-secret-resilience: done
+  4-2-worker-redis-streams-consumer-plugin-paheko: done
   epic-4-retrospective: optional
 
-  epic-5: backlog
-  5-1-ouverture-et-fermeture-de-session-de-caisse-multi-sites-multi-caisses: backlog
-  5-2-enregistrement-des-ventes-et-push-par-ticket-vers-paheko: backlog
-  5-3-cloture-de-session-comptage-physique-totaux-ecart-et-syncaccounting: backlog
-  5-4-optionnel-v1-saisie-caisse-hors-ligne-et-synchronisation-au-retour: backlog
+  epic-5: done
+  5-1-ouverture-et-fermeture-de-session-de-caisse-multi-sites-multi-caisses: done
+  5-2-enregistrement-des-ventes-et-push-par-ticket-vers-paheko: done
+  5-3-cloture-de-session-comptage-physique-totaux-ecart-et-syncaccounting: done
+  5-4-optionnel-v1-saisie-caisse-hors-ligne-et-synchronisation-au-retour: done
   epic-5-retrospective: optional
 
-  epic-6: backlog
-  6-1-ouverture-de-poste-de-reception-et-creation-de-tickets-de-depot: backlog
-  6-2-saisie-des-lignes-de-reception-poids-categorie-destination: backlog
-  6-3-export-csv-et-stats-live-reception: backlog
+  epic-6: done
+  6-1-ouverture-de-poste-de-reception-et-creation-de-tickets-de-depot: done
+  6-2-saisie-des-lignes-de-reception-poids-categorie-destination: done
+  6-3-export-csv-et-stats-live-reception: done
   epic-6-retrospective: optional
 
-  epic-7: backlog
-  7-1-modele-et-stockage-du-mapping-recyclique-paheko: backlog
-  7-2-interface-ou-api-d-administration-du-mapping: backlog
+  epic-7: done
+  7-1-modele-et-stockage-du-mapping-recyclique-paheko: done
+  7-2-interface-ou-api-d-administration-du-mapping: done
   epic-7-retrospective: optional
 
-  epic-8: backlog
-  8-1-administration-complete-des-utilisateurs: backlog
-  8-2-administration-sites-postes-sessions-et-rapports-caisse: backlog
-  8-3-import-export-categories-et-admin-avance: backlog
-  8-4-reception-admin-sante-audit-log-logs-email-parametres: backlog
-  8-5-bdd-export-purge-import-et-import-legacy: backlog
-  8-6-acces-et-documentation-pour-l-administration-compta-via-paheko-v1: backlog
-  8-7-ecrans-ou-placeholders-vie-associative-dans-recyclique: backlog
+  epic-8: done
+  8-1-administration-complete-des-utilisateurs: done
+  8-2-administration-sites-postes-sessions-et-rapports-caisse: done
+  # 8-2 review 2026-02-27 pass 2: approved (filtre opérateur présent)
+  8-3-import-export-categories-et-admin-avance: done
+  8-4-reception-admin-sante-audit-log-logs-email-parametres: done  # review pass 3 approved 2026-02-27
+  8-5-bdd-export-purge-import-et-import-legacy: done  # review pass 2 approved 2026-02-27
+  8-6-acces-et-documentation-pour-l-administration-compta-via-paheko-v1: done  # review pass 2 approved 2026-02-27
+  8-7-ecrans-ou-placeholders-vie-associative-dans-recyclique: done
   epic-8-retrospective: optional
 
   epic-9: backlog

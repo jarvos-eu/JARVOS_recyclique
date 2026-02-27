@@ -1,0 +1,7 @@
+{
+  "storyKey": "8-3-import-export-categories-et-admin-avance",
+  "reviewResult": "approved",
+  "summary": "Route /admin/categories protégée par AdminGuard (App.tsx). Endpoints API présents et protégés admin : GET /v1/categories/import/template, GET /v1/categories/actions/export, POST import/analyze, POST import/execute, GET /{id}/breadcrumb, GET /{id}/has-usage, DELETE /{id}/hard, POST /{id}/restore. AdminCategoriesPage utilise Mantine (Stack, Group, Title, Button, Breadcrumbs, Table, Alert, Loader, Modal, etc.). Tests co-locés AdminCategoriesPage.test.tsx (Vitest, RTL, MantineProvider) couvrent rendu, boutons import/export/template, forbidden sans admin, état vide, hiérarchie et Restaurer.",
+  "reviewedAt": "2026-02-27",
+  "reviewPass": 1
+}

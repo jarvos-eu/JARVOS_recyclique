@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "AC 1-3 verifies : tables mapping (payment_method_mappings, category_mappings, location_mappings), API GET/POST/PATCH sans DELETE, RBAC admin, service de resolution (resolve_payment_method, resolve_category, resolve_location). Conventions snake_case BDD/API/URLs, erreurs { \"detail\": \"...\" }. File List coherente. Tests : 27 pytest passants apres correction des URLs dans test_mapping_payment_methods.py (payment-methods -> payment_methods) pour alignement avec les routes."
+}

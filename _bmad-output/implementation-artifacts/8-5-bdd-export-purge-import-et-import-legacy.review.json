@@ -1,0 +1,39 @@
+{
+  "storyKey": "8-5-bdd-export-purge-import-et-import-legacy",
+  "reviewResult": "approved",
+  "reviewedAt": "2026-02-27",
+  "reviewPass": 2,
+  "adversarial": false,
+  "summary": "Pass 2 : (1) Fallback admin v1 documenté dans la story (critères d'acceptation, section BDD) et en en-tête de api/routers/v1/admin/db.py. (2) write_audit_event appelé pour purge-transactions (action admin.db.purge_transactions) et pour import (action admin.db.import). Conforme. Approved. Story done.",
+  "findings": [
+    {
+      "severity": "major",
+      "id": "8-5-permissions-bdd",
+      "title": "Permissions BDD : super_admin exigé, implémentation autorise admin",
+      "description": "Critères d'acceptation et Conventions story : « permissions super-admin pour les actions BDD », « endpoints BDD réservés super-admin ». Backend api/routers/v1/admin/db.py utilise require_permissions(\"super_admin\", \"admin\") donc tout utilisateur avec admin peut appeler export/purge/import. Frontend AppNav et garde pour /admin/db utilisent permissionCode 'admin'. La permission super_admin n'existe pas dans le seed (api/alembic/versions/2026_02_27_002_seed_permissions_groups.py). Action : soit restreindre à super_admin uniquement et ajouter la permission super_admin au seed + l'attribuer à un groupe (ex. admin_technique), et mettre à jour le frontend (permissionCode super_admin pour /admin/db) ; soit documenter explicitement dans la story le choix v1 « fallback admin tant que super_admin non déployé ».",
+      "file": "api/routers/v1/admin/db.py",
+      "line": 12
+    },
+    {
+      "severity": "minor",
+      "id": "8-5-audit-events",
+      "title": "Audit events manquants pour purge et import",
+      "description": "Story Tasks backend : « audit event recommandé » pour purge-transactions et import. api/routers/v1/admin/db.py n'appelle pas write_audit_event (api/services/audit.py) dans admin_db_purge_transactions ni admin_db_import. Ajouter des appels après succès (ex. action \"db_purge_transactions\", \"db_import\" avec resource_type/details pertinents).",
+      "file": "api/routers/v1/admin/db.py"
+    }
+  ],
+  "verified": [
+    "Routes /v1/admin/db (prefix /admin + /db) et /v1/admin/import/legacy (prefix /admin + /import/legacy) montées dans api/routers/v1/admin/__init__.py",
+    "POST /v1/admin/db/export : 200, Response application/sql, Content-Disposition filename",
+    "POST /v1/admin/db/purge-transactions : 200, body message + deleted_count",
+    "POST /v1/admin/db/import : 200, body ok + message + filename (UploadFile)",
+    "GET /v1/admin/import/legacy/llm-models : 200, body models (liste)",
+    "POST /v1/admin/import/legacy/analyze (fichier) : 200, columns, errors, warnings",
+    "POST /v1/admin/import/legacy/preview, validate, execute : 200 et structures attendues",
+    "Import legacy protégé par admin ou super_admin (conforme story « admin ou super-admin selon politique »)",
+    "Frontend : routes /admin/db et /admin/import/legacy dans App.tsx, AppNav, AdminDashboardPage ; adminDb.ts et adminImportLegacy.ts appellent les bons endpoints",
+    "Tests api/tests/routers/test_admin_db_import_legacy.py couvrent tous les endpoints (TestAdminDb, TestAdminImportLegacy) avec auth_headers (admin)"
+  ],
+  "correctionsAppliedAt": "2026-02-27",
+  "readyForReviewPass": 2
+}

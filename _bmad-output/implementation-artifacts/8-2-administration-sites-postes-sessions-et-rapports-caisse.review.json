@@ -1,0 +1,7 @@
+{
+  "storyKey": "8-2-administration-sites-postes-sessions-et-rapports-caisse",
+  "reviewResult": "approved",
+  "summary": "Deuxième passage : filtre opérateur vérifié. AdminSessionManagerPage contient le Select « Opérateur » (placeholder, clearable, data-testid filter-operator), state operatorFilter et passage operator_id à getCashSessionsList. API GET /v1/cash-sessions accepte operator_id en query et applique le filtre. Client frontend (api/caisse.ts) CashSessionsListParams.operator_id et getCashSessionsList envoie le paramètre. Réinitialiser efface le filtre opérateur.",
+  "reviewedAt": "2026-02-27",
+  "reviewPass": 2
+}

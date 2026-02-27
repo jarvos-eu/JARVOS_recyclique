@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Re-review post-migration : migration Alembic 2026_02_27_5_4 verifiee conforme. Colonne sales.offline_id (postgresql.UUID, nullable, comment), index unique ix_sales_offline_id, revision 5_4 / down_revision 5_3. upgrade/downgrade corrects. Alignement avec api/models/sale.py. Bloquant precedent (migration manquante) resolu."
+}

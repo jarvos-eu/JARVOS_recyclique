@@ -1,0 +1,16 @@
+{
+  "storyKey": "7-1-modele-et-stockage-du-mapping-recyclique-paheko",
+  "phase": "dev",
+  "lastCompletedStep": "9",
+  "blockedAt": null,
+  "blockReason": null,
+  "questions": [],
+  "artifactsProduced": [
+    "api/models/mapping.py",
+    "api/db/alembic/versions/2026_02_27_7_1_mapping_tables.py",
+    "api/schemas/mapping.py",
+    "api/routers/mapping/",
+    "api/services/mapping_service.py",
+    "api/tests/routers/mapping/"
+  ]
+}

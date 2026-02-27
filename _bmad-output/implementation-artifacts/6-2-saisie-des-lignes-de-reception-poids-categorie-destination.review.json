@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Second passage (après corrections). Les 4 follow-ups sont traités : (1) État formulaire ajout séparé de la modal Modifier (editPoidsKg, editCategoryId, editDestination, editNotes, editIsExit) — vérifié dans ReceptionTicketDetailPage.tsx. (2) Tests frontend : ajout ligne (createLigne), modification (updateLigne), suppression (deleteLigne + confirm), modal poids (updateLigneWeight) — tous couverts dans ReceptionTicketDetailPage.test.tsx. (3) API destination : Literal recyclage/revente/destruction/don/autre dans api/schemas/ligne_depot.py ; test_create_ligne_validation_destination_valeurs_metier attend 422 pour valeur invalide. (4) Accessibilité NFR-A1 : role=\"form\", aria-label sur formulaires ajout/modifier/poids, aria-required sur champs obligatoires. Aucun CRITICAL ni HIGH restant. AC 1–6 et tâches conformes."
+}

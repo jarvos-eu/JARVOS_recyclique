@@ -1,5 +1,6 @@
-"""Router cash-registers — CRUD + GET /status (Story 2.2)."""
+"""Router cash-registers — CRUD + GET /status (Story 2.2) + start/stop (Story 3.4). Protégé RBAC (Story 3.2) : GET = caisse.access | admin, write = admin."""
 
+import json
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -7,8 +8,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from api.core.deps import require_permissions
 from api.db import get_db
-from api.models import CashRegister, Site
+from api.models import AuditEvent, CashRegister, Site, User
 from api.schemas.cash_register import (
     CashRegisterCreate,
     CashRegisterResponse,
@@ -17,6 +19,9 @@ from api.schemas.cash_register import (
 )
 
 router = APIRouter(prefix="/cash-registers", tags=["cash-registers"])
+
+_CaisseOrAdmin = Depends(require_permissions("caisse.access", "admin"))
+_Admin = Depends(require_permissions("admin"))
 
 
 def _get_site_or_404(db: Session, site_id: UUID) -> Site | None:
@@ -28,6 +33,7 @@ def list_cash_registers(
     site_id: UUID | None = None,
     is_active: bool | None = None,
     db: Session = Depends(get_db),
+    current_user: User = _CaisseOrAdmin,
 ) -> list[CashRegister]:
     """GET /v1/cash-registers — liste des postes (filtres optionnels site_id, is_active)."""
     q = select(CashRegister)
@@ -42,20 +48,29 @@ def list_cash_registers(
 def get_cash_registers_status(
     site_id: UUID | None = None,
     db: Session = Depends(get_db),
+    current_user: User = _CaisseOrAdmin,
 ) -> list[CashRegisterStatusItem]:
-    """GET /v1/cash-registers/status — statut global (occupé/libre). En v1 sans cash_sessions : tous libres."""
+    """GET /v1/cash-registers/status — statut global (libre/démarré). Story 3.4 : started_at / started_by exposés."""
     q = select(CashRegister)
     if site_id is not None:
         q = q.where(CashRegister.site_id == site_id)
     registers = list(db.execute(q).scalars().all())
     return [
-        CashRegisterStatusItem(register_id=r.id, status="free") for r in registers
+        CashRegisterStatusItem(
+            register_id=r.id,
+            status="started" if r.started_at else "free",
+            started_at=r.started_at,
+            started_by_user_id=r.started_by_user_id,
+        )
+        for r in registers
     ]
 
 
 @router.get("/{register_id}", response_model=CashRegisterResponse)
 def get_cash_register(
-    register_id: UUID, db: Session = Depends(get_db)
+    register_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = _CaisseOrAdmin,
 ) -> CashRegister:
     """GET /v1/cash-registers/{register_id} — détail d'un poste (404 si absent)."""
     row = (
@@ -70,7 +85,9 @@ def get_cash_register(
 
 @router.post("", response_model=CashRegisterResponse, status_code=201)
 def create_cash_register(
-    body: CashRegisterCreate, db: Session = Depends(get_db)
+    body: CashRegisterCreate,
+    db: Session = Depends(get_db),
+    current_user: User = _Admin,
 ) -> CashRegister:
     """POST /v1/cash-registers — création (site_id requis, site existant)."""
     site = _get_site_or_404(db, body.site_id)
@@ -97,6 +114,7 @@ def update_cash_register(
     register_id: UUID,
     body: CashRegisterUpdate,
     db: Session = Depends(get_db),
+    current_user: User = _Admin,
 ) -> CashRegister:
     """PATCH /v1/cash-registers/{register_id} — mise à jour partielle."""
     reg = (
@@ -131,7 +149,9 @@ def update_cash_register(
 
 @router.delete("/{register_id}", status_code=204)
 def delete_cash_register(
-    register_id: UUID, db: Session = Depends(get_db)
+    register_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = _Admin,
 ) -> None:
     """DELETE /v1/cash-registers/{register_id} — suppression (204 ou 404)."""
     reg = (
@@ -143,3 +163,35 @@ def delete_cash_register(
         raise HTTPException(status_code=404, detail="Cash register not found")
     db.delete(reg)
     db.commit()
+
+
+@router.post("/{register_id}/stop", response_model=CashRegisterResponse)
+def stop_cash_register(
+    register_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = _Admin,
+) -> CashRegister:
+    """POST /v1/cash-registers/{register_id}/stop — arreter un poste caisse (admin). Story 3.4."""
+    reg = (
+        db.execute(select(CashRegister).where(CashRegister.id == register_id))
+        .scalars()
+        .one_or_none()
+    )
+    if reg is None:
+        raise HTTPException(status_code=404, detail="Cash register not found")
+    if reg.started_at is None:
+        db.refresh(reg)
+        return reg
+    evt = AuditEvent(
+        user_id=current_user.id,
+        action="register_stopped",
+        resource_type="cash_register",
+        resource_id=str(reg.id),
+        details=json.dumps({"site_id": str(reg.site_id), "register_id": str(reg.id)}),
+    )
+    db.add(evt)
+    reg.started_at = None
+    reg.started_by_user_id = None
+    db.commit()
+    db.refresh(reg)
+    return reg

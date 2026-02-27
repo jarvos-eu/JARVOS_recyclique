@@ -1,5 +1,6 @@
 # Modele CashRegister — table cash_registers (RecyClique, Story 2.2).
-# Colonnes : id, site_id (FK sites), name, location, is_active, enable_virtual, enable_deferred, created_at, updated_at.
+# Colonnes : id, site_id (FK sites), name, location, is_active, enable_virtual, enable_deferred,
+# started_at, started_by_user_id (Story 3.4), created_at, updated_at.
 # Conventions : snake_case, timestamps with timezone.
 
 import uuid
@@ -26,6 +27,12 @@ class CashRegister(Base):
     is_active = Column(Boolean, nullable=False, default=True)
     enable_virtual = Column(Boolean, nullable=False, default=False)
     enable_deferred = Column(Boolean, nullable=False, default=False)
+    started_at = Column(DateTime(timezone=True), nullable=True)
+    started_by_user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     created_at = Column(
         DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -37,8 +44,11 @@ class CashRegister(Base):
     )
 
     site = relationship("Site", back_populates="cash_registers")
+    started_by_user = relationship("User", backref="started_cash_registers", foreign_keys=[started_by_user_id])
+    cash_sessions = relationship("CashSession", back_populates="register")
 
     __table_args__ = (
         Index("idx_cash_registers_site_id", "site_id"),
         Index("idx_cash_registers_is_active", "is_active"),
+        Index("idx_cash_registers_started_at", "started_at"),
     )

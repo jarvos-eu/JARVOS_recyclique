@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "AC 1–4 validés. Backend : POST start/stop caisse, GET status, POST reception/postes/open, audit register_started/register_stopped/reception_post_opened ; migrations 007/008 ; vérification site_id/register_id. Frontend : StartPostPage + client admin livrés et testés ; route /admin/start-post à brancher lorsque le routeur app est en place (documenté). Tests API (pytest) et frontend (Vitest/RTL) conformes. Correction appliquée en review : détails d'audit en json.dumps au lieu de f-string."
+}

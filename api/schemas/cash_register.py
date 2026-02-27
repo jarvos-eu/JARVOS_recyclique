@@ -26,9 +26,18 @@ class CashRegisterUpdate(BaseModel):
     enable_deferred: bool | None = None
 
 
+class CashRegisterStartRequest(BaseModel):
+    """Body pour POST /v1/admin/cash-registers/start (Story 3.4)."""
+
+    site_id: UUID
+    register_id: UUID
+
+
 class CashRegisterResponse(CashRegisterBase):
     id: UUID
     site_id: UUID
+    started_at: datetime | None = None
+    started_by_user_id: UUID | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -36,7 +45,9 @@ class CashRegisterResponse(CashRegisterBase):
 
 
 class CashRegisterStatusItem(BaseModel):
-    """Un poste avec son statut (libre/occupé). En v1 sans cash_sessions : toujours libre."""
+    """Un poste avec son statut (libre/occupé). Inclut started_at / started_by si démarré (Story 3.4)."""
 
     register_id: UUID
-    status: str = Field(..., description="free | occupied")
+    status: str = Field(..., description="free | started")
+    started_at: datetime | None = None
+    started_by_user_id: UUID | None = None

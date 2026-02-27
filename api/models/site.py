@@ -21,5 +21,6 @@ class Site(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     cash_registers = relationship("CashRegister", back_populates="site", cascade="all, delete-orphan")
+    cash_sessions = relationship("CashSession", back_populates="site")
 
     __table_args__ = (Index("idx_sites_is_active", "is_active"),)
