@@ -1,0 +1,11 @@
+# Config modules pour les tests (Story 9.2 — route export décla).
+# Utilisé quand MODULES_CONFIG_PATH pointe vers ce fichier.
+
+[modules]
+enabled = ["stub", "decla"]
+
+[stub]
+comment = "Module stub"
+
+[decla]
+comment = "Module décla pour tests export"

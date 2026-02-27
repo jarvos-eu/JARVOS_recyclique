@@ -24,6 +24,7 @@ from api.models.mapping import (
     LocationMapping,
     PaymentMethodMapping,
 )
+from api.models.declarative import DeclarativeAggregate
 
 __all__ = [
     "Base",
@@ -50,4 +51,5 @@ __all__ = [
     "PaymentMethodMapping",
     "CategoryMapping",
     "LocationMapping",
+    "DeclarativeAggregate",
 ]

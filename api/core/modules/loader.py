@@ -57,9 +57,11 @@ def _resolve_module_instance(module_id: str, config: dict[str, Any]) -> ModuleBa
     Évolutif vers entry points ou discovery par chemin.
     """
     from api.core.modules import stub_module  # noqa: F401
+    from api.core.modules import decla_module  # noqa: F401
 
     registry: dict[str, type[ModuleBase]] = {
         "stub": stub_module.StubModule,
+        "decla": decla_module.DeclaModule,
     }
     cls = registry.get(module_id)
     if not cls:

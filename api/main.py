@@ -21,6 +21,7 @@ from api.routers.categories import router as categories_router
 from api.routers.presets import router as presets_router
 from api.routers.sales import router as sales_router
 from api.routers.mapping import router as mapping_router
+from api.routers.declarative import router as declarative_router
 from api.workers.push_consumer import run_push_consumer, set_shutdown_event
 
 
@@ -70,6 +71,20 @@ app.include_router(categories_router, prefix="/v1")
 app.include_router(presets_router, prefix="/v1")
 # API v1 : sales POST/GET/PUT/PATCH (Story 5.2)
 app.include_router(sales_router, prefix="/v1")
+# API v1 : agrégats déclaratifs read-only (Story 9.1)
+app.include_router(declarative_router, prefix="/v1")
+# API v1 : export décla (Story 9.2 post-MVP) — même ordre que les autres v1 pour éviter le catch-all
+from api.core.modules.loader import _get_modules_config_path, _parse_toml
+_modules_path = _get_modules_config_path()
+if _modules_path:
+    _data = _parse_toml(_modules_path)
+    _modules_section = _data.get("modules", {}) if isinstance(_data.get("modules"), dict) else {}
+    _enabled = _modules_section.get("enabled", []) if isinstance(_modules_section, dict) else []
+    if not isinstance(_enabled, list):
+        _enabled = []
+    if "decla" in [str(x).strip().lower() for x in _enabled]:
+        from api.routers.declarative_export import router as decla_export_router
+        app.include_router(decla_export_router, prefix="/v1")
 # API mapping RecyClique -> Paheko (Story 7.1) : GET/POST/PATCH /api/mapping/*
 app.include_router(mapping_router, prefix="/api/mapping")
 dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"

@@ -88,12 +88,12 @@ development_status:
   8-7-ecrans-ou-placeholders-vie-associative-dans-recyclique: done
   epic-8-retrospective: optional
 
-  epic-9: backlog
-  9-1-modele-et-persistance-des-donnees-declaratives: backlog
-  9-2-post-mvp-module-decla-eco-organismes: backlog
+  epic-9: done
+  9-1-modele-et-persistance-des-donnees-declaratives: done
+  9-2-post-mvp-module-decla-eco-organismes: done
   epic-9-retrospective: optional
 
-  epic-10: backlog
-  10-1-interfaces-et-stubs-layoutconfigservice-visualprovider-v1: backlog
-  10-2-post-mvp-fonds-documentaire-recyclique: backlog
+  epic-10: in-progress
+  10-1-interfaces-et-stubs-layoutconfigservice-visualprovider-v1: done
+  10-2-post-mvp-fonds-documentaire-recyclique: review
   epic-10-retrospective: optional

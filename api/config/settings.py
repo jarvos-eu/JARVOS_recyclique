@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     # Story 4.2 : nom du stream Redis pour la file push caisse (événements pos.ticket.created, etc.).
     redis_stream_push_caisse: str = "recyclic:push:caisse"
 
+    # Story 9.2 : chemin optionnel vers le fichier modules.toml (env MODULES_CONFIG_PATH)
+    modules_config_path: str | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:

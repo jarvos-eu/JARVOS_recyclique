@@ -2,4 +2,6 @@
  * Composants et utilitaires partagés entre les domaines.
  * Convention : composants en PascalCase (ex. UserCard.tsx), hooks en camelCase (ex. useSessionCaisse).
  */
-export {}
+export * from './display-services';
+export * from './layout';
+export * from './visual';

@@ -18,6 +18,10 @@ Les **slots** permettent d'injecter du contenu fourni par les modules (extension
 - `shared/slots/` : point d'entrée et documentation.
 - Les implémentations concrètes (registre, composant Slot, enregistrement au chargement des modules) seront ajoutées dans les stories suivantes (modules, layout dynamique).
 
+## Alignement layout / visuel (Story 10.1)
+
+Les composants qui rendent dans un slot peuvent utiliser **`useLayoutConfig()`** et **`useVisual()`** (depuis `shared/layout` et `shared/visual`) pour le contenu futur (v2+ : écrans configurables, visuels Peintre). En v1, seules les interfaces et stubs sont en place ; aucun changement de structure des écrans.
+
 ## Références
 
 - `_bmad-output/planning-artifacts/architecture.md` — Frontend Architecture (Slots, extension points), Project Structure.

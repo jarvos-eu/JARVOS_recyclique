@@ -1,8 +1,12 @@
 # Config des modules RecyClique (chargée au démarrage).
 # Voir modules.example.toml pour le schéma et les options.
+# Story 9.2 (post-MVP) : ajouter "decla" à enabled pour activer le module déclarations éco-organismes (export).
 
 [modules]
 enabled = ["stub"]
 
 [stub]
 comment = "Module stub pour valider le loader"
+
+[decla]
+comment = "Module déclarations éco-organismes (post-MVP) — export agrégats CSV/JSON"

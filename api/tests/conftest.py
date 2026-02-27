@@ -1,6 +1,14 @@
 # Pytest fixtures pour l'API — DB test (SQLite in-memory), user mock (Story 6.1).
 # client : session-scoped pour éviter UNIQUE constraint quand plusieurs modules utilisent le client.
 
+import os
+from pathlib import Path
+
+# Story 9.2 : activer le module decla en tests pour GET /v1/declarative/export (avant tout import api.main)
+_conftest_dir = Path(__file__).resolve().parent
+_api_dir = _conftest_dir.parent
+os.environ.setdefault("MODULES_CONFIG_PATH", str(_api_dir / "config" / "modules.test.toml"))
+
 import uuid
 from collections.abc import Generator
 
