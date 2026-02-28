@@ -47,7 +47,7 @@ Pour la story courante (story_key derive de sprint-status, ex. `1-1-initialiser-
 
 9. **Apres Revision** : Controle agent-state (escalade) ; traiter si besoin.
 
-**Avant Code Review** : Deleguer a @git-specialist un `git add` des fichiers de la story (File List dans la story ou sortie `git status`) afin que le subagent bmad-qa les ait dans son contexte (fichiers non trackes souvent absents du sandbox).
+<!-- **Avant Code Review** : Deleguer a @git-specialist un `git add` des fichiers de la story (File List dans la story ou sortie `git status`) afin que le subagent bmad-qa les ait dans son contexte (fichiers non trackes souvent absents du sandbox). -->
 
 10. **Code Review** : Task(subagent_type="bmad-qa", prompt="Code review adversarial pour la story {story_key}. Fichier story: _bmad-output/implementation-artifacts/{story_key}.md. Workflow: _bmad/bmm/workflows/4-implementation/code-review/. Apres execution du workflow BMAD, ecris OBLIGATOIREMENT _bmad-output/implementation-artifacts/{story_key}.review.json avec { reviewResult: \"approved\" | \"changes-requested\", summary: \"...\" }. Mets a jour le fichier story et sprint-status selon le workflow BMAD. En cas d'escalade, ecris agent-state ; sinon questions: [] ou supprime.", is_background=false).
 

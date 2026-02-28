@@ -86,8 +86,13 @@ if dist.exists() and (dist / "index.html").exists():
 
     @app.get("/{full_path:path}")
     def catch_all_spa(full_path: str):
-        """Catch-all pour SPA : renvoie index.html."""
-        if full_path and not full_path.startswith(("api/", "v1/", "health", "docs", "openapi", "assets")):
+        """Catch-all pour SPA : racine (/) ou chemin non-API renvoie index.html."""
+        is_spa_path = (
+            not full_path
+            or full_path == "/"
+            or not full_path.startswith(("api/", "v1/", "health", "docs", "openapi", "assets"))
+        )
+        if is_spa_path:
             return FileResponse(dist / "index.html")
         return JSONResponse({"detail": "Not Found", "message": "Path not found"}, status_code=404)
 else:

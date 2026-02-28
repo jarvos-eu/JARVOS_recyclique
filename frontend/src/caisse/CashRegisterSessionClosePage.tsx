@@ -73,7 +73,7 @@ export function CashRegisterSessionClosePage() {
       <Stack gap="md" p="md" data-testid="cash-register-session-close-page">
         <Title order={1}>Fermeture de session</Title>
         <Loader size="sm" />
-        <p>Chargement…</p>
+        <Text size="sm">Chargement…</Text>
       </Stack>
     );
   }
@@ -97,7 +97,7 @@ export function CashRegisterSessionClosePage() {
       <Text size="sm">Fond de caisse : {(session.initial_amount / 100).toFixed(2)} €</Text>
       {(session.total_sales != null || session.total_items != null) && (
         <Text size="sm" data-testid="session-close-totals">
-          Total ventes : {(session.total_sales ?? 0) / 100} € — Nombre de lignes : {session.total_items ?? 0}
+          Total ventes : {((session.total_sales ?? 0) / 100).toFixed(2)} € — Nombre de lignes : {session.total_items ?? 0}
         </Text>
       )}
       <form onSubmit={handleSubmit}>

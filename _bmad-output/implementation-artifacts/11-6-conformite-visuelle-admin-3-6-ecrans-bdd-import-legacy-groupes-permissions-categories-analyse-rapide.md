@@ -1,6 +1,6 @@
 # Story 11.6: Conformité visuelle — Admin 3 (6 écrans : BDD, import legacy, groupes, permissions, catégories, analyse rapide)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -129,7 +129,15 @@ afin d'assurer la parité visuelle pour la gestion technique et le référentiel
 
 **Console** : Vérification manuelle recommandée sur les 6 URLs (`/admin/db`, `/admin/import/legacy`, `/admin/groups`, `/admin/permissions`, `/admin/categories`, `/admin/quick-analysis`) — à faire en revue manuelle ; pas d’erreur introduite côté code (pas de console.log ni d’appel non mocké en test).
 
+**Console** : Vérification manuelle recommandée sur les 6 URLs (`/admin/db`, `/admin/import/legacy`, `/admin/groups`, `/admin/permissions`, `/admin/categories`, `/admin/quick-analysis`) — à faire en revue manuelle ; pas d'erreur introduite côté code (pas de console.log ni d'appel non mocké en test).
+
 **npm audit** : Exécuté dans frontend/ ; vulnérabilités éventuelles à traiter en dehors de cette story ; aucun secret ni dépendance non déclarée ajoutée.
+
+### Senior Developer Review (AI)
+
+- **Date** : 2026-02-28. **Résultat** : approved.
+- **Vérifications** : Build frontend exécuté (`npm run build`, exit 0). Docker et console documentés dans Completion Notes. Trace Copy/Consolidate/Security par lot présente. Visuel 1.4.4 (Card withBorder, Stack, Title order=2) aligné sur les 6 écrans. Routes et tests co-locés validés. Pas d'import React inutile dans les `.test.tsx`.
+- **Points mineurs (non bloquants)** : AdminDbPage affichage « forbidden » en `<p>` au lieu de Mantine `<Text>` ; en-têtes BDD/Import legacy indiquent Story 8.5 sans mention 11.6.
 
 ### File List
 
@@ -151,4 +159,5 @@ afin d'assurer la parité visuelle pour la gestion technique et le référentiel
 
 ### Change Log
 
+- 2026-02-28 : Code review (BMAD QA) — Build vérifié OK, docker/console documentés, visuel 1.4.4 et trace AC validés ; approved. Story et sprint-status 11-6 → done, epic-11 → done.
 - 2026-02-28 : Conformité visuelle Admin 3 — 6 écrans (BDD, Import legacy, Groupes, Permissions, Catégories, Analyse rapide) alignés Mantine 1.4.4 ; routes et nav ajoutées ; tests co-locés ; build et docker OK.

@@ -2,7 +2,6 @@
  * Tests StartPostPage — Story 3.4.
  * Affichage sites/postes, soumission caisse, réception, messages succès/erreur.
  */
-import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';

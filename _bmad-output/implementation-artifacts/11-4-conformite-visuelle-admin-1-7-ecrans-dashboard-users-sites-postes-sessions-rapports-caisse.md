@@ -1,6 +1,6 @@
 # Story 11.4: Conformité visuelle — Admin 1 (7 écrans : dashboard, users, sites, postes, sessions, rapports caisse)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -100,6 +100,7 @@ afin d'assurer la parité visuelle pour dashboard, utilisateurs, sites, postes d
 ### Change Log
 
 - 2026-02-28 : Conformité visuelle Admin 1 (7 écrans). Dashboard avec stats optionnelles et Card Navigation ; Users, Sites, CashRegisters, SessionManager, Reports, CashSessionDetail alignés Mantine (Card, Table, espacements). Client API adminDashboard.ts (GET /v1/admin/dashboard/stats optionnel). Tests smoke ajoutés (AdminDashboardPage, AdminReportsPage, AdminSessionManagerPage). Import React remplacé par `import type { ReactElement }` dans AdminDbPage.test.tsx et AdminHealthPage.test.tsx. Build frontend OK.
+- 2026-02-28 : Code review (BMAD adversarial). Build vérifié OK. Trace Completion Notes et visuel 1.4.4 conformes. File List complétée (AdminUserDetailPage.tsx). Statut → done.
 
 ### Agent Model Used
 
@@ -161,6 +162,7 @@ afin d'assurer la parité visuelle pour dashboard, utilisateurs, sites, postes d
 - frontend/src/admin/AdminDashboardPage.tsx (modifié)
 - frontend/src/admin/AdminDashboardPage.test.tsx (nouveau)
 - frontend/src/admin/AdminUsersListPage.tsx (modifié — Card)
+- frontend/src/admin/AdminUserDetailPage.tsx (modifié — alignement 11.4 si applicable)
 - frontend/src/admin/AdminSitesPage.tsx (modifié — Card)
 - frontend/src/admin/AdminCashRegistersPage.tsx (modifié — Card)
 - frontend/src/admin/AdminSessionManagerPage.tsx (modifié — Card)
@@ -171,3 +173,10 @@ afin d'assurer la parité visuelle pour dashboard, utilisateurs, sites, postes d
 - frontend/src/admin/AdminDbPage.test.tsx (modifié — import type ReactElement)
 - frontend/src/admin/AdminHealthPage.test.tsx (modifié — import type ReactElement)
 - _bmad-output/implementation-artifacts/sprint-status.yaml (modifié — 11-4 in-progress puis review)
+
+## Senior Developer Review (AI)
+
+- **Date :** 2026-02-28
+- **Vérifications :** Build `npm run build` frontend exécuté → OK (tsc + vite build, 821 modules). Fichiers File List lus (adminDashboard.ts, AdminDashboardPage, AdminUsersListPage, AdminSitesPage, AdminCashRegistersPage, AdminSessionManagerPage, AdminReportsPage, AdminCashSessionDetailPage, tests smoke). Trace Copy/Consolidate/Security présente par écran dans Completion Notes. Visuel 1.4.4 : layout unifié Card withBorder/Stack/Title documenté ; aucune charte couleurs explicite dans les refs — thème Mantine conservé (conforme). Aucun import React inutile dans les .test.tsx (type ReactElement uniquement où nécessaire).
+- **Correctif appliqué :** AdminUserDetailPage.tsx ajouté à la File List (modifié dans le périmètre écran 3, omis dans la liste initiale).
+- **Résultat :** Approved.

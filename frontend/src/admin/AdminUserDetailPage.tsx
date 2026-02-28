@@ -2,7 +2,7 @@
  * Page détail utilisateur admin — Story 8.1.
  * Route : /admin/users/:id. Profil, rôle, statut, groupes, historique, actions.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Stack,
@@ -18,7 +18,7 @@ import {
   MultiSelect,
   Modal,
   TextInput,
-  Paper,
+  Card,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -182,7 +182,7 @@ export function AdminUserDetailPage() {
 
       {error && <Alert color="red">{error}</Alert>}
 
-      <Paper p="md" withBorder>
+      <Card withBorder padding="md" radius="md">
         <Stack gap="sm">
           <Text size="sm" fw={500}>Profil</Text>
           <Group>
@@ -264,9 +264,10 @@ export function AdminUserDetailPage() {
             </Button>
           </Group>
         </Stack>
-      </Paper>
+      </Card>
 
-      <Tabs defaultValue="history">
+      <Card withBorder padding="md" radius="md">
+        <Tabs defaultValue="history">
         <Tabs.List>
           <Tabs.Tab value="history">Historique / Audit</Tabs.Tab>
         </Tabs.List>
@@ -292,6 +293,7 @@ export function AdminUserDetailPage() {
           {history.length === 0 && <Text size="sm">Aucun événement.</Text>}
         </Tabs.Panel>
       </Tabs>
+      </Card>
 
       <Modal opened={resetPwModal} onClose={() => setResetPwModal(false)} title="Nouveau mot de passe">
         <TextInput

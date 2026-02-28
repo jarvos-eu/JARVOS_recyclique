@@ -33,4 +33,4 @@
 
 ## Quand utiliser cette checklist
 
-À chaque **pioche** dans le code 1.4.4 (copie de fichiers ou de blocs vers le nouveau projet), valider mentalement ou par écrit les trois blocs Copy, Consolidate, Security avant de considérer l'import terminé.
+À chaque **pioche** dans le code 1.4.4 (copie de fichiers ou de blocs vers le nouveau projet), valider mentalement ou par écrit les trois blocs Copy, Consolidate, Security avant de considérer l'import terminé. L'objectif est d'obtenir le **même rendu** que 1.4.4 tout en passant le code par une **analyse de cohérence** (Consolidate) et une **analyse de sécurité** (Security) — pas de reprise brute sans contrôle.

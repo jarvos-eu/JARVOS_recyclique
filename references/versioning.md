@@ -1,33 +1,41 @@
 # Versioning — JARVOS Recyclique
 
-Convention de versions et tags Git. Peut evoluer selon BMAD ou les besoins du projet.
+Convention simplifiee de statut produit. Objectif : eviter les confusions liees aux versions intermediaires.
 
 ---
 
-## Contexte
+## Decision active (a appliquer maintenant)
 
-- **Ancien repo (archive)** : Recyclique **v1.4.4** — une ressourcerie test, code a refactorer.
-- **Ce repo** : JARVOS Recyclique — refonte complete, nouveau backend.
+Le projet **n'utilise plus** les versions intermediaires `v0.x` pour piloter le travail.
 
----
+Le pilotage se fait avec :
 
-## Usage pour les agents et le developpement
-
-**A lire en premier.** Les numéros de version (v0.1.0, v0.2.0, etc.) **ne pilotent pas** le développement : ils ne définissent pas l'ordre des epics ni des stories. La planification et la priorisation se font **uniquement** via les **epics et stories** (`_bmad-output/planning-artifacts/epics.md`). La **seule cible de livraison** à prendre en compte pour le travail courant est la **première version en production** (objectif « v1.0 » : parité 1.4.4 + sync, sans rupture). Le tableau « Convention de tags » ci-dessous est une **référence optionnelle** pour des tags Git / releases GitHub ; créer un tag est à la discrétion de Strophe et n'est pas requis pour avancer. Dans les documents (PRD, epics), les mentions « v0.1 », « v0.2+ », « v1 » dans les FR ou les stories désignent des **phases ou périmètres** (ex. phase initiale, phase ultérieure, première prod), **pas** des numéros de release à respecter à la lettre.
+- les **epics/stories** (`_bmad-output/planning-artifacts/epics.md`) pour le "quoi faire",
+- un **statut de maturite produit** pour le "ou on en est".
 
 ---
 
-## Convention de tags (releases)
+## Statuts de maturite (source de verite)
 
-Le tableau ci-dessous peut servir de repère pour des tags optionnels ; il **ne constitue pas un plan de livraison** à suivre.
+Utiliser uniquement ces 3 statuts :
 
-| Version   | Objectif |
-|-----------|----------|
-| **v0.1.0** | Socle Docker Paheko + API stub FastAPI |
-| **v0.2.0** | Vertical slice caisse/ventes fonctionnel |
-| **v0.3.0** | Reception fonctionnelle |
-| **v0.4.0** | Auth + users + admin |
-| **v0.5.0** | Eco-organismes |
-| **v1.0.0** | Deploye en prod chez La Clique, stable |
+1. **alpha interne** : construction active, instable, changements frequents.
+2. **beta terrain** : tests reels/operationnels, stabilisation, corrections prioritaires.
+3. **v1.0 prod** : mise en production stable chez La Clique, sans rupture des usages cibles.
 
-Tags Git : `v0.1.0`, `v0.2.0`, etc. (semver). Ne pas creer de tag sans validation de Strophe.
+---
+
+## Regles d'usage
+
+- Ne plus creer ni annoncer de jalons `v0.1`, `v0.2`, `v0.3`, etc.
+- Les anciennes mentions `v0.x` dans les docs historiques sont considerees comme des **etiquettes de phase passees**, non bloquantes.
+- Les decisions de priorite se prennent via backlog/epics/stories, pas via numerotation de versions intermediaires.
+- Le passage en **v1.0 prod** se decide explicitement quand la checklist de readiness prod est validee.
+
+---
+
+## Tags Git
+
+- Tant que le projet n'est pas en production stable : pas d'obligation de tag de release.
+- Premier tag cible recommande : `v1.0.0` (apres validation explicite).
+- Ne pas creer de tag sans validation de Strophe.

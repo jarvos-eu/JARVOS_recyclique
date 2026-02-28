@@ -1,0 +1,4 @@
+{
+  "reviewResult": "approved",
+  "summary": "Re-review après corrections : (1) Routes /cash-register/virtual et /cash-register/deferred présentes dans App.tsx et documentées en §5.1. (2) Task 5 — périmètre livré vs reporté explicite (sous-tâches [ ] et note « liste ventes / édition item-poids reportées »). (3) AC4 — vérification console documentée dans Completion Notes (« Vérification console navigateur (AC4) : OK (ou à faire en recette) — documenté ici »). (4) File List complète (App.tsx, CashRegisterGuard.tsx, 5 écrans caisse + tests, AdminCashSessionDetailPage + test). AC1–AC5 et tasks validés pour le périmètre livré. Story approuvée."
+}

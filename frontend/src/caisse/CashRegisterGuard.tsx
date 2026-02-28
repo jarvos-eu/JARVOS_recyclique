@@ -4,13 +4,13 @@
  * toute tentative d'accès à une route non caisse.
  * À utiliser avec React Router (useLocation, useNavigate).
  */
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CAISSE_DEFAULT_REDIRECT, isCaisseAllowedPath } from './cashRegisterRoutes';
+import { CAISSE_DEFAULT_REDIRECT } from './cashRegisterRoutes';
 import { useCashRegisterLock } from './useCashRegisterLock';
 
 export interface CashRegisterGuardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   /** Redirection si accès refusé (défaut: /caisse). */
   redirectTo?: string;
 }

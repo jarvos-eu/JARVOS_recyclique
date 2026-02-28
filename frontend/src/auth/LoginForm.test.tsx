@@ -3,13 +3,13 @@
  * Vitest + React Testing Library + jsdom (convention projet). Mantine : wrapper MantineProvider.
  */
 import { describe, it, expect, vi } from 'vitest';
-import React from 'react';
+import type { ReactElement } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import { LoginForm } from './LoginForm';
 
-function renderWithMantine(ui: React.ReactElement) {
+function renderWithMantine(ui: ReactElement) {
   return render(<MantineProvider>{ui}</MantineProvider>);
 }
 

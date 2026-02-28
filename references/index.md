@@ -32,8 +32,8 @@ Refonte complete de Recyclique 1.4.4. Nouveau backend. Solo dev : Strophe. BMAD 
 - **`procedure-git-cursor.md`** — Procedure Git dans Cursor : ce que l'agent peut faire, ce que l'utilisateur fait, credentials, workflow et depannage.
   _(Charger si : operations Git, configuration, ou delegation au subagent Git.)_
 
-- **`versioning.md`** — Convention de versions et tags (v0.1.0 → v1.0.0). Ancien repo 1.4.4. **Source de vérité pour le périmètre par version.**
-  _(Charger si : release, tag Git, planification de version.)_
+- **`versioning.md`** — Statuts de maturité produit (alpha interne, beta terrain, v1.0 prod) et règles de tags. Ancien repo 1.4.4.
+  _(Charger si : cadrage de statut produit, release, tag Git.)_
 
 - **Décisions architecturales (v0.1)** — Checklist : `references/artefacts/2026-02-26_03_checklist-v0.1-architecture.md` ; architecture : `_bmad-output/planning-artifacts/architecture.md` (sections Gap Analysis, Implementation Readiness, Implementation Handoff). Résumé aussi en tête de `_bmad-output/planning-artifacts/epics.md`. À charger pour toute session sur epics, stories ou implémentation socle/modules.
   _(Charger si : travail sur epics, stories, code socle, loader, slots, tests frontend, ou alignement agents.)_

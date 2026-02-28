@@ -2,7 +2,6 @@
  * Tests CashRegisterPinPage — Story 11.1. Smoke : rendu clavier PIN.
  */
 import { describe, it, expect } from 'vitest';
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';

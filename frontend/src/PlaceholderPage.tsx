@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function PlaceholderPage({ title, testId }: { title: string; testId: string }) {
   return (
     <div data-testid={testId}>

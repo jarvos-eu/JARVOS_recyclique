@@ -2,7 +2,6 @@
  * Tests ProfilPage — Story 11.1. Smoke : non connecté redirige vers /login.
  */
 import { describe, it, expect, vi } from 'vitest';
-import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';

@@ -13,7 +13,7 @@ import {
 } from '../api/caisse';
 import type { CashRegisterItem } from '../api/caisse';
 import { useAuth } from '../auth/AuthContext';
-import { Stack, Title, TextInput, Select, Button, Alert } from '@mantine/core';
+import { Stack, Title, Text, TextInput, Select, Button, Alert } from '@mantine/core';
 
 export function CashRegisterSessionOpenPage() {
   const { accessToken } = useAuth();
@@ -115,7 +115,7 @@ export function CashRegisterSessionOpenPage() {
     return (
       <Stack gap="md" p="md" data-testid="page-session-open">
         <Title order={1}>Ouverture de session</Title>
-        <p>Chargement…</p>
+        <Text size="sm">Chargement…</Text>
       </Stack>
     );
   }

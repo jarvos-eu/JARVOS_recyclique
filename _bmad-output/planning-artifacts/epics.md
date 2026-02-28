@@ -14,8 +14,17 @@ inputDocuments:
   - references/ancien-repo/checklist-import-1.4.4.md
   - references/ou-on-en-est.md
   - references/versioning.md
-lastEdited: '2026-02-26'
+lastEdited: '2026-02-27'
 editHistory:
+  - date: '2026-02-27'
+    changes: >
+      Renforcements qualité refactor (Create Epic/Story) : dans Règle refactor brownfield — « Copie » = réécriture/adaptation (pas collage) ;
+      preuve checklist = trace par écran dans Completion Notes (Copy / Consolidate / Security). Même exigences dans Epic 11 « Qualité refactor ».
+  - date: '2026-02-27'
+    changes: >
+      Ajout Epic 11 « Conformité visuelle 1.4.4 » avec 6 stories (Auth, Caisse, Réception, Admin 1, Admin 2, Admin 3).
+      Chaque story : AC = aligner le rendu des écrans du domaine sur le code 1.4.4 + checklist import.
+      Admin scindé en 3 stories pour fenêtre de contexte raisonnable (~100k tokens). 29 écrans au total.
   - date: '2026-02-26'
     changes: >
       Refonte complète de l'ordre des epics (Correct Course). Epic 1 inchangé.
@@ -34,7 +43,7 @@ Ce document fournit le découpage complet en epics et stories pour JARVOS_recycl
 
 **Epic 1 livré.** Le reste suit l'ordre ci-dessous : chaque couche dépend de la précédente. On ne commence pas par les murs avant les fondations.
 
-**Human in the Loop (HITL)** : chaque epic (3 à 10) contient une section « Human in the Loop — moments possibles ». L'Epic 7 (correspondance) a des HITL **obligatoires**. Les autres epics ont des HITL **recommandés** ou **optionnels**.
+**Human in the Loop (HITL)** : chaque epic métier (3 à 10) contient une section « Human in the Loop — moments possibles ». L'Epic 7 (correspondance) a des HITL **obligatoires**. Les autres epics ont des HITL **recommandés** ou **optionnels**. L'Epic 11 (Conformité visuelle 1.4.4) n'a pas de HITL dédié (travail d'alignement rendu).
 
 ---
 
@@ -71,6 +80,7 @@ Couche 6          Epic 7  — Correspondance et mapping (dépend de Epic 5 stabl
 Couche 7          Epic 8  — Administration, compta v1, vie associative
 Couche 8          Epic 9  — Données déclaratives et éco-organismes
 Couche 9  [//]    Epic 10 — Extension points / stubs (parallèle possible)
+Epic 11           Conformité visuelle 1.4.4 (29 écrans ; parallèle possible une fois les écrans livrés par domaine)
 ```
 
 **Règle de précédence :** Une story ne peut pas être commencée si une story d'une couche inférieure dont elle dépend n'est pas livrée. Les trous de dépendance sont la cause première du revert Epic 2. La table des référentiels ci-dessous formalise cette règle.
@@ -80,10 +90,13 @@ Couche 9  [//]    Epic 10 — Extension points / stubs (parallèle possible)
 ## Règle refactor brownfield
 
 > **Pour toute story qui touche au métier caisse, réception, auth, admin, catégories :**
-> le livrable est une **migration/copie** depuis RecyClique 1.4.4 selon `references/ancien-repo/checklist-import-1.4.4.md` (copy + consolidate + security).
-> Ce n'est **pas** une conception from scratch.
+> le livrable est une **migration** depuis RecyClique 1.4.4 selon `references/ancien-repo/checklist-import-1.4.4.md` (copy + consolidate + security). Ce n'est **pas** une conception from scratch ni un simple copier-coller : à chaque import, appliquer une **analyse de cohérence** du code (alignement architecture, pas de doublon) et une **analyse de sécurité** (secrets, audit fichiers, CVE dépendances). Pour toute story qui livre des **écrans** : le rendu final doit être **identique** aux écrans 1.4.4 correspondants (référence audits et artefact 10).
 
-**Références 1.4.4 à charger selon le domaine :**
+**« Copie » = réécriture / adaptation (pas collage de fichier)**  
+Pour chaque écran ou bloc importé : identifier dans l'ancien repo 1.4.4 les composants et styles concernés (traçabilité Copy), puis les **réécrire ou adapter** dans la stack actuelle (Mantine, structure `frontend/src/`) en appliquant Consolidate et Security — pas de collage de fichier tel quel.
+
+**Preuve que la checklist est faite**  
+Pour que l'import soit considéré terminé, une **trace** doit exister par écran (ou par lot d'écrans homogène) : dans les Completion Notes de la story ou en commentaire livrable, au minimum une ligne par bloc Copy / Consolidate / Security — ex. : **Copy** : source 1.4.4 identifiée (fichier ou chemin) ; **Consolidate** : dépendances ajoutées / pas de doublon ; **Security** : pas de secret en dur, audit rapide des fichiers, `npm audit` OK (ou équivalent). Sans cette trace, la story n'est pas acceptée comme conforme.
 
 | Domaine | Références |
 |---------|------------|
@@ -179,7 +192,7 @@ NFR-A1: Bonnes pratiques d'accessibilité de base (contraste, navigation clavier
 - Artefacts de référence : 08 (qui stocke quoi), 09 (périmètre API v1), 10 (traçabilité écran → API).
 
 **UX v1 :**
-- Mêmes écrans que RecyClique 1.4.4 (copy + consolidate + security) ; pas de refonte UX pour la v1.
+- Mêmes écrans que RecyClique 1.4.4 ; pas de refonte UX pour la v1. Pour toute story livrant du front : rendu identique aux écrans 1.4.4 concernés ; méthode d'import = checklist (copy + consolidate + security) avec analyse de cohérence et de sécurité, pas de simple copier-coller.
 - Extension points (LayoutConfigService, VisualProvider) en stubs v1.
 - Référence : `_bmad-output/planning-artifacts/ux-design-specification.md`.
 
@@ -232,6 +245,7 @@ FR27: (Post-MVP) Epic 10 — Fonds documentaire RecyClique
 - **Epic 8**: Administration, compta v1 et vie associative
 - **Epic 9**: Données déclaratives et éco-organismes
 - **Epic 10**: Extension points et évolution
+- **Epic 11**: Conformité visuelle 1.4.4
 
 ---
 
@@ -325,7 +339,8 @@ afin que l'écran caisse puisse charger les boutons rapides au démarrage.
 **Étant donné** la table `categories` existante  
 **Quand** la migration crée `preset_buttons` (id, name, category_id FK nullable, preset_price, button_type, sort_order, is_active)  
 **Alors** les endpoints fonctionnent : `GET /v1/presets`, `GET /v1/presets/active`, `GET /v1/presets/{id}`, `POST /v1/presets`, `PATCH /v1/presets/{id}`, `DELETE /v1/presets/{id}`  
-**Et** `GET /v1/presets/active` retourne uniquement les presets is_active=true, triés par sort_order ; livrable = migration/copie 1.4.4 (artefact 08 §2.6, artefact 09 §3.12, audit caisse §1.3 Presets).
+**Et** `GET /v1/presets/active` retourne uniquement les presets is_active=true, triés par sort_order ; livrable = migration/copie 1.4.4 (artefact 08 §2.6, artefact 09 §3.12, audit caisse §1.3 Presets).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ---
 
@@ -364,7 +379,8 @@ afin d'accéder aux fonctionnalités selon mon rôle.
 **Quand** je soumets mes identifiants à `POST /v1/auth/login`  
 **Alors** l'API retourne un JWT (access token + refresh token) ; les requêtes avec le token sont reconnues (FR16)  
 **Et** les endpoints de compte fonctionnent : logout, refresh, forgot-password, reset-password, PIN login (`POST /v1/auth/pin`) ; `GET/PUT /v1/users/me` (profil, password, PIN) ; secrets et config JWT en env (NFR-S2)  
-**Et** livrable = migration/copie 1.4.4 (artefact 08 §2.1, artefact 09 §3.2/3.3, artefact 10 §4.1 à 4.6).
+**Et** livrable = migration/copie 1.4.4 (artefact 08 §2.1, artefact 09 §3.2/3.3, artefact 10 §4.1 à 4.6).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 3.2: Groupes, permissions et RBAC
 
@@ -380,7 +396,8 @@ afin de contrôler l'accès aux différentes fonctionnalités de l'application.
 **Quand** un utilisateur possède les permissions requises et envoie son JWT  
 **Alors** le middleware API valide le token **et** les permissions avant d'accéder à la ressource  
 **Et** les endpoints d'admin groupes/permissions fonctionnent (`GET/POST/PUT/DELETE /v1/admin/groups`, `/v1/admin/permissions`) ; la matrice RBAC du PRD est implémentée (opérateur caisse, réception, responsable compta/admin, admin technique, bénévole)  
-**Et** livrable = migration/copie 1.4.4 (artefact 08 §2.1).
+**Et** livrable = migration/copie 1.4.4 (artefact 08 §2.1).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 3.3: Gestion des PIN opérateur caisse et déverrouillage de session
 
@@ -397,7 +414,8 @@ afin que seul un opérateur autorisé puisse sortir du mode caisse.
 **Étant donné** une personne habilitée à la caisse avec un PIN configuré  
 **Quand** le poste est en mode caisse verrouillé et que je saisis mon PIN correct  
 **Alors** la session se déverrouille ; un PIN incorrect ne déverrouille pas (FR5, FR15)  
-**Et** l'association PIN / utilisateur est gérée de façon sécurisée (hash, NFR-S3) ; livrable = migration/copie 1.4.4.
+**Et** l'association PIN / utilisateur est gérée de façon sécurisée (hash, NFR-S3) ; livrable = migration/copie 1.4.4.  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 3.4: Démarrer un poste (caisse ou réception) avec un compte administrateur
 
@@ -412,7 +430,8 @@ afin qu'un opérateur puisse ensuite utiliser ce poste.
 **Étant donné** un utilisateur avec rôle admin authentifié, et des sites + postes existants (Epic 2)  
 **Quand** je demande l'ouverture d'un poste caisse ou réception pour un site/caisse donné  
 **Alors** le poste est enregistré et l'état est disponible (FR14) ; l'action est tracée (audit_events)  
-**Et** en multi-sites/multi-caisses, le site et la caisse sont correctement associés au poste ; livrable = migration/copie 1.4.4 (artefact 08 §2.2, artefact 09 §3.8, artefact 10 §5.1).
+**Et** en multi-sites/multi-caisses, le site et la caisse sont correctement associés au poste ; livrable = migration/copie 1.4.4 (artefact 08 §2.2, artefact 09 §3.8, artefact 10 §5.1).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 3.5: Mode caisse verrouillé — restriction du menu à la caisse uniquement
 
@@ -427,7 +446,8 @@ afin de garantir que seules les actions caisse sont possibles sur ce poste.
 **Étant donné** un poste en mode caisse actif  
 **Quand** je navigue dans l'application sans avoir déverrouillé par PIN  
 **Alors** seul le menu caisse est accessible ; les autres routes sont inaccessibles (FR4)  
-**Et** le déverrouillage exige le PIN d'un opérateur habilité (Story 3.3) ; comportement cohérent avec la matrice RBAC ; livrable = migration/copie 1.4.4 (artefact 10 §5.1).
+**Et** le déverrouillage exige le PIN d'un opérateur habilité (Story 3.3) ; comportement cohérent avec la matrice RBAC ; livrable = migration/copie 1.4.4 (artefact 10 §5.1).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 3.6: (Phase ultérieure) SSO RecyClique–Paheko — documentation et objectif
 
@@ -526,7 +546,8 @@ afin de tenir une caisse par point de vente.
 **Étant donné** un poste caisse actif (Epic 3) et un site/caisse identifiés (Epic 2)  
 **Quand** j'ouvre une session avec un montant de fond de caisse  
 **Alors** la session est créée en BDD RecyClique (table `cash_sessions` : id, operator_id, register_id, site_id, initial_amount, status, opened_at) ; une session Paheko correspondante est créée via le plugin (canal push Epic 4) (FR1, FR6)  
-**Et** les sessions sont listables (`GET /v1/cash-sessions`) et tracées (audit_events) ; chaque caisse a sa session ; livrable = migration/copie 1.4.4 (artefact 10 §5.2).
+**Et** les sessions sont listables (`GET /v1/cash-sessions`) et tracées (audit_events) ; chaque caisse a sa session ; livrable = migration/copie 1.4.4 (artefact 10 §5.2).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 5.2: Enregistrement des ventes et push par ticket vers Paheko
 
@@ -542,7 +563,8 @@ afin qu'aucun ticket ne soit perdu et que la compta reçoive les ventes sans dou
 **Quand** j'ajoute des lignes à un ticket (catégorie, quantité, prix en centimes, poids éventuel) et je saisis un ou plusieurs paiements  
 **Alors** le ticket et les lignes sont persistés en BDD RecyClique (tables `sales`, `sale_items`, `payment_transactions`) (FR2)  
 **Et** le ticket est ajouté à la file Redis Streams ; le worker (Epic 4) consomme la file et envoie au plugin Paheko (HTTPS + secret) (FR7, NFR-S1, NFR-I1)  
-**Et** le temps de réponse pour enregistrer une vente reste < 2 s en conditions normales (NFR-P1) ; en cas d'échec Paheko, retry sans perte (FR20) ; livrable = migration/copie 1.4.4 (artefact 08 §2.3, artefact 09 §3.6, artefact 10 §5.3).
+**Et** le temps de réponse pour enregistrer une vente reste < 2 s en conditions normales (NFR-P1) ; en cas d'échec Paheko, retry sans perte (FR20) ; livrable = migration/copie 1.4.4 (artefact 08 §2.3, artefact 09 §3.6, artefact 10 §5.3).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 5.3: Clôture de session (comptage physique, totaux, écart) et syncAccounting
 
@@ -557,7 +579,8 @@ afin que la caisse soit bouclée et la compta à jour sans double saisie.
 **Étant donné** une session de caisse avec des tickets (certains poussés, d'autres en file)  
 **Quand** je lance la clôture et saisis les totaux (closing_amount, actual_amount, variance_comment)  
 **Alors** un contrôle des totaux RecyClique vs Paheko est effectué ; la sync comptable (syncAccounting) est déclenchée côté Paheko ; la session est marquée clôturée (FR3, FR11)  
-**Et** l'opérateur n'est pas bloqué plus de 10 s ; push et sync en arrière-plan (NFR-P2) ; écritures compta respectent la config Paheko (NFR-I2) ; livrable = migration/copie 1.4.4 (artefact 10 §5.4).
+**Et** l'opérateur n'est pas bloqué plus de 10 s ; push et sync en arrière-plan (NFR-P2) ; écritures compta respectent la config Paheko (NFR-I2) ; livrable = migration/copie 1.4.4 (artefact 10 §5.4).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 5.4: (Optionnel v1) Saisie caisse hors ligne et synchronisation au retour
 
@@ -608,7 +631,8 @@ afin d'enregistrer les entrées matière de façon traçable.
 **Étant donné** un utilisateur autorisé avec un poste réception actif (Epic 3)  
 **Quand** j'ouvre un poste de réception et je crée un nouveau ticket de dépôt  
 **Alors** le poste (`poste_reception`) et le ticket (`ticket_depot`) sont enregistrés en BDD RecyClique (FR8) ; le ticket est listable via `GET /v1/reception/tickets`  
-**Et** aucune sync manuelle vers Paheko n'est requise (FR10) ; livrable = migration/copie 1.4.4 (artefact 10 §6.1/6.2).
+**Et** aucune sync manuelle vers Paheko n'est requise (FR10) ; livrable = migration/copie 1.4.4 (artefact 10 §6.1/6.2).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 6.2: Saisie des lignes de réception (poids, catégorie, destination)
 
@@ -621,7 +645,8 @@ afin que les flux matière soient disponibles pour les déclarations et le suivi
 **Étant donné** un ticket de dépôt ouvert  
 **Quand** j'ajoute des lignes avec poids_kg, category_id et destination  
 **Alors** les lignes (`ligne_depot`) sont persistées en BDD RecyClique (FR9, FR10)  
-**Et** les données sont disponibles pour exports ou déclarations ; bonnes pratiques accessibilité (NFR-A1) ; livrable = migration/copie 1.4.4 (artefact 08 §2.4, artefact 10 §6.4).
+**Et** les données sont disponibles pour exports ou déclarations ; bonnes pratiques accessibilité (NFR-A1) ; livrable = migration/copie 1.4.4 (artefact 08 §2.4, artefact 10 §6.4).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 6.3: Export CSV et stats live réception
 
@@ -634,7 +659,8 @@ afin de suivre les flux matière sans quitter RecyClique.
 **Étant donné** des tickets et lignes de réception existants  
 **Quand** je clique « Export CSV » sur un ticket ou les lignes d'une période  
 **Alors** le fichier est généré et téléchargeable (`POST /v1/reception/tickets/{id}/download-token`, `GET .../export-csv`, `GET /v1/reception/lignes/export-csv`)  
-**Et** `GET /v1/reception/stats/live` retourne les KPI de réception en temps réel ; livrable = migration/copie 1.4.4 (artefact 09 §3.10, artefact 10 §6.5).
+**Et** `GET /v1/reception/stats/live` retourne les KPI de réception en temps réel ; livrable = migration/copie 1.4.4 (artefact 09 §3.10, artefact 10 §6.5).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ---
 
@@ -696,7 +722,8 @@ afin de configurer à l'avance tout ce qui est nécessaire pour la sync caisse.
 **Étant donné** le modèle de mapping (Story 7.1)  
 **Quand** j'accède à l'écran ou à l'API d'administration du mapping  
 **Alors** je peux lister et éditer les correspondances (RecyClique → Paheko)  
-**Et** les modifications sensibles sont tracées (audit_events) ; périmètre documenté dans la story.
+**Et** les modifications sensibles sont tracées (audit_events) ; périmètre documenté dans la story.  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ---
 
@@ -731,7 +758,8 @@ afin de gérer les accès à RecyClique.
 **Étant donné** les APIs users/groups/permissions existantes (Epic 3)  
 **Quand** j'accède à `/admin/users`  
 **Alors** les écrans de liste, détail, pending, approve/reject, changement rôle/statut/groupes, reset password/PIN sont opérationnels  
-**Et** livrable = migration/copie 1.4.4 (artefact 10 §7.2/7.3).
+**Et** livrable = migration/copie 1.4.4 (artefact 10 §7.2/7.3).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 8.2: Administration sites, postes, sessions et rapports caisse
 
@@ -744,7 +772,8 @@ afin de piloter les opérations de caisse et d'accéder aux rapports.
 **Étant donné** les APIs sites/cash-registers/cash-sessions existantes (Epics 2 et 5)  
 **Quand** j'accède aux écrans admin correspondants  
 **Alors** la gestion sites, postes (CRUD), gestionnaire de sessions (filtres, pagination), rapports par session et export bulk sont opérationnels  
-**Et** livrable = migration/copie 1.4.4 (artefact 10 §7.4/7.5/7.6/7.7).
+**Et** livrable = migration/copie 1.4.4 (artefact 10 §7.4/7.5/7.6/7.7).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 8.3: Import/export catégories et admin avancé
 
@@ -757,7 +786,8 @@ afin de gérer facilement le référentiel EEE/décla.
 **Étant donné** la table `categories` existante (Epic 2) et les endpoints de base  
 **Quand** j'accède à l'écran admin catégories  
 **Alors** les actions import/export CSV (template, analyze, execute), hard delete, restauration et breadcrumb sont opérationnelles  
-**Et** livrable = migration/copie 1.4.4 (artefact 10 §8.1).
+**Et** livrable = migration/copie 1.4.4 (artefact 10 §8.1).  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 8.4: Réception admin, santé, audit log, logs email, paramètres
 
@@ -770,7 +800,8 @@ afin de surveiller l'instance et de configurer les seuils.
 **Étant donné** les APIs correspondantes existantes  
 **Quand** j'accède aux sections admin réception, santé, audit, logs et paramètres  
 **Alors** tous les écrans listés dans l'artefact 10 §7.8/7.9 sont opérationnels  
-**Et** livrable = migration/copie 1.4.4.
+**Et** livrable = migration/copie 1.4.4.  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 8.5: BDD (export, purge, import) et import legacy
 
@@ -783,7 +814,8 @@ afin de maintenir et migrer les données.
 **Étant donné** les permissions super-admin  
 **Quand** j'utilise les actions BDD  
 **Alors** export, purge transactions et import fonctionnent ; l'interface import legacy (analyze, execute, validate, preview) est opérationnelle  
-**Et** livrable = migration/copie 1.4.4 (artefact 10 §7.10) ; scope import legacy à confirmer produit.
+**Et** livrable = migration/copie 1.4.4 (artefact 10 §7.10) ; scope import legacy à confirmer produit.  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ### Story 8.6: Accès et documentation pour l'administration compta via Paheko (v1)
 
@@ -808,7 +840,8 @@ afin d'avoir un point d'entrée unique sans ouvrir Paheko.
 
 **Étant donné** un utilisateur connecté avec accès vie asso  
 **Quand** je navigue vers la section vie associative  
-**Alors** des écrans ou placeholders sont affichés (FR21) ; le parcours complet sera déroulé en growth.
+**Alors** des écrans ou placeholders sont affichés (FR21) ; le parcours complet sera déroulé en growth.  
+**Et** le livrable respecte le rendu des écrans 1.4.4 correspondants (référence : audits, artefact 10) et résulte d'une analyse de cohérence et de sécurité selon `references/ancien-repo/checklist-import-1.4.4.md` — pas de simple copier-coller.
 
 ---
 
@@ -895,3 +928,100 @@ afin de centraliser la doc et préparer l'évolution JARVOS Nano/Mini.
 **Quand** le fonds documentaire est implémenté  
 **Alors** le stockage (volume dédié ou K-Drive) et la frontière avec Paheko sont définis (FR27)  
 **Et** la story est post-MVP.
+
+---
+
+## Epic 11: Conformité visuelle 1.4.4
+
+Aligner le rendu des 29 écrans RecyClique sur le code et les maquettes 1.4.4, en appliquant à chaque domaine la checklist import (`references/ancien-repo/checklist-import-1.4.4.md`) et les références artefact 10 (traçabilité écran → API) et audits. Découpage par domaine pour rester dans une fenêtre de contexte raisonnable (~100k tokens) ; Admin est scindé en trois stories.
+
+**Prérequis :** Les écrans concernés existent déjà (placeholders ou livraisons des Epics 2 à 8). Cette epic porte sur le **rendu visuel et l’alignement 1.4.4**, pas sur la création des écrans.
+
+**Règle :** Pour chaque story, livrable = aligner le rendu des écrans du périmètre sur le code 1.4.4 + checklist import (copy + consolidate + security). Référence : `references/artefacts/2026-02-26_10_tracabilite-ecran-donnees-appels-api.md` (index §3, détail par domaine §4 à §8).
+
+**Qualité refactor (s’applique à toutes les stories 11.x)**  
+- **Pas de copier-coller de fichier** : pour chaque écran, identifier dans 1.4.4 les composants/styles, puis **réécrire ou adapter** dans la stack actuelle (Mantine, `frontend/src/`) en appliquant Consolidate et Security.  
+- **Preuve checklist** : dans les Completion Notes (ou livrable), une trace par écran (ou lot homogène) avec au minimum : **Copy** — source 1.4.4 identifiée (fichier/chemin) ; **Consolidate** — dépendances / pas de doublon ; **Security** — pas de secret en dur, audit rapide, `npm audit` OK. Sans cette trace, la story n’est pas acceptée comme conforme.
+
+- **Vérification build et console (obligatoire pour toute story 11.x)** : Avant de considérer la story terminée : (1) **Build** — exécuter `npm run build` dans `frontend/` et `docker compose up --build` à la racine ; les deux doivent réussir sans erreur (aucune TS6133, TS2345, etc.). (2) **Console navigateur (recommandé)** — ouvrir les URLs des écrans livrés, DevTools (F12 → Console), vérifier qu'il n'y a pas d'erreur rouge ; indiquer dans les Completion Notes que la vérification a été faite (ou lister les erreurs corrigées).
+
+**Périmètre des 29 écrans :** Auth 6, Caisse 5, Réception 5, Admin 12, Catégories 1.
+
+### Story 11.1: Conformité visuelle — Auth (6 écrans)
+
+En tant qu’équipe produit,
+je veux que les écrans Auth aient un rendu identique à RecyClique 1.4.4,
+afin d’assurer la parité visuelle et comportementale pour login, signup, forgot/reset password, profil et connexion PIN.
+
+**Critères d’acceptation :**
+
+**Étant donné** les écrans Auth existants (Login, Signup, Forgot password, Reset password, Profil, Connexion par PIN — artefact 10 §4)  
+**Quand** on applique la checklist import 1.4.4 (copy + consolidate + security) et qu’on aligne le rendu sur le code 1.4.4  
+**Alors** le rendu des 6 écrans du domaine Auth est identique aux écrans 1.4.4 correspondants  
+**Et** l’import respecte `references/ancien-repo/checklist-import-1.4.4.md` (pas de copier-coller sans analyse de cohérence et de sécurité).
+
+### Story 11.2: Conformité visuelle — Caisse (5 écrans)
+
+En tant qu’équipe produit,
+je veux que les écrans Caisse aient un rendu identique à RecyClique 1.4.4,
+afin d’assurer la parité visuelle pour dashboard, ouverture/fermeture session, saisie vente et détail session admin.
+
+**Critères d’acceptation :**
+
+**Étant donné** les écrans Caisse existants (Dashboard caisses, Ouverture session, Saisie vente, Fermeture session, Détail session admin — artefact 10 §5)  
+**Quand** on applique la checklist import 1.4.4 et qu’on aligne le rendu sur le code 1.4.4  
+**Alors** le rendu des 5 écrans du domaine Caisse est identique aux écrans 1.4.4 correspondants  
+**Et** l’import respecte `references/ancien-repo/checklist-import-1.4.4.md` ; référence audits caisse 1.4.4.
+
+### Story 11.3: Conformité visuelle — Réception (5 écrans)
+
+En tant qu’équipe produit,
+je veux que les écrans Réception aient un rendu identique à RecyClique 1.4.4,
+afin d’assurer la parité visuelle pour accueil, poste, tickets, lignes, export CSV et stats live.
+
+**Critères d’acceptation :**
+
+**Étant donné** les écrans Réception existants (Accueil/poste, Ouverture poste, Liste tickets, Détail ticket + lignes, Export CSV / Stats live — artefact 10 §6)  
+**Quand** on applique la checklist import 1.4.4 et qu’on aligne le rendu sur le code 1.4.4  
+**Alors** le rendu des 5 écrans du domaine Réception est identique aux écrans 1.4.4 correspondants  
+**Et** l’import respecte `references/ancien-repo/checklist-import-1.4.4.md` ; référence audit réception 1.4.4.
+
+### Story 11.4: Conformité visuelle — Admin 1 (7 écrans : dashboard, users, sites, postes, sessions, rapports caisse)
+
+En tant qu’équipe produit,
+je veux que les premiers écrans Admin aient un rendu identique à RecyClique 1.4.4,
+afin d’assurer la parité visuelle pour dashboard, utilisateurs, sites, postes de caisse, gestionnaire de sessions et rapports caisse.
+
+**Critères d’acceptation :**
+
+**Étant donné** les écrans Admin existants (Dashboard, Utilisateurs liste/détail/pending, Sites, Postes caisse, Gestionnaire sessions, Rapports caisse — artefact 10 §7.1 à §7.7)  
+**Quand** on applique la checklist import 1.4.4 et qu’on aligne le rendu sur le code 1.4.4  
+**Alors** le rendu de ces 7 écrans est identique aux écrans 1.4.4 correspondants  
+**Et** l’import respecte `references/ancien-repo/checklist-import-1.4.4.md`.
+
+### Story 11.5: Conformité visuelle — Admin 2 (5 écrans : réception admin, santé, audit, logs, paramètres)
+
+En tant qu’équipe produit,
+je veux que les écrans Admin réception/santé/audit/logs/paramètres aient un rendu identique à RecyClique 1.4.4,
+afin d’assurer la parité visuelle pour la surveillance et la configuration.
+
+**Critères d’acceptation :**
+
+**Étant donné** les écrans Admin existants (Réception admin stats/rapports/tickets, Santé, Audit log, Logs email, Paramètres — artefact 10 §7.8, §7.9)  
+**Quand** on applique la checklist import 1.4.4 et qu’on aligne le rendu sur le code 1.4.4  
+**Alors** le rendu de ces 5 écrans est identique aux écrans 1.4.4 correspondants  
+**Et** l’import respecte `references/ancien-repo/checklist-import-1.4.4.md`.
+
+### Story 11.6: Conformité visuelle — Admin 3 (6 écrans : BDD, import legacy, groupes, permissions, catégories, analyse rapide)
+
+En tant qu’équipe produit,
+je veux que les écrans Admin BDD, import legacy, groupes, permissions, catégories et analyse rapide aient un rendu identique à RecyClique 1.4.4,
+afin d’assurer la parité visuelle pour la gestion technique et le référentiel catégories.
+
+**Critères d’acceptation :**
+
+**Étant donné** les écrans Admin existants (BDD export/purge/import, Import legacy, Groupes, Permissions, Analyse rapide) et la page Catégories (artefact 10 §7.10, §7.11, §7.12, §8.1)  
+**Quand** on applique la checklist import 1.4.4 et qu’on aligne le rendu sur le code 1.4.4  
+**Alors** le rendu de ces écrans est identique aux écrans 1.4.4 correspondants  
+**Et** l’import respecte `references/ancien-repo/checklist-import-1.4.4.md`.
+

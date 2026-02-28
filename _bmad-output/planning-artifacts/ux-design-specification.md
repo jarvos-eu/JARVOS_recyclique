@@ -28,7 +28,7 @@ date: '2026-02-26'
 Ce document ne décrit **pas** une création de maquettes ou de parcours UX from scratch. La stratégie projet, déjà fixée dans le PRD et l'architecture, est la suivante :
 
 - **v1.0** : réutilisation des **écrans existants de RecyClique 1.4.4** (devenue obsolète). Aucune refonte des écrans pour la v1.
-- **Méthode d'import** : à chaque pioche dans le code 1.4.4, appliquer la règle **copy + consolidate + security** selon la checklist `references/ancien-repo/checklist-import-1.4.4.md`.
+- **Méthode d'import** : à chaque pioche dans le code 1.4.4, appliquer la règle **copy + consolidate + security** selon la checklist `references/ancien-repo/checklist-import-1.4.4.md`. L'import n'est pas un simple copier-coller : chaque pioche fait l'objet d'une **analyse de cohérence** (alignement architecture, pas de doublon, dépendances maîtrisées) et d'une **analyse de sécurité** (pas de secret en dur, audit des fichiers, CVE des dépendances). Le **résultat** visuel reste identique aux écrans 1.4.4.
 - **Objectif v1** : continuité d'usage pour La Clique, pas de rupture ; mêmes parcours (caisse, réception, admin) avec la nouvelle stack (React-Vite-TS, FastAPI, Paheko, Redis).
 
 Les écrans et parcours sont donc **déjà définis par l'existant 1.4.4** ; ce document formalise cette stratégie, recense les sources de référence et décrit ce qui est **préparé dès la v1** pour une évolution ultérieure vers un affichage plus dynamique (v2+).

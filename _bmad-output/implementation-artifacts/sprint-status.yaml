@@ -1,5 +1,5 @@
-# generated: 2026-02-26
-# updated: 2026-02-26 (Correct Course — alignement refonte epics.md 10 epics, Epic 1 livré)
+# generated: 2026-02-27
+# updated: 2026-02-27 (sprint-planning — Epic 11 ajouté avec 6 stories conformité visuelle 1.4.4)
 # project: JARVOS_recyclique
 # project_key: NOKEY
 # tracking_system: file-system
@@ -22,8 +22,15 @@
 # Retrospective Status:
 #   - optional: Can be completed but not required
 #   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
-generated: "2026-02-26"
+generated: "2026-02-27"
 project: JARVOS_recyclique
 project_key: NOKEY
 tracking_system: file-system
@@ -80,11 +87,10 @@ development_status:
   epic-8: done
   8-1-administration-complete-des-utilisateurs: done
   8-2-administration-sites-postes-sessions-et-rapports-caisse: done
-  # 8-2 review 2026-02-27 pass 2: approved (filtre opérateur présent)
   8-3-import-export-categories-et-admin-avance: done
-  8-4-reception-admin-sante-audit-log-logs-email-parametres: done  # review pass 3 approved 2026-02-27
-  8-5-bdd-export-purge-import-et-import-legacy: done  # review pass 2 approved 2026-02-27
-  8-6-acces-et-documentation-pour-l-administration-compta-via-paheko-v1: done  # review pass 2 approved 2026-02-27
+  8-4-reception-admin-sante-audit-log-logs-email-parametres: done
+  8-5-bdd-export-purge-import-et-import-legacy: done
+  8-6-acces-et-documentation-pour-l-administration-compta-via-paheko-v1: done
   8-7-ecrans-ou-placeholders-vie-associative-dans-recyclique: done
   epic-8-retrospective: optional
 
@@ -97,3 +103,12 @@ development_status:
   10-1-interfaces-et-stubs-layoutconfigservice-visualprovider-v1: done
   10-2-post-mvp-fonds-documentaire-recyclique: done
   epic-10-retrospective: optional
+
+  epic-11: done
+  11-1-conformite-visuelle-auth-6-ecrans: done
+  11-2-conformite-visuelle-caisse-5-ecrans: done
+  11-3-conformite-visuelle-reception-5-ecrans: done
+  11-4-conformite-visuelle-admin-1-7-ecrans-dashboard-users-sites-postes-sessions-rapports-caisse: done
+  11-5-conformite-visuelle-admin-2-5-ecrans-reception-admin-sante-audit-logs-parametres: done
+  11-6-conformite-visuelle-admin-3-6-ecrans-bdd-import-legacy-groupes-permissions-categories-analyse-rapide: done
+  epic-11-retrospective: optional
