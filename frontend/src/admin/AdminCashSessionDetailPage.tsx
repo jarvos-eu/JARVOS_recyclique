@@ -2,9 +2,9 @@
  * Page admin Détail session caisse — Story 8.2 (écran 5.5).
  * Route : /admin/cash-sessions/:id. GET /v1/cash-sessions/{id}, lien rapport.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Stack, Title, Alert, Loader, Button, Group, Text } from '@mantine/core';
+import { Stack, Title, Alert, Loader, Button, Group, Text, Card } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import { getCashSession, type CashSessionItem } from '../api/caisse';
 import { getReportBySession } from '../api/adminReports';
@@ -52,15 +52,17 @@ export function AdminCashSessionDetailPage() {
 
   if (!permissions.includes('admin')) {
     return (
-      <div data-testid="admin-session-detail-forbidden">
-        <p>Accès réservé aux administrateurs.</p>
-      </div>
+      <Stack gap="md" p="md" data-testid="admin-session-detail-forbidden">
+        <Alert color="orange" title="Accès réservé">
+          Accès réservé aux administrateurs.
+        </Alert>
+      </Stack>
     );
   }
 
   if (loading) return <Loader size="sm" data-testid="admin-session-detail-loading" />;
   if (error && !session) return <Alert color="red">{error}</Alert>;
-  if (!session) return <p data-testid="admin-session-detail-not-found">Session introuvable.</p>;
+  if (!session) return <Text component="p" data-testid="admin-session-detail-not-found">Session introuvable.</Text>;
 
   return (
     <Stack gap="md" data-testid="admin-session-detail-page">
@@ -73,6 +75,7 @@ export function AdminCashSessionDetailPage() {
 
       {error && <Alert color="red">{error}</Alert>}
 
+      <Card withBorder padding="md" radius="md">
       <Stack gap="xs">
         <Text><strong>Ouverture :</strong> {new Date(session.opened_at).toLocaleString()}</Text>
         <Text><strong>Clôture :</strong> {session.closed_at ? new Date(session.closed_at).toLocaleString() : '—'}</Text>
@@ -80,9 +83,13 @@ export function AdminCashSessionDetailPage() {
         <Text><strong>Type :</strong> {session.session_type}</Text>
         <Text><strong>Fond de caisse :</strong> {(session.initial_amount / 100).toFixed(2)} €</Text>
         {session.closing_amount != null && <Text><strong>Montant clôture :</strong> {(session.closing_amount / 100).toFixed(2)} €</Text>}
+        {session.actual_amount != null && <Text><strong>Montant compté :</strong> {(session.actual_amount / 100).toFixed(2)} €</Text>}
+        {session.variance != null && <Text><strong>Écart :</strong> {(session.variance / 100).toFixed(2)} €</Text>}
+        {session.variance_comment && <Text><strong>Commentaire écart :</strong> {session.variance_comment}</Text>}
         {session.total_sales != null && <Text><strong>Total ventes :</strong> {(session.total_sales / 100).toFixed(2)} €</Text>}
         {session.total_items != null && <Text><strong>Nombre d'articles :</strong> {session.total_items}</Text>}
       </Stack>
+      </Card>
 
       {session.status === 'closed' && (
         <Button onClick={handleDownloadReport} data-testid="download-report">

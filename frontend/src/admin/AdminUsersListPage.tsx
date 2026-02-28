@@ -2,9 +2,9 @@
  * Page liste utilisateurs admin — Story 8.1.
  * Route : /admin/users. Table Mantine, filtres rôle/statut, pagination, onglet En attente.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Table, Select, Button, Tabs, Alert, Loader, Stack, Group, Title } from '@mantine/core';
+import { Table, Select, Button, Tabs, Alert, Loader, Stack, Group, Title, Card } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
   getAdminUsers,
@@ -128,6 +128,7 @@ export function AdminUsersListPage() {
         </Button>
       </Group>
 
+      <Card withBorder padding="md" radius="md">
       <Tabs
         value={tab}
         onChange={(v) => setSearchParams(v ? { tab: v } : {})}
@@ -293,6 +294,7 @@ export function AdminUsersListPage() {
           )}
         </Tabs.Panel>
       </Tabs>
+      </Card>
     </Stack>
   );
 }

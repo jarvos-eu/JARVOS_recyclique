@@ -2,7 +2,7 @@
  * Page admin Gestionnaire de sessions caisse — Story 8.2.
  * Route : /admin/session-manager. Liste sessions avec filtres et pagination (GET /v1/cash-sessions).
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Table,
@@ -14,6 +14,7 @@ import {
   Loader,
   Select,
   TextInput,
+  Card,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import { getCashSessionsList, type CashSessionItem } from '../api/caisse';
@@ -160,6 +161,7 @@ export function AdminSessionManagerPage() {
       {loading ? (
         <Loader size="sm" data-testid="admin-sessions-loading" />
       ) : (
+        <Card withBorder padding="md" radius="md">
         <Table striped highlightOnHover data-testid="admin-sessions-table">
           <Table.Thead>
             <Table.Tr>
@@ -188,6 +190,7 @@ export function AdminSessionManagerPage() {
             ))}
           </Table.Tbody>
         </Table>
+        </Card>
       )}
       {!loading && sessions.length === 0 && (
         <p data-testid="admin-sessions-empty">Aucune session.</p>

@@ -1,10 +1,10 @@
 /**
- * Page saisie vente (étape sale) — Story 5.2, 5.4 (hors ligne + sync).
+ * Page saisie vente (étape sale) — Story 5.2, 5.4, 11.2 (hors ligne + sync).
  * GET /v1/cash-sessions/current, GET /v1/presets/active, GET /v1/categories/sale-tickets.
  * Panier (lignes), paiements multiples, note, option sale_date. POST /v1/sales → vidage panier.
- * Hors ligne : buffer IndexedDB ; au retour en ligne envoi vers API (meme contrat 5.2).
+ * Rendu Mantine aligné 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   getCurrentCashSession,
@@ -27,6 +27,19 @@ import {
   syncOfflineQueue,
   getPendingCount,
 } from './offlineQueue';
+import {
+  Stack,
+  Title,
+  Text,
+  Alert,
+  Button,
+  Group,
+  Select,
+  NumberInput,
+  TextInput,
+  Table,
+  Loader,
+} from '@mantine/core';
 
 export interface CartLine {
   id: string;
@@ -58,6 +71,10 @@ export function CashRegisterSalePage() {
   const [submitting, setSubmitting] = useState(false);
   const [pendingOfflineCount, setPendingOfflineCount] = useState(0);
   const [syncing, setSyncing] = useState(false);
+  const [catQuantity, setCatQuantity] = useState(1);
+  const [catPriceEur, setCatPriceEur] = useState('');
+  const [catWeight, setCatWeight] = useState<string>('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!accessToken) return;
@@ -96,7 +113,7 @@ export function CashRegisterSalePage() {
         if (!cancelled) return getPendingCount();
       })
       .then((count) => {
-        if (!cancelled) setPendingOfflineCount(count);
+        if (!cancelled && count !== undefined) setPendingOfflineCount(count);
       })
       .catch(() => {})
       .finally(() => {
@@ -107,7 +124,6 @@ export function CashRegisterSalePage() {
     };
   }, [online, accessToken]);
 
-  // Rafraichir le nombre de tickets en attente (apres ajout en buffer ou au mount).
   const refreshPendingCount = useCallback(async () => {
     const count = await getPendingCount();
     setPendingOfflineCount(count);
@@ -176,6 +192,17 @@ export function CashRegisterSalePage() {
     setPayments((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
+  const handleAddCategoryLine = useCallback(() => {
+    if (!selectedCategoryId) return;
+    const cat = categories.find((c) => c.id === selectedCategoryId);
+    if (cat) {
+      const priceCents = Math.round(parseFloat(catPriceEur || '0') * 100);
+      const weightVal = catWeight ? parseFloat(catWeight) : null;
+      addCategoryToCart(cat, catQuantity, priceCents, weightVal);
+      setSelectedCategoryId(null);
+    }
+  }, [categories, selectedCategoryId, catQuantity, catPriceEur, catWeight, addCategoryToCart]);
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -212,7 +239,6 @@ export function CashRegisterSalePage() {
 
       try {
         if (!online) {
-          // Story 5.4 : hors ligne → buffer local (IndexedDB).
           const offlineId = crypto.randomUUID();
           await addTicket({
             ...payload,
@@ -255,199 +281,235 @@ export function CashRegisterSalePage() {
 
   if (loading) {
     return (
-      <div data-testid="page-sale">
-        <p>Chargement…</p>
-      </div>
+      <Stack gap="md" p="md" data-testid="page-sale">
+        <Title order={1}>Saisie vente</Title>
+        <Loader size="sm" />
+        <Text size="sm">Chargement…</Text>
+      </Stack>
     );
   }
 
   if (!session) {
     return (
-      <div data-testid="page-sale">
-        <p>Aucune session en cours.</p>
-        <button type="button" onClick={() => navigate('/caisse')}>
+      <Stack gap="md" p="md" data-testid="page-sale">
+        <Title order={1}>Saisie vente</Title>
+        <Text>Aucune session en cours.</Text>
+        <Button variant="light" onClick={() => navigate('/caisse')}>
           Retour dashboard
-        </button>
-      </div>
+        </Button>
+      </Stack>
     );
   }
 
   return (
-    <div data-testid="page-sale">
-      {/* Story 5.4 : indication hors ligne / synchronisation en attente */}
+    <Stack gap="md" p="md" data-testid="page-sale">
       {!online && (
-        <div role="status" aria-live="polite" data-testid="offline-banner" style={{ padding: '0.5rem', background: '#f0ad4e', color: '#000', marginBottom: '0.5rem' }}>
+        <Alert color="yellow" role="status" aria-live="polite" data-testid="offline-banner">
           Hors ligne — Les ventes sont enregistrées localement et seront envoyées au retour en ligne.
-        </div>
+        </Alert>
       )}
       {online && (pendingOfflineCount > 0 || syncing) && (
-        <div role="status" aria-live="polite" data-testid="sync-pending-banner" style={{ padding: '0.5rem', background: '#5bc0de', color: '#000', marginBottom: '0.5rem' }}>
+        <Alert color="blue" role="status" aria-live="polite" data-testid="sync-pending-banner">
           {syncing
             ? `Synchronisation en cours… (${pendingOfflineCount} ticket(s) en attente)`
             : `Synchronisation en attente : ${pendingOfflineCount} ticket(s) à envoyer.`}
-        </div>
+        </Alert>
       )}
-      <h1>Saisie vente</h1>
-      <p>Session : {session.id.slice(0, 8)}… — Fond de caisse : {(session.initial_amount / 100).toFixed(2)} €</p>
+      <Title order={1}>Saisie vente</Title>
+      <Text size="sm">
+        Session : {session.id.slice(0, 8)}… — Fond de caisse : {(session.initial_amount / 100).toFixed(2)} €
+      </Text>
 
-      <section aria-label="Presets">
-        <h2>Boutons rapides</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+      <Stack gap="xs">
+        <Text fw={500}>Boutons rapides</Text>
+        <Group gap="xs">
           {presets.map((p) => (
-            <button
+            <Button
               key={p.id}
-              type="button"
+              variant="light"
+              size="sm"
               data-testid={`preset-${p.id}`}
               onClick={() => addPresetToCart(p)}
             >
               {p.name} ({(p.preset_price / 100).toFixed(2)} €)
-            </button>
+            </Button>
           ))}
-        </div>
-      </section>
+        </Group>
+      </Stack>
 
-      <section aria-label="Panier">
-        <h2>Panier</h2>
+      <Stack gap="xs">
+        <Text fw={500}>Panier</Text>
         {cart.length === 0 ? (
-          <p data-testid="cart-empty">Panier vide</p>
+          <Text size="sm" data-testid="cart-empty">Panier vide</Text>
         ) : (
-          <ul data-testid="cart-lines">
-            {cart.map((l) => (
-              <li key={l.id}>
-                {l.preset_name ?? l.category_name} × {l.quantity} = {(l.total_price / 100).toFixed(2)} €
-                {l.weight != null && ` — ${l.weight} kg`}
-                <button
-                  type="button"
-                  data-testid={`remove-line-${l.id}`}
-                  onClick={() => removeCartLine(l.id)}
-                >
-                  Retirer
-                </button>
-              </li>
-            ))}
-          </ul>
+          <Table data-testid="cart-lines">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Désignation</Table.Th>
+                <Table.Th>Qté</Table.Th>
+                <Table.Th>Total</Table.Th>
+                <Table.Th />
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {cart.map((l) => (
+                <Table.Tr key={l.id}>
+                  <Table.Td>{l.preset_name ?? l.category_name}</Table.Td>
+                  <Table.Td>{l.quantity}</Table.Td>
+                  <Table.Td>{(l.total_price / 100).toFixed(2)} €{l.weight != null ? ` — ${l.weight} kg` : ''}</Table.Td>
+                  <Table.Td>
+                    <Button
+                      type="button"
+                      variant="subtle"
+                      size="xs"
+                      data-testid={`remove-line-${l.id}`}
+                      onClick={() => removeCartLine(l.id)}
+                    >
+                      Retirer
+                    </Button>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
         )}
-        <p data-testid="cart-total">
-          <strong>Total : {(cartTotal / 100).toFixed(2)} €</strong>
-        </p>
-      </section>
+        <Text fw={500} data-testid="cart-total">
+          Total : {(cartTotal / 100).toFixed(2)} €
+        </Text>
+      </Stack>
 
-      <section aria-label="Catégories">
-        <h2>Ajouter une ligne (catégorie)</h2>
-        <select
-          data-testid="category-select"
-          onChange={(e) => {
-            const id = e.target.value;
-            if (!id) return;
-            const cat = categories.find((c) => c.id === id);
-            if (cat) {
-              const qty = parseInt((document.getElementById('cat-quantity') as HTMLInputElement)?.value || '1', 10);
-              const priceEur = (document.getElementById('cat-price') as HTMLInputElement)?.value || '0';
-              const priceCents = Math.round(parseFloat(priceEur) * 100);
-              const weightInput = document.getElementById('cat-weight') as HTMLInputElement;
-              const weight = weightInput?.value ? parseFloat(weightInput.value) : null;
-              addCategoryToCart(cat, qty, priceCents, weight);
-              e.target.value = '';
-            }
-          }}
-        >
-          <option value="">— Choisir catégorie —</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-        <label>
-          Quantité <input id="cat-quantity" type="number" min={1} defaultValue={1} data-testid="cat-quantity" />
-        </label>
-        <label>
-          Prix unitaire (€) <input id="cat-price" type="number" step="0.01" min={0} defaultValue="0" data-testid="cat-price" />
-        </label>
-        <label>
-          Poids (kg) <input id="cat-weight" type="number" step="0.001" min={0} data-testid="cat-weight" placeholder="Optionnel" />
-        </label>
-      </section>
-
-      <section aria-label="Paiements">
-        <h2>Paiements</h2>
-        <div>
-          <label>
-            Moyen{' '}
-            <select
-              data-testid="payment-method"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-            >
-              <option value="especes">Espèces</option>
-              <option value="cheque">Chèque</option>
-              <option value="cb">Carte bancaire</option>
-            </select>
-          </label>
-          <label>
-            Montant (€){' '}
-            <input
-              type="number"
-              step="0.01"
-              min={0}
-              data-testid="payment-amount"
-              value={paymentAmountEur}
-              onChange={(e) => setPaymentAmountEur(e.target.value)}
-            />
-          </label>
-          <button type="button" data-testid="add-payment" onClick={addPayment}>
+      <Stack gap="xs">
+        <Text fw={500}>Ajouter une ligne (catégorie)</Text>
+        <Group align="flex-end" gap="xs">
+          <Select
+            placeholder="— Choisir catégorie —"
+            data-testid="category-select"
+            value={selectedCategoryId}
+            onChange={(v) => setSelectedCategoryId(v)}
+            data={categories.map((c) => ({ value: c.id, label: c.name }))}
+            clearable
+          />
+          <NumberInput
+            min={1}
+            value={catQuantity}
+            onChange={(v) => setCatQuantity(Number(v) || 1)}
+            data-testid="cat-quantity"
+            placeholder="Qté"
+            w={80}
+          />
+          <NumberInput
+            decimalScale={2}
+            min={0}
+            value={catPriceEur}
+            onChange={(v) => setCatPriceEur(String(v ?? ''))}
+            data-testid="cat-price"
+            placeholder="Prix €"
+            w={100}
+          />
+          <NumberInput
+            decimalScale={3}
+            min={0}
+            value={catWeight}
+            onChange={(v) => setCatWeight(String(v ?? ''))}
+            data-testid="cat-weight"
+            placeholder="Poids kg"
+            w={100}
+          />
+          <Button type="button" variant="light" size="sm" onClick={handleAddCategoryLine}>
             Ajouter
-          </button>
-        </div>
-        <ul data-testid="payments-list">
-          {payments.map((p, i) => (
-            <li key={i}>
-              {p.payment_method} : {(p.amount / 100).toFixed(2)} €
-              <button type="button" data-testid={`remove-payment-${i}`} onClick={() => removePayment(i)}>
-                Retirer
-              </button>
-            </li>
-          ))}
-        </ul>
-        <p>Total paiements : {(paymentsTotal / 100).toFixed(2)} €</p>
-      </section>
+          </Button>
+        </Group>
+      </Stack>
+
+      <Stack gap="xs">
+        <Text fw={500}>Paiements</Text>
+        <Group align="flex-end" gap="xs">
+          <Select
+            data-testid="payment-method"
+            value={paymentMethod}
+            onChange={(v) => setPaymentMethod(v ?? 'especes')}
+            data={[
+              { value: 'especes', label: 'Espèces' },
+              { value: 'cheque', label: 'Chèque' },
+              { value: 'cb', label: 'Carte bancaire' },
+            ]}
+            w={140}
+          />
+          <NumberInput
+            decimalScale={2}
+            min={0}
+            value={paymentAmountEur}
+            onChange={(v) => setPaymentAmountEur(String(v ?? ''))}
+            data-testid="payment-amount"
+            placeholder="Montant €"
+            w={120}
+          />
+          <Button type="button" variant="light" size="sm" data-testid="add-payment" onClick={addPayment}>
+            Ajouter
+          </Button>
+        </Group>
+        {payments.length > 0 && (
+          <Table data-testid="payments-list">
+            <Table.Tbody>
+              {payments.map((p, i) => (
+                <Table.Tr key={i}>
+                  <Table.Td>{p.payment_method}</Table.Td>
+                  <Table.Td>{(p.amount / 100).toFixed(2)} €</Table.Td>
+                  <Table.Td>
+                    <Button
+                      type="button"
+                      variant="subtle"
+                      size="xs"
+                      data-testid={`remove-payment-${i}`}
+                      onClick={() => removePayment(i)}
+                    >
+                      Retirer
+                    </Button>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        )}
+        <Text size="sm">Total paiements : {(paymentsTotal / 100).toFixed(2)} €</Text>
+      </Stack>
 
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="sale-note">Note ticket</label>
-          <input
+        <Stack gap="sm">
+          <TextInput
+            label="Note ticket"
             id="sale-note"
-            type="text"
             data-testid="sale-note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
-        </div>
-        <div>
-          <label htmlFor="sale-date">Date réelle (optionnel, YYYY-MM-DD)</label>
-          <input
+          <TextInput
+            label="Date réelle (optionnel, YYYY-MM-DD)"
             id="sale-date"
             type="date"
             data-testid="sale-date"
             value={saleDate}
             onChange={(e) => setSaleDate(e.target.value)}
           />
-        </div>
-        {error && <p data-testid="sale-error">{error}</p>}
-        <button
-          type="submit"
-          disabled={submitting || cart.length === 0 || paymentsTotal !== cartTotal}
-          data-testid="sale-submit"
-        >
-          {submitting ? 'Enregistrement…' : 'Enregistrer le ticket'}
-        </button>
+          {error && (
+            <Alert color="red" data-testid="sale-error">
+              {error}
+            </Alert>
+          )}
+          <Button
+            type="submit"
+            loading={submitting}
+            disabled={submitting || cart.length === 0 || paymentsTotal !== cartTotal}
+            data-testid="sale-submit"
+          >
+            {submitting ? 'Enregistrement…' : 'Enregistrer le ticket'}
+          </Button>
+        </Stack>
       </form>
 
-      <p>
-        <button type="button" onClick={() => navigate('/cash-register/session/close')}>
-          Fermer la session
-        </button>
-      </p>
-    </div>
+      <Button variant="light" onClick={() => navigate('/cash-register/session/close')}>
+        Fermer la session
+      </Button>
+    </Stack>
   );
 }

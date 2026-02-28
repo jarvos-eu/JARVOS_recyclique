@@ -2,7 +2,7 @@
  * Tests AdminHealthPage — Story 8.4.
  * Vitest + RTL + MantineProvider. Mock API et AuthContext.
  */
-import React from 'react';
+import type { ReactElement } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -21,7 +21,7 @@ vi.mock('../api/adminHealthAudit', () => ({
   getAdminHealthScheduler: (...args: unknown[]) => mockGetAdminHealthScheduler(...args),
 }));
 
-function renderWithProviders(ui: React.ReactElement) {
+function renderWithProviders(ui: ReactElement) {
   return render(
     <MantineProvider>
       <MemoryRouter>{ui}</MemoryRouter>

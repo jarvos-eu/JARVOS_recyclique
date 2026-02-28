@@ -1,10 +1,10 @@
 /**
- * Page dashboard caisses — Story 3.4, 3.5, 5.1.
+ * Page dashboard caisses — Story 3.4, 3.5, 5.1, 11.2.
  * Charge GET /v1/cash-registers, GET /v1/cash-registers/status, et pour chaque poste
  * GET /v1/cash-sessions/status/{register_id}. Affiche liste des postes avec occupé/libre (session)
- * et lien vers ouverture de session.
+ * et lien vers ouverture de session. Rendu Mantine aligné 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   getCashRegisters,
@@ -19,6 +19,7 @@ import type {
 } from '../api/caisse';
 import { useAuth } from '../auth/AuthContext';
 import { useCaisse } from './CaisseContext';
+import { Stack, Title, Alert, Loader, Button, Card, Group, Text, Anchor } from '@mantine/core';
 
 type RegisterWithStatus = CashRegisterItem & {
   registerStatus: CashRegisterStatusItem;
@@ -95,40 +96,59 @@ export function CaisseDashboardPage() {
   );
 
   return (
-    <div data-testid="caisse-dashboard-page">
-      <h1>Dashboard caisses</h1>
+    <Stack gap="md" maw={800} mx="auto" p="md" data-testid="caisse-dashboard-page">
+      <Title order={1}>Dashboard caisses</Title>
       {currentSession && (
-        <p data-testid="caisse-current-session">
-          <Link to="/cash-register/session/close">Fermer la session en cours</Link>
-        </p>
+        <Text size="sm" data-testid="caisse-current-session">
+          <Anchor component={Link} to="/cash-register/session/close">
+            Fermer la session en cours
+          </Anchor>
+        </Text>
       )}
-      {loading && <p data-testid="caisse-dashboard-loading">Chargement…</p>}
-      {error && <p data-testid="caisse-dashboard-error">{error}</p>}
+      {loading && (
+        <Loader size="sm" data-testid="caisse-dashboard-loading" />
+      )}
+      {error && (
+        <Alert color="red" data-testid="caisse-dashboard-error">
+          {error}
+        </Alert>
+      )}
       {!loading && !error && (
-        <ul data-testid="caisse-dashboard-list">
+        <Stack gap="sm" data-testid="caisse-dashboard-list">
           {registers.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                data-testid={`caisse-poste-${item.id}`}
-                onClick={() => handleSelectPoste(item)}
-                aria-pressed={currentRegisterId === item.id && item.registerStatus.status === 'started'}
-              >
-                {item.name} — {item.registerStatus.status === 'started' ? 'Démarré' : 'Libre'}
-                {item.sessionStatus?.has_open_session ? ' (session ouverte)' : ''}
-              </button>
-              {item.registerStatus.status === 'started' && !item.sessionStatus?.has_open_session && (
-                <Link
-                  to={`/cash-register/session/open?register_id=${item.id}`}
-                  data-testid={`caisse-open-session-${item.id}`}
-                >
-                  Ouvrir une session
-                </Link>
-              )}
-            </li>
+            <Card key={item.id} withBorder padding="md" radius="md">
+              <Group justify="space-between">
+                <div>
+                  <Text fw={500}>{item.name}</Text>
+                  <Text size="sm" c="dimmed">
+                    {item.registerStatus.status === 'started' ? 'Occupé' : 'Libre'}
+                    {item.sessionStatus?.has_open_session ? ' (session ouverte)' : ''}
+                  </Text>
+                </div>
+                <Group gap="xs">
+                  <Button
+                    variant={currentRegisterId === item.id && item.registerStatus.status === 'started' ? 'filled' : 'light'}
+                    onClick={() => handleSelectPoste(item)}
+                    data-testid={`caisse-poste-${item.id}`}
+                    aria-pressed={currentRegisterId === item.id && item.registerStatus.status === 'started'}
+                  >
+                    {item.name}
+                  </Button>
+                  {item.registerStatus.status === 'started' && !item.sessionStatus?.has_open_session && (
+                    <Button
+                      component={Link}
+                      to={`/cash-register/session/open?register_id=${item.id}`}
+                      data-testid={`caisse-open-session-${item.id}`}
+                    >
+                      Ouvrir une session
+                    </Button>
+                  )}
+                </Group>
+              </Group>
+            </Card>
           ))}
-        </ul>
+        </Stack>
       )}
-    </div>
+    </Stack>
   );
 }

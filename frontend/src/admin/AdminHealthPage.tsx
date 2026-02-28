@@ -1,9 +1,9 @@
 /**
- * Page admin Santé — Story 8.4.
- * Route : /admin/health. GET /v1/admin/health, /health/database, /health/scheduler.
+ * Page admin Santé — Story 8.4, 11.5.
+ * Route : /admin/health. GET /v1/admin/health, /health/database, /health/scheduler. Rendu Mantine 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
-import { Stack, Title, Alert, Loader, Card, Text, Group, Badge, Button } from '@mantine/core';
+import { useCallback, useEffect, useState } from 'react';
+import { Stack, Title, Alert, Loader, Card, Text, Group, Badge, Button, SimpleGrid } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
   getAdminHealth,
@@ -87,37 +87,37 @@ export function AdminHealthPage() {
   return (
     <Stack gap="md" data-testid="admin-health-page">
       <Title order={2}>Santé</Title>
-      <Group gap="md">
-        <Card shadow="sm" padding="md" withBorder>
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
+        <Card withBorder padding="md" radius="md" shadow="sm">
           <Text size="sm" c="dimmed">Global</Text>
           <Badge color={statusColor(health?.status ?? '')} size="lg" data-testid="health-status">
             {health?.status ?? '—'}
           </Badge>
         </Card>
-        <Card shadow="sm" padding="md" withBorder>
+        <Card withBorder padding="md" radius="md" shadow="sm">
           <Text size="sm" c="dimmed">Base de données</Text>
           <Badge color={statusColor(health?.database ?? dbStatus ?? '')} data-testid="health-database">
             {health?.database ?? dbStatus ?? '—'}
           </Badge>
         </Card>
-        <Card shadow="sm" padding="md" withBorder>
+        <Card withBorder padding="md" radius="md" shadow="sm">
           <Text size="sm" c="dimmed">Redis</Text>
           <Badge color={statusColor(health?.redis ?? '')} data-testid="health-redis">
             {health?.redis ?? '—'}
           </Badge>
         </Card>
-        <Card shadow="sm" padding="md" withBorder>
+        <Card withBorder padding="md" radius="md" shadow="sm">
           <Text size="sm" c="dimmed">Scheduler (push worker)</Text>
           <Badge color={statusColor(scheduler?.status ?? '')} data-testid="health-scheduler">
             {scheduler?.status ?? '—'}
           </Badge>
           {scheduler && (
-            <Text size="xs" mt="xs">
+            <Text size="xs" mt="xs" c="dimmed">
               Configuré: {scheduler.configured ? 'oui' : 'non'} — Running: {scheduler.running ? 'oui' : 'non'}
             </Text>
           )}
         </Card>
-      </Group>
+      </SimpleGrid>
       <Group>
         <Button
           loading={testNotifLoading}

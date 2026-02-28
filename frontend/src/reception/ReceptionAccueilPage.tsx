@@ -2,17 +2,18 @@
  * Accueil réception — Story 6.1, 6.3.
  * État du poste (ouvert/fermé), boutons Ouvrir poste, Créer ticket, Fermer poste,
  * liste des tickets du poste courant. KPI live (stats/live), export lignes (période).
- * Alignement Mantine (architecture/checklist v0.1).
+ * Alignement visuel 1.4.4 (Mantine Card, typo, espacements).
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Modal, Stack, Title, Text, Group, List, TextInput, Anchor } from '@mantine/core';
+import { Button, Modal, Stack, Title, Text, Group, TextInput, Anchor, Card, Alert, Loader, Table } from '@mantine/core';
 import {
   getCurrentPoste,
   openPoste,
   closePoste,
   getTickets,
   createTicket,
+  closeTicket,
   getReceptionStatsLive,
   exportLignesCsv,
 } from '../api/reception';
@@ -34,6 +35,7 @@ export function ReceptionAccueilPage() {
   const [exportLignesTo, setExportLignesTo] = useState('');
   const [exportLignesPending, setExportLignesPending] = useState(false);
   const [exportLignesModal, setExportLignesModal] = useState(false);
+  const [closingTicketId, setClosingTicketId] = useState<string | null>(null);
 
   const loadPoste = useCallback(async () => {
     if (!accessToken) return;
@@ -164,62 +166,103 @@ export function ReceptionAccueilPage() {
     }
   }, [accessToken, poste?.id]);
 
+  const handleCloseTicket = useCallback(
+    async (t: TicketDepotItem) => {
+      if (!accessToken || t.status !== 'opened') return;
+      setClosingTicketId(t.id);
+      setError(null);
+      try {
+        await closeTicket(accessToken, t.id);
+        setTickets((prev) => prev.filter((x) => x.id !== t.id));
+        setTotalTickets((n) => Math.max(0, n - 1));
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Erreur fermeture ticket');
+      } finally {
+        setClosingTicketId(null);
+      }
+    },
+    [accessToken]
+  );
+
   return (
-    <Stack gap="md" data-testid="reception-accueil-page">
+    <Stack gap="md" maw={900} mx="auto" p="md" data-testid="reception-accueil-page">
       <Title order={1}>Réception</Title>
-      {loading && <Text data-testid="reception-loading">Chargement…</Text>}
-      {error && <Text c="red" data-testid="reception-error">{error}</Text>}
+      {loading && <Loader size="sm" data-testid="reception-loading" />}
+      {error && (
+        <Alert color="red" data-testid="reception-error">
+          {error}
+        </Alert>
+      )}
 
-      <Group data-testid="reception-kpi-banner" align="flex-start" gap="lg">
-        {statsLoading && <Text size="sm" c="dimmed">Chargement des indicateurs…</Text>}
+      <Card withBorder padding="md" radius="md" data-testid="reception-kpi-banner">
+        <Title order={2} size="h3" mb="xs">
+          Indicateurs
+        </Title>
+        {statsLoading && (
+          <Text size="sm" c="dimmed">
+            Chargement des indicateurs…
+          </Text>
+        )}
         {!statsLoading && stats && (
-          <>
-            <Text size="sm"><strong>Tickets aujourd&apos;hui :</strong> {stats.tickets_today}</Text>
-            <Text size="sm"><strong>Poids total (kg) :</strong> {stats.total_weight_kg}</Text>
-            <Text size="sm"><strong>Lignes :</strong> {stats.lines_count}</Text>
-          </>
+          <Group gap="lg">
+            <Text size="sm">
+              <strong>Tickets aujourd&apos;hui :</strong> {stats.tickets_today}
+            </Text>
+            <Text size="sm">
+              <strong>Poids total (kg) :</strong> {stats.total_weight_kg}
+            </Text>
+            <Text size="sm">
+              <strong>Lignes :</strong> {stats.lines_count}
+            </Text>
+          </Group>
         )}
-      </Group>
+      </Card>
 
-      {!loading && !poste && !error && (
-        <Text data-testid="reception-poste-status">Aucun poste ouvert</Text>
-      )}
-      {!loading && poste && (
-        <Text data-testid="reception-poste-status">
-          Poste ouvert le {new Date(poste.opened_at).toLocaleString()} (statut : {poste.status})
-        </Text>
-      )}
-
-      <Group>
-        {!poste ? (
-          <Button
-            data-testid="reception-open-poste-btn"
-            onClick={() => setOpenModal(true)}
-            loading={loading}
-          >
-            Ouvrir poste
-          </Button>
-        ) : (
-          <>
+      <Card withBorder padding="md" radius="md">
+        <Title order={2} size="h3" mb="xs">
+          Poste courant
+        </Title>
+        {!loading && !poste && !error && (
+          <Text data-testid="reception-poste-status" c="dimmed">
+            Aucun poste ouvert
+          </Text>
+        )}
+        {!loading && poste && (
+          <Text data-testid="reception-poste-status" size="sm" mb="md">
+            Poste ouvert le {new Date(poste.opened_at).toLocaleString()} (statut : {poste.status})
+          </Text>
+        )}
+        <Group>
+          {!poste ? (
             <Button
-              data-testid="reception-create-ticket-btn"
-              onClick={handleCreateTicket}
+              data-testid="reception-open-poste-btn"
+              onClick={() => setOpenModal(true)}
               loading={loading}
             >
-              Créer ticket
+              Ouvrir poste
             </Button>
-            <Button
-              variant="light"
-              color="red"
-              data-testid="reception-close-poste-btn"
-              onClick={handleClosePoste}
-              loading={loading}
-            >
-              Fermer poste
-            </Button>
-          </>
-        )}
-      </Group>
+          ) : (
+            <>
+              <Button
+                data-testid="reception-create-ticket-btn"
+                onClick={handleCreateTicket}
+                loading={loading}
+              >
+                Créer ticket
+              </Button>
+              <Button
+                variant="light"
+                color="red"
+                data-testid="reception-close-poste-btn"
+                onClick={handleClosePoste}
+                loading={loading}
+              >
+                Fermer poste
+              </Button>
+            </>
+          )}
+        </Group>
+      </Card>
 
       <Button
         variant="light"
@@ -294,22 +337,65 @@ export function ReceptionAccueilPage() {
       </Modal>
 
       {poste && (
-        <Stack gap="xs" data-testid="reception-tickets-section">
-          <Title order={2}>Tickets du poste ({totalTickets})</Title>
-          <List listStyleType="none" data-testid="reception-tickets-list">
-            {tickets.map((t) => (
-              <List.Item key={t.id}>
-                <Anchor
-                  component={Link}
-                  to={`/reception/tickets/${t.id}`}
-                  data-testid={`reception-ticket-${t.id}`}
-                >
-                  Ticket {t.id.slice(0, 8)}… — {t.status} — {new Date(t.created_at).toLocaleString()}
-                </Anchor>
-              </List.Item>
-            ))}
-          </List>
-        </Stack>
+        <Card withBorder padding="md" radius="md" data-testid="reception-tickets-section">
+          <Title order={2} size="h3" mb="sm">
+            Tickets du poste ({totalTickets})
+          </Title>
+          <Table data-testid="reception-tickets-list">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>ID</Table.Th>
+                <Table.Th>Date</Table.Th>
+                <Table.Th>Statut</Table.Th>
+                <Table.Th>Lignes</Table.Th>
+                <Table.Th>Actions</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {tickets.map((t) => (
+                <Table.Tr key={t.id} data-testid={`reception-ticket-row-${t.id}`}>
+                  <Table.Td>
+                    <Anchor
+                      component={Link}
+                      to={`/reception/tickets/${t.id}`}
+                      size="sm"
+                      data-testid={`reception-ticket-${t.id}`}
+                    >
+                      {t.id.slice(0, 8)}…
+                    </Anchor>
+                  </Table.Td>
+                  <Table.Td>{new Date(t.created_at).toLocaleString()}</Table.Td>
+                  <Table.Td>{t.status}</Table.Td>
+                  <Table.Td>{t.lignes?.length ?? '—'}</Table.Td>
+                  <Table.Td>
+                    <Group gap="xs">
+                      <Button
+                        component={Link}
+                        to={`/reception/tickets/${t.id}`}
+                        variant="light"
+                        size="compact-xs"
+                      >
+                        Détail
+                      </Button>
+                      {t.status === 'opened' && (
+                        <Button
+                          variant="light"
+                          color="red"
+                          size="compact-xs"
+                          loading={closingTicketId === t.id}
+                          onClick={() => handleCloseTicket(t)}
+                          data-testid={`reception-close-ticket-${t.id}`}
+                        >
+                          Fermer
+                        </Button>
+                      )}
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </Card>
       )}
     </Stack>
   );

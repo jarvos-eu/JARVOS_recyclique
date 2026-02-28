@@ -1,9 +1,10 @@
 /**
- * Page ouverture de session de caisse — Story 5.1.
+ * Page ouverture de session de caisse — Story 5.1, 11.2.
  * GET /v1/cash-registers, pour différée GET /v1/cash-sessions/deferred/check,
  * POST /v1/cash-sessions avec initial_amount, register_id, optionnel opened_at.
+ * Rendu Mantine aligné 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   getCashRegisters,
@@ -12,6 +13,7 @@ import {
 } from '../api/caisse';
 import type { CashRegisterItem } from '../api/caisse';
 import { useAuth } from '../auth/AuthContext';
+import { Stack, Title, TextInput, Select, Button, Alert } from '@mantine/core';
 
 export function CashRegisterSessionOpenPage() {
   const { accessToken } = useAuth();
@@ -111,86 +113,83 @@ export function CashRegisterSessionOpenPage() {
 
   if (loading) {
     return (
-      <div data-testid="page-session-open">
+      <Stack gap="md" p="md" data-testid="page-session-open">
+        <Title order={1}>Ouverture de session</Title>
         <p>Chargement…</p>
-      </div>
+      </Stack>
     );
   }
 
   return (
-    <div data-testid="page-session-open">
-      <h1>Ouverture de session</h1>
+    <Stack gap="md" maw={500} mx="auto" p="md" data-testid="page-session-open">
+      <Title order={1}>Ouverture de session</Title>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="session-type">Type</label>
-          <select
+        <Stack gap="sm">
+          <Select
+            label="Type"
             id="session-type"
             data-testid="session-open-type"
             value={sessionType}
-            onChange={(e) =>
-              setSessionType(e.target.value as 'real' | 'virtual' | 'deferred')
-            }
-          >
-            <option value="real">Réelle</option>
-            <option value="virtual">Virtuelle</option>
-            <option value="deferred">Différée</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="register">Poste</label>
-          <select
+            onChange={(v) => setSessionType((v as 'real' | 'virtual' | 'deferred') ?? 'real')}
+            data={[
+              { value: 'real', label: 'Réelle' },
+              { value: 'virtual', label: 'Virtuelle' },
+              { value: 'deferred', label: 'Différée' },
+            ]}
+          />
+          <Select
+            label="Poste"
             id="register"
             data-testid="session-open-register"
             value={registerId}
-            onChange={(e) => setRegisterId(e.target.value)}
+            onChange={(v) => setRegisterId(v ?? '')}
+            data={[
+              { value: '', label: '— Choisir —' },
+              ...registers.map((r) => ({ value: r.id, label: r.name })),
+            ]}
             required
-          >
-            <option value="">— Choisir —</option>
-            {registers.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="initial-amount">Fond de caisse (€)</label>
-          <input
+          />
+          <TextInput
+            label="Fond de caisse (€)"
             id="initial-amount"
             type="number"
-            step="0.01"
-            min="0"
+            min={0}
+            step={0.01}
             data-testid="session-open-initial-amount"
             value={initialAmountEur}
             onChange={(e) => setInitialAmountEur(e.target.value)}
             required
           />
-        </div>
-        {sessionType === 'deferred' && (
-          <>
-            <div>
-              <label htmlFor="deferred-date">Date réelle (YYYY-MM-DD)</label>
-              <input
+          {sessionType === 'deferred' && (
+            <>
+              <TextInput
+                label="Date réelle (YYYY-MM-DD)"
                 id="deferred-date"
                 type="date"
                 data-testid="session-open-deferred-date"
                 value={deferredDate}
                 onChange={(e) => setDeferredDate(e.target.value)}
               />
-            </div>
-            <button type="button" onClick={checkDeferred} data-testid="session-open-deferred-check">
-              Vérifier doublon
-            </button>
-            {deferredCheckMessage && (
-              <p data-testid="session-open-deferred-message">{deferredCheckMessage}</p>
-            )}
-          </>
-        )}
-        {error && <p data-testid="session-open-error">{error}</p>}
-        <button type="submit" disabled={submitting} data-testid="session-open-submit">
-          {submitting ? 'Ouverture…' : 'Ouvrir la session'}
-        </button>
+              <Button type="button" variant="light" onClick={checkDeferred} data-testid="session-open-deferred-check">
+                Vérifier doublon
+              </Button>
+              {deferredCheckMessage && (
+                <Alert data-testid="session-open-deferred-message" color={deferredCheckMessage.includes('existe déjà') ? 'red' : 'blue'}>
+                  {deferredCheckMessage}
+                </Alert>
+              )}
+            </>
+          )}
+          {error && (
+            <Alert color="red" data-testid="session-open-error">
+              {error}
+            </Alert>
+          )}
+          <Button type="submit" loading={submitting} disabled={submitting} data-testid="session-open-submit">
+            {submitting ? 'Ouverture…' : 'Ouvrir la session'}
+          </Button>
+        </Stack>
       </form>
-    </div>
+    </Stack>
   );
 }

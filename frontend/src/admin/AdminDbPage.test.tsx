@@ -2,7 +2,7 @@
  * Tests AdminDbPage — Story 8.5.
  * Vitest + RTL + MantineProvider. Mock API et AuthContext.
  */
-import React from 'react';
+import type { ReactElement } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -21,7 +21,7 @@ vi.mock('../api/adminDb', () => ({
   postAdminDbImport: (...args: unknown[]) => mockPostAdminDbImport(...args),
 }));
 
-function renderWithProviders(ui: React.ReactElement) {
+function renderWithProviders(ui: ReactElement) {
   return render(
     <MantineProvider>
       <MemoryRouter>{ui}</MemoryRouter>

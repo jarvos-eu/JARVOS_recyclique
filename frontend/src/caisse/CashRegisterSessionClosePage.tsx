@@ -1,13 +1,15 @@
 /**
- * Page fermeture de session de caisse — Story 5.1, 5.3.
+ * Page fermeture de session de caisse — Story 5.1, 5.3, 11.2.
  * GET /v1/cash-sessions/current (totaux total_sales, total_items), formulaire closing_amount,
  * actual_amount, variance_comment, POST /v1/cash-sessions/{id}/close, redirection dashboard.
+ * Rendu Mantine aligné 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentCashSession, closeCashSession } from '../api/caisse';
 import type { CashSessionItem } from '../api/caisse';
 import { useAuth } from '../auth/AuthContext';
+import { Stack, Title, Text, TextInput, Button, Alert, Loader } from '@mantine/core';
 
 export function CashRegisterSessionClosePage() {
   const { accessToken } = useAuth();
@@ -68,71 +70,74 @@ export function CashRegisterSessionClosePage() {
 
   if (loading) {
     return (
-      <div data-testid="cash-register-session-close-page">
+      <Stack gap="md" p="md" data-testid="cash-register-session-close-page">
+        <Title order={1}>Fermeture de session</Title>
+        <Loader size="sm" />
         <p>Chargement…</p>
-      </div>
+      </Stack>
     );
   }
 
   if (!session) {
     return (
-      <div data-testid="cash-register-session-close-page">
-        <p>Aucune session en cours.</p>
-        <button type="button" onClick={() => navigate('/caisse')}>
+      <Stack gap="md" p="md" data-testid="cash-register-session-close-page">
+        <Title order={1}>Fermeture de session</Title>
+        <Text>Aucune session en cours.</Text>
+        <Button variant="light" onClick={() => navigate('/caisse')}>
           Retour dashboard
-        </button>
-      </div>
+        </Button>
+      </Stack>
     );
   }
 
   return (
-    <div data-testid="cash-register-session-close-page">
-      <h1>Fermeture de session</h1>
-      <p>Session ouverte le {new Date(session.opened_at).toLocaleString()}</p>
-      <p>Fond de caisse : {(session.initial_amount / 100).toFixed(2)} €</p>
+    <Stack gap="md" maw={500} mx="auto" p="md" data-testid="cash-register-session-close-page">
+      <Title order={1}>Fermeture de session</Title>
+      <Text size="sm">Session ouverte le {new Date(session.opened_at).toLocaleString()}</Text>
+      <Text size="sm">Fond de caisse : {(session.initial_amount / 100).toFixed(2)} €</Text>
       {(session.total_sales != null || session.total_items != null) && (
-        <p data-testid="session-close-totals">
+        <Text size="sm" data-testid="session-close-totals">
           Total ventes : {(session.total_sales ?? 0) / 100} € — Nombre de lignes : {session.total_items ?? 0}
-        </p>
+        </Text>
       )}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="closing-amount">Montant de clôture (€)</label>
-          <input
+        <Stack gap="sm">
+          <TextInput
+            label="Montant de clôture (€)"
             id="closing-amount"
             type="number"
-            step="0.01"
+            step={0.01}
             data-testid="session-close-closing-amount"
             value={closingAmount}
             onChange={(e) => setClosingAmount(e.target.value)}
           />
-        </div>
-        <div>
-          <label htmlFor="actual-amount">Montant compté (€)</label>
-          <input
+          <TextInput
+            label="Montant compté (€)"
             id="actual-amount"
             type="number"
-            step="0.01"
+            step={0.01}
             data-testid="session-close-actual-amount"
             value={actualAmount}
             onChange={(e) => setActualAmount(e.target.value)}
           />
-        </div>
-        <div>
-          <label htmlFor="variance-comment">Commentaire écart</label>
-          <input
+          <TextInput
+            label="Commentaire écart"
             id="variance-comment"
             type="text"
             data-testid="session-close-variance-comment"
             value={varianceComment}
             onChange={(e) => setVarianceComment(e.target.value)}
           />
-        </div>
-        {error && <p data-testid="session-close-error">{error}</p>}
-        <button type="submit" disabled={submitting} data-testid="session-close-submit">
-          {submitting ? 'Fermeture…' : 'Fermer la session'}
-        </button>
+          {error && (
+            <Alert color="red" data-testid="session-close-error">
+              {error}
+            </Alert>
+          )}
+          <Button type="submit" loading={submitting} disabled={submitting} data-testid="session-close-submit">
+            {submitting ? 'Fermeture…' : 'Fermer la session'}
+          </Button>
+        </Stack>
       </form>
-    </div>
+    </Stack>
   );
 }

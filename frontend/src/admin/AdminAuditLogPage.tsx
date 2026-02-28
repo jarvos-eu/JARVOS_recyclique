@@ -1,8 +1,8 @@
 /**
- * Page admin Audit log — Story 8.4.
- * Route : /admin/audit-log. GET /v1/admin/audit-log avec pagination et filtres.
+ * Page admin Audit log — Story 8.4, 11.5.
+ * Route : /admin/audit-log. GET /v1/admin/audit-log avec pagination et filtres. Rendu Mantine 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Stack,
   Title,
@@ -12,6 +12,8 @@ import {
   Group,
   Button,
   TextInput,
+  Card,
+  Text,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -67,38 +69,39 @@ export function AdminAuditLogPage() {
   return (
     <Stack gap="md" data-testid="admin-audit-log-page">
       <Title order={2}>Audit log</Title>
-      <Group gap="sm">
-        <TextInput
-          placeholder="Date début"
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          data-testid="filter-date-from"
-        />
-        <TextInput
-          placeholder="Date fin"
-          type="date"
-          value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-          data-testid="filter-date-to"
-        />
-        <TextInput
-          placeholder="Type (action)"
-          value={eventType ?? ''}
-          onChange={(e) => setEventType(e.target.value || null)}
-          data-testid="filter-event-type"
-        />
-        <Button variant="subtle" onClick={() => { setDateFrom(''); setDateTo(''); setEventType(null); setPage(1); }}>
-          Réinitialiser
-        </Button>
-        <Button variant="light" onClick={() => load()}>Rafraîchir</Button>
-      </Group>
-      {error && <Alert color="red">{error}</Alert>}
-      {loading ? (
-        <Loader size="sm" data-testid="admin-audit-log-loading" />
-      ) : (
-        <>
-          <Table striped highlightOnHover data-testid="admin-audit-log-table">
+      <Card withBorder padding="md" radius="md">
+        <Group gap="sm" mb="md">
+          <TextInput
+            placeholder="Date début"
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            data-testid="filter-date-from"
+          />
+          <TextInput
+            placeholder="Date fin"
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            data-testid="filter-date-to"
+          />
+          <TextInput
+            placeholder="Type (action)"
+            value={eventType ?? ''}
+            onChange={(e) => setEventType(e.target.value || null)}
+            data-testid="filter-event-type"
+          />
+          <Button variant="subtle" onClick={() => { setDateFrom(''); setDateTo(''); setEventType(null); setPage(1); }}>
+            Réinitialiser
+          </Button>
+          <Button variant="light" onClick={() => load()}>Rafraîchir</Button>
+        </Group>
+        {error && <Alert color="red">{error}</Alert>}
+        {loading ? (
+          <Loader size="sm" data-testid="admin-audit-log-loading" />
+        ) : (
+          <>
+            <Table striped highlightOnHover data-testid="admin-audit-log-table">
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Date</Table.Th>
@@ -121,10 +124,10 @@ export function AdminAuditLogPage() {
             </Table.Tbody>
           </Table>
           {data && data.items.length === 0 && (
-            <p data-testid="admin-audit-log-empty">Aucun événement.</p>
+            <Text size="sm" c="dimmed" data-testid="admin-audit-log-empty">Aucun événement.</Text>
           )}
           {data && data.total > PAGE_SIZE && (
-            <Group gap="sm" data-testid="admin-audit-log-pagination">
+            <Group gap="sm" data-testid="admin-audit-log-pagination" mt="md">
               <Button
                 variant="subtle"
                 size="sm"
@@ -133,7 +136,7 @@ export function AdminAuditLogPage() {
               >
                 Précédent
               </Button>
-              <span>Page {page} / {Math.ceil(data.total / PAGE_SIZE) || 1} ({data.total} au total)</span>
+              <Text size="sm">Page {page} / {Math.ceil(data.total / PAGE_SIZE) || 1} ({data.total} au total)</Text>
               <Button
                 variant="subtle"
                 size="sm"
@@ -146,6 +149,7 @@ export function AdminAuditLogPage() {
           )}
         </>
       )}
+      </Card>
     </Stack>
   );
 }

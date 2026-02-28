@@ -1,9 +1,10 @@
 /**
- * Tests accueil réception — Story 6.1.
+ * Tests accueil réception — Story 6.1, 11.3.
  * Vitest + React Testing Library + jsdom.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { ReceptionAccueilPage } from './ReceptionAccueilPage';
@@ -29,6 +30,7 @@ describe('ReceptionAccueilPage', () => {
     vi.spyOn(receptionApi, 'getCurrentPoste');
     vi.spyOn(receptionApi, 'getTickets');
     vi.spyOn(receptionApi, 'getReceptionStatsLive');
+    vi.spyOn(receptionApi, 'closeTicket');
   });
 
   it('affiche le titre Réception et le bouton Ouvrir poste quand aucun poste', async () => {
@@ -84,5 +86,46 @@ describe('ReceptionAccueilPage', () => {
     renderReceptionAccueil();
     expect(await screen.findByTestId('reception-create-ticket-btn')).toBeInTheDocument();
     expect(screen.getByTestId('reception-close-poste-btn')).toBeInTheDocument();
+  });
+
+  it('clic Fermer sur un ticket ouvert appelle closeTicket et retire le ticket de la liste', async () => {
+    const ticketOpened = {
+      id: 'ticket-1',
+      poste_id: 'poste-1',
+      benevole_user_id: 'user-1',
+      created_at: '2026-02-27T12:00:00Z',
+      closed_at: null,
+      status: 'opened',
+      updated_at: '2026-02-27T12:00:00Z',
+    };
+    (receptionApi.getCurrentPoste as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: 'poste-1',
+      opened_by_user_id: 'user-1',
+      opened_at: '2026-02-27T10:00:00Z',
+      closed_at: null,
+      status: 'opened',
+      created_at: '2026-02-27T10:00:00Z',
+      updated_at: '2026-02-27T10:00:00Z',
+    });
+    (receptionApi.getTickets as ReturnType<typeof vi.fn>).mockResolvedValue({
+      items: [ticketOpened],
+      total: 1,
+      page: 1,
+      page_size: 20,
+    });
+    (receptionApi.getReceptionStatsLive as ReturnType<typeof vi.fn>).mockResolvedValue({
+      tickets_today: 1,
+      total_weight_kg: 0,
+      lines_count: 0,
+    });
+    (receptionApi.closeTicket as ReturnType<typeof vi.fn>).mockResolvedValue({ ...ticketOpened, status: 'closed' });
+    const user = userEvent.setup();
+    renderReceptionAccueil();
+    await screen.findByTestId('reception-tickets-section');
+    const closeBtn = screen.getByTestId('reception-close-ticket-ticket-1');
+    await user.click(closeBtn);
+    await waitFor(() => {
+      expect(receptionApi.closeTicket as ReturnType<typeof vi.fn>).toHaveBeenCalledWith('fake-token', 'ticket-1');
+    });
   });
 });

@@ -170,6 +170,26 @@ export async function getTicket(
   return res.json() as Promise<TicketDepotItem>;
 }
 
+/**
+ * POST /v1/reception/tickets/{ticket_id}/close — fermer un ticket (Story 6.1, 6.3).
+ */
+export async function closeTicket(
+  accessToken: string,
+  ticketId: string
+): Promise<TicketDepotItem> {
+  const url = `${getBase()}/v1/reception/tickets/${ticketId}/close`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: getAuthHeaders(accessToken),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const msg = typeof data?.detail === 'string' ? data.detail : `Erreur ${res.status}`;
+    throw new Error(msg);
+  }
+  return res.json() as Promise<TicketDepotItem>;
+}
+
 // ----- Lignes (Story 6.2) -----
 
 export async function getLignes(

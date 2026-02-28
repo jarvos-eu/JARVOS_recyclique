@@ -1,9 +1,9 @@
 /**
- * Page admin Logs email — Story 8.4.
- * Route : /admin/email-logs. GET /v1/admin/email-logs (stub v1, lecture seule).
+ * Page admin Logs email — Story 8.4, 11.5.
+ * Route : /admin/email-logs. GET /v1/admin/email-logs. Rendu Mantine 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
-import { Stack, Title, Alert, Loader, Table, Text } from '@mantine/core';
+import { useCallback, useEffect, useState } from 'react';
+import { Stack, Title, Alert, Loader, Table, Text, Card } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import { getAdminEmailLogs, type EmailLogItem } from '../api/adminHealthAudit';
 
@@ -12,7 +12,7 @@ const PAGE_SIZE = 20;
 export function AdminEmailLogsPage() {
   const { accessToken, permissions } = useAuth();
   const [items, setItems] = useState<EmailLogItem[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, _setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,15 +45,16 @@ export function AdminEmailLogsPage() {
   return (
     <Stack gap="md" data-testid="admin-email-logs-page">
       <Title order={2}>Logs email</Title>
-      <Text size="sm" c="dimmed">
+      <Text size="sm" c="dimmed" mb="xs">
         Consultation des envois email (stub v1 : liste vide si non implémenté).
       </Text>
-      {error && <Alert color="red">{error}</Alert>}
-      {loading ? (
-        <Loader size="sm" data-testid="admin-email-logs-loading" />
-      ) : (
-        <>
-          <Table striped highlightOnHover data-testid="admin-email-logs-table">
+      <Card withBorder padding="md" radius="md">
+        {error && <Alert color="red">{error}</Alert>}
+        {loading ? (
+          <Loader size="sm" data-testid="admin-email-logs-loading" />
+        ) : (
+          <>
+            <Table striped highlightOnHover data-testid="admin-email-logs-table">
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Date</Table.Th>
@@ -72,12 +73,13 @@ export function AdminEmailLogsPage() {
                 </Table.Tr>
               ))}
             </Table.Tbody>
-          </Table>
-          {items.length === 0 && (
-            <p data-testid="admin-email-logs-empty">Aucun log email.</p>
-          )}
-        </>
-      )}
+            </Table>
+            {items.length === 0 && (
+              <Text size="sm" c="dimmed" data-testid="admin-email-logs-empty">Aucun log email.</Text>
+            )}
+          </>
+        )}
+      </Card>
     </Stack>
   );
 }

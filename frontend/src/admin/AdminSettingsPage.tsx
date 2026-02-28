@@ -1,8 +1,8 @@
 /**
- * Page admin Paramètres — Story 8.4.
- * Route : /admin/settings. GET/PUT /v1/admin/settings (stub v1, structure Mantine).
+ * Page admin Paramètres — Story 8.4, 11.5.
+ * Route : /admin/settings. GET/PUT /v1/admin/settings. Rendu Mantine 1.4.4.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Stack,
   Title,
@@ -24,7 +24,7 @@ import {
 
 export function AdminSettingsPage() {
   const { accessToken, permissions } = useAuth();
-  const [settings, setSettings] = useState<SettingsResponse | null>(null);
+  const [_settings, setSettings] = useState<SettingsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -97,7 +97,7 @@ export function AdminSettingsPage() {
   return (
     <Stack gap="md" data-testid="admin-settings-page">
       <Title order={2}>Paramètres</Title>
-      <Text size="sm" c="dimmed">
+      <Text size="sm" c="dimmed" mb="xs">
         Seuils d&apos;alertes, session, email, activité (stub v1 : lecture/écriture minimale).
       </Text>
       {error && <Alert color="red">{error}</Alert>}
@@ -109,7 +109,7 @@ export function AdminSettingsPage() {
           <Tabs.Tab value="email">Email</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="activity">
-          <Card shadow="sm" padding="md" withBorder mt="md">
+          <Card withBorder padding="md" radius="md" mt="md">
             <NumberInput
               label="Seuil d'activité"
               placeholder="Optionnel"
@@ -123,17 +123,17 @@ export function AdminSettingsPage() {
           </Card>
         </Tabs.Panel>
         <Tabs.Panel value="alerts">
-          <Card shadow="sm" padding="md" withBorder mt="md">
+          <Card withBorder padding="md" radius="md" mt="md">
             <Text size="sm" c="dimmed">Seuils d&apos;alertes — à configurer (stub).</Text>
           </Card>
         </Tabs.Panel>
         <Tabs.Panel value="session">
-          <Card shadow="sm" padding="md" withBorder mt="md">
+          <Card withBorder padding="md" radius="md" mt="md">
             <Text size="sm" c="dimmed">Paramètres de session — à configurer (stub).</Text>
           </Card>
         </Tabs.Panel>
         <Tabs.Panel value="email">
-          <Card shadow="sm" padding="md" withBorder mt="md">
+          <Card withBorder padding="md" radius="md" mt="md">
             <Text size="sm" c="dimmed">Paramètres email et test — à configurer (stub).</Text>
             <Button
               mt="md"

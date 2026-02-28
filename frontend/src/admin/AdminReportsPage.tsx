@@ -2,7 +2,7 @@
  * Page admin Rapports caisse — Story 8.2.
  * Routes : /admin/reports, /admin/reports/cash-sessions. Liste rapports par session, téléchargement, export bulk.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Table,
   Button,
@@ -14,6 +14,7 @@ import {
   Modal,
   TextInput,
   Select,
+  Card,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -125,6 +126,7 @@ export function AdminReportsPage() {
       {loading ? (
         <Loader size="sm" data-testid="admin-reports-loading" />
       ) : (
+        <Card withBorder padding="md" radius="md">
         <Table striped highlightOnHover data-testid="admin-reports-table">
           <Table.Thead>
             <Table.Tr>
@@ -154,6 +156,7 @@ export function AdminReportsPage() {
             ))}
           </Table.Tbody>
         </Table>
+        </Card>
       )}
       {!loading && reports.length === 0 && (
         <p data-testid="admin-reports-empty">Aucun rapport (sessions clôturées).</p>

@@ -1,10 +1,10 @@
 /**
- * Contexte auth minimal — Story 3.3, 3.5.
- * Expose setFromPinLogin pour le déverrouillage PIN et accessToken pour les appels API (ex. getCashRegistersStatus).
- * À étendre (login classique, refresh) dans les stories auth dédiées.
+ * Contexte auth minimal — Story 3.3, 3.5, 11.1.
+ * Expose setFromPinLogin, login, logout et accessToken pour les appels API.
  */
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import type { UserInToken } from '../api/auth';
+import { postLogin, postLogout } from '../api/auth';
 
 export interface AuthState {
   user: UserInToken | null;
@@ -16,6 +16,8 @@ export interface AuthState {
 interface AuthContextValue extends AuthState {
   setFromPinLogin: (user: UserInToken, accessToken: string, refreshToken: string, permissions?: string[]) => void;
   setTokens: (accessToken: string | null, refreshToken: string | null) => void;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -39,12 +41,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState((s) => ({ ...s, accessToken, refreshToken }));
   }, []);
 
+  const login = useCallback(async (username: string, password: string) => {
+    const data = await postLogin(username, password);
+    setState({
+      user: data.user,
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      permissions: data.permissions ?? [],
+    });
+  }, []);
+
+  const logout = useCallback(async () => {
+    if (state.refreshToken) {
+      try {
+        await postLogout(state.refreshToken);
+      } catch {
+        // ignore
+      }
+    }
+    setState({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      permissions: [],
+    });
+  }, [state.refreshToken]);
+
   return (
     <AuthContext.Provider
       value={{
         ...state,
         setFromPinLogin,
         setTokens,
+        login,
+        logout,
       }}
     >
       {children}

@@ -1,10 +1,10 @@
 /**
- * Tests Story 5.4 — flux hors ligne et synchronisation.
- * Vitest + React Testing Library ; flux buffer → envoi.
+ * Tests Story 5.4, 11.2 — flux hors ligne et synchronisation (Vitest + RTL + MantineProvider).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { MantineProvider } from '@mantine/core';
 import { CashRegisterSalePage } from './CashRegisterSalePage';
 import * as caisseApi from '../api/caisse';
 import * as offlineQueue from './offlineQueue';
@@ -99,9 +99,11 @@ beforeEach(() => {
 
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <CashRegisterSalePage />
-    </MemoryRouter>
+    <MantineProvider>
+      <MemoryRouter>
+        <CashRegisterSalePage />
+      </MemoryRouter>
+    </MantineProvider>
   );
 }
 

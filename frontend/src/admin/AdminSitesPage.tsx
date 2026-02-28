@@ -2,7 +2,7 @@
  * Page admin Sites — Story 8.2.
  * Route : /admin/sites. Liste + CRUD sites (GET/POST/PATCH/DELETE /v1/sites).
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Table,
   Button,
@@ -14,6 +14,7 @@ import {
   Modal,
   TextInput,
   Checkbox,
+  Card,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -122,6 +123,7 @@ export function AdminSitesPage() {
       {loading ? (
         <Loader size="sm" data-testid="admin-sites-loading" />
       ) : (
+        <Card withBorder padding="md" radius="md">
         <Table striped highlightOnHover data-testid="admin-sites-table">
           <Table.Thead>
             <Table.Tr>
@@ -149,6 +151,7 @@ export function AdminSitesPage() {
             ))}
           </Table.Tbody>
         </Table>
+        </Card>
       )}
       {!loading && sites.length === 0 && (
         <p data-testid="admin-sites-empty">Aucun site.</p>

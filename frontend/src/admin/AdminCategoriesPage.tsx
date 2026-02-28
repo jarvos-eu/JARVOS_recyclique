@@ -2,7 +2,7 @@
  * Page admin Catégories — Story 8.3.
  * Route : /admin/categories. Liste/hiérarchie, breadcrumb, Import/Export, hard delete, restauration.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Stack,
   Group,
@@ -16,6 +16,7 @@ import {
   Modal,
   Text,
   Checkbox,
+  Card,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -30,7 +31,6 @@ import {
   getCategoryHasUsage,
   type CategoryHierarchyNode,
   type CategoryImportAnalyzeResponse,
-  type CategoryImportAnalyzeRow,
 } from '../api/categories';
 
 export function AdminCategoriesPage() {
@@ -217,6 +217,7 @@ export function AdminCategoriesPage() {
       {error && <Alert color="red">{error}</Alert>}
       {actionError && <Alert color="orange">{actionError}</Alert>}
 
+      <Card withBorder padding="md" radius="md">
       {loading ? (
         <Loader size="sm" data-testid="admin-categories-loading" />
       ) : (
@@ -266,6 +267,7 @@ export function AdminCategoriesPage() {
       {flatList.length === 0 && !loading && (
         <Text data-testid="admin-categories-empty">Aucune catégorie.</Text>
       )}
+      </Card>
 
       <Modal
         opened={importModalOpen}

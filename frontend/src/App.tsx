@@ -3,7 +3,6 @@
  * Structure minimale pour AC1/AC2 : BrowserRouter, CashRegisterGuard, AppNav, Routes.
  * Routes /admin/users protégées par AdminGuard (permission admin).
  */
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CashRegisterGuard, AppNav, CaisseDashboardPage, CAISSE_PIN_PATH } from './caisse';
 import { CashRegisterPinPage } from './caisse/CashRegisterPinPage';
@@ -32,8 +31,16 @@ import { AdminEmailLogsPage } from './admin/AdminEmailLogsPage';
 import { AdminSettingsPage } from './admin/AdminSettingsPage';
 import { AdminDbPage } from './admin/AdminDbPage';
 import { AdminImportLegacyPage } from './admin/AdminImportLegacyPage';
+import { AdminGroupsPage } from './admin/AdminGroupsPage';
+import { AdminPermissionsPage } from './admin/AdminPermissionsPage';
+import { AdminQuickAnalysisPage } from './admin/AdminQuickAnalysisPage';
 import { VieAssociativeGuard } from './admin/VieAssociativeGuard';
 import { AdminVieAssociativePage } from './admin/AdminVieAssociativePage';
+import { LoginPage } from './auth/LoginPage';
+import { SignupPage } from './auth/SignupPage';
+import { ForgotPasswordPage } from './auth/ForgotPasswordPage';
+import { ResetPasswordPage } from './auth/ResetPasswordPage';
+import { ProfilPage } from './auth/ProfilPage';
 
 export function App() {
   return (
@@ -45,7 +52,14 @@ export function App() {
           </aside>
           <main style={{ flex: 1, padding: '1rem' }}>
             <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/inscription" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/caisse" element={<CaisseDashboardPage />} />
+              <Route path="/cash-register/virtual" element={<CaisseDashboardPage />} />
+              <Route path="/cash-register/deferred" element={<CaisseDashboardPage />} />
               <Route path="/cash-register/session/open" element={<CashRegisterSessionOpenPage />} />
               <Route path="/cash-register/sale" element={<CashRegisterSalePage />} />
               <Route path="/cash-register/session/close" element={<CashRegisterSessionClosePage />} />
@@ -133,7 +147,7 @@ export function App() {
               />
               <Route path="/reception" element={<ReceptionAccueilPage />} />
               <Route path="/reception/tickets/:ticketId" element={<ReceptionTicketDetailPage />} />
-              <Route path="/profil" element={<PlaceholderPage title="Profil" testId="page-profil" />} />
+              <Route path="/profil" element={<ProfilPage />} />
               <Route
                 path="/admin/categories"
                 element={
@@ -203,6 +217,30 @@ export function App() {
                 element={
                   <AdminGuard>
                     <AdminImportLegacyPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/groups"
+                element={
+                  <AdminGuard>
+                    <AdminGroupsPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/permissions"
+                element={
+                  <AdminGuard>
+                    <AdminPermissionsPage />
+                  </AdminGuard>
+                }
+              />
+              <Route
+                path="/admin/quick-analysis"
+                element={
+                  <AdminGuard>
+                    <AdminQuickAnalysisPage />
                   </AdminGuard>
                 }
               />

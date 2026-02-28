@@ -2,7 +2,7 @@
  * Page admin Postes de caisse — Story 8.2.
  * Route : /admin/cash-registers. Liste + CRUD postes (GET/POST/PATCH/DELETE /v1/cash-registers, GET /v1/sites).
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Table,
   Button,
@@ -15,6 +15,7 @@ import {
   TextInput,
   Select,
   Checkbox,
+  Card,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -158,6 +159,7 @@ export function AdminCashRegistersPage() {
       {loading ? (
         <Loader size="sm" data-testid="admin-registers-loading" />
       ) : (
+        <Card withBorder padding="md" radius="md">
         <Table striped highlightOnHover data-testid="admin-registers-table">
           <Table.Thead>
             <Table.Tr>
@@ -193,6 +195,7 @@ export function AdminCashRegistersPage() {
             ))}
           </Table.Tbody>
         </Table>
+        </Card>
       )}
       {!loading && registers.length === 0 && (
         <p data-testid="admin-registers-empty">Aucun poste de caisse.</p>

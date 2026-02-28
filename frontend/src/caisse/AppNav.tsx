@@ -38,9 +38,12 @@ const FULL_NAV_ITEMS: NavItem[] = [
   { to: '/admin/settings', label: 'Paramètres', permissionCode: 'admin' },
   { to: '/admin/db', label: 'BDD (export, purge, import)', permissionCode: 'admin' },
   { to: '/admin/import/legacy', label: 'Import legacy', permissionCode: 'admin' },
+  { to: '/admin/groups', label: 'Groupes', permissionCode: 'admin' },
+  { to: '/admin/permissions', label: 'Permissions', permissionCode: 'admin' },
   { to: '/reception', label: 'Réception', permissionCode: 'reception.access' },
   { to: '/profil', label: 'Profil' },
   { to: '/admin/categories', label: 'Catégories', permissionCode: 'admin' },
+  { to: '/admin/quick-analysis', label: 'Analyse rapide', permissionCode: 'admin' },
   { to: '/admin/vie-associative', label: 'Vie associative', permissionCodes: ['admin', 'vie_asso.access'] },
 ];
 

@@ -1,9 +1,8 @@
 /**
- * Détail ticket réception + lignes de dépôt — Story 6.1, 6.2.
- * GET ticket (avec lignes), GET categories/entry-tickets. Ajout / modification / suppression lignes.
- * Alignement Mantine, accessibilité NFR-A1 (labels, contraste, clavier).
+ * Détail ticket réception + lignes de dépôt — Story 6.1, 6.2, 11.3.
+ * Alignement visuel 1.4.4 (Mantine Card, typo, espacements). Accessibilité NFR-A1.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   Stack,
@@ -18,6 +17,9 @@ import {
   Checkbox,
   Group,
   Modal,
+  Card,
+  Alert,
+  Loader,
 } from '@mantine/core';
 import {
   getTicket,
@@ -27,6 +29,7 @@ import {
   updateLigneWeight,
   deleteLigne,
   exportTicketCsv,
+  closeTicket,
 } from '../api/reception';
 import type {
   TicketDepotItem,
@@ -68,6 +71,7 @@ export function ReceptionTicketDetailPage() {
   const [weightLigne, setWeightLigne] = useState<LigneDepotItem | null>(null);
   const [editWeightValue, setEditWeightValue] = useState<number | ''>('');
   const [exportCsvPending, setExportCsvPending] = useState(false);
+  const [closeTicketPending, setCloseTicketPending] = useState(false);
 
   const load = useCallback(async () => {
     if (!accessToken || !ticketId) return;
@@ -191,41 +195,74 @@ export function ReceptionTicketDetailPage() {
     }
   }, [accessToken, ticketId]);
 
+  const handleCloseTicket = useCallback(async () => {
+    if (!accessToken || !ticketId) return;
+    setCloseTicketPending(true);
+    setError(null);
+    try {
+      const updated = await closeTicket(accessToken, ticketId);
+      setTicket(updated);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erreur fermeture ticket');
+    } finally {
+      setCloseTicketPending(false);
+    }
+  }, [accessToken, ticketId]);
+
   if (!ticketId) {
     return <Text data-testid="reception-ticket-detail-missing-id">ID ticket manquant</Text>;
   }
-  if (loading) return <Text data-testid="reception-ticket-detail-loading">Chargement…</Text>;
-  if (error) return <Text c="red" data-testid="reception-ticket-detail-error">{error}</Text>;
+  if (loading) return <Loader size="sm" data-testid="reception-ticket-detail-loading" />;
+  if (error) return <Alert color="red" data-testid="reception-ticket-detail-error">{error}</Alert>;
   if (!ticket) return null;
 
   const categoryOptions = categories.map((c) => ({ value: c.id, label: c.name }));
   const lignes = ticket.lignes ?? [];
 
   return (
-    <Stack gap="md" data-testid="reception-ticket-detail-page">
+    <Stack gap="md" maw={900} mx="auto" p="md" data-testid="reception-ticket-detail-page">
       <Anchor component={Link} to="/reception" size="sm">← Retour réception</Anchor>
-      <Title order={1}>Ticket {ticket.id.slice(0, 8)}…</Title>
-      <Text>Statut : {ticket.status}</Text>
-      <Text>Créé le : {new Date(ticket.created_at).toLocaleString()}</Text>
-      {ticket.closed_at && (
-        <Text>Fermé le : {new Date(ticket.closed_at).toLocaleString()}</Text>
-      )}
-      <Button
-        variant="light"
-        onClick={handleExportCsv}
-        loading={exportCsvPending}
-        data-testid="reception-ticket-export-csv-btn"
-      >
-        Export CSV
-      </Button>
 
-      <Title order={2}>Ajouter une ligne</Title>
-      <Stack gap="sm" style={{ maxWidth: 400 }} role="form" aria-label="Ajouter une ligne de dépôt">
+      <Card withBorder padding="md" radius="md">
+        <Title order={1} mb="xs">Ticket {ticket.id.slice(0, 8)}…</Title>
+        <Stack gap="xs" mb="md">
+          <Text size="sm"><strong>Statut :</strong> {ticket.status}</Text>
+          <Text size="sm">Créé le : {new Date(ticket.created_at).toLocaleString()}</Text>
+          {ticket.closed_at && (
+            <Text size="sm">Fermé le : {new Date(ticket.closed_at).toLocaleString()}</Text>
+          )}
+        </Stack>
+        <Group>
+          <Button
+            variant="light"
+            onClick={handleExportCsv}
+            loading={exportCsvPending}
+            data-testid="reception-ticket-export-csv-btn"
+          >
+            Export CSV
+          </Button>
+          {ticket.status === 'opened' && (
+            <Button
+              variant="light"
+              color="red"
+              loading={closeTicketPending}
+              onClick={handleCloseTicket}
+              data-testid="reception-ticket-close-btn"
+            >
+              Fermer le ticket
+            </Button>
+          )}
+        </Group>
+      </Card>
+
+      <Card withBorder padding="md" radius="md">
+        <Title order={2} size="h3" mb="sm">Ajouter une ligne</Title>
+        <Stack gap="sm" maw={400} role="form" aria-label="Ajouter une ligne de dépôt">
         <NumberInput
           label="Poids (kg)"
           description="Obligatoire"
           value={poidsKg}
-          onChange={setPoidsKg}
+          onChange={(v) => setPoidsKg(v === '' ? '' : (typeof v === 'number' ? v : Number(v)))}
           min={0.001}
           step={0.1}
           decimalScale={3}
@@ -270,12 +307,14 @@ export function ReceptionTicketDetailPage() {
         >
           Ajouter la ligne
         </Button>
-      </Stack>
+        </Stack>
+      </Card>
 
-      <Title order={2}>Lignes ({lignes.length})</Title>
-      {lignes.length === 0 ? (
-        <Text size="sm" c="dimmed" data-testid="reception-lignes-empty">Aucune ligne.</Text>
-      ) : (
+      <Card withBorder padding="md" radius="md">
+        <Title order={2} size="h3" mb="sm">Lignes ({lignes.length})</Title>
+        {lignes.length === 0 ? (
+          <Text size="sm" c="dimmed" data-testid="reception-lignes-empty">Aucune ligne.</Text>
+        ) : (
         <Table data-testid="reception-lignes-table">
           <Table.Thead>
             <Table.Tr>
@@ -328,7 +367,8 @@ export function ReceptionTicketDetailPage() {
             ))}
           </Table.Tbody>
         </Table>
-      )}
+        )}
+      </Card>
 
       <Modal
         opened={editLigne !== null}
@@ -341,7 +381,7 @@ export function ReceptionTicketDetailPage() {
             <NumberInput
               label="Poids (kg)"
               value={editPoidsKg}
-              onChange={setEditPoidsKg}
+              onChange={(v) => setEditPoidsKg(v === '' ? '' : (typeof v === 'number' ? v : Number(v)))}
               min={0.001}
               step={0.1}
               decimalScale={3}
@@ -383,11 +423,12 @@ export function ReceptionTicketDetailPage() {
             <NumberInput
               label="Poids (kg)"
               value={editWeightValue}
-              onChange={setEditWeightValue}
+              onChange={(v) => setEditWeightValue(v === '' ? '' : (typeof v === 'number' ? v : Number(v)))}
               min={0.001}
               step={0.1}
               decimalScale={3}
               aria-required="true"
+              data-testid="reception-weight-modal-poids-input"
             />
             <Group justify="flex-end">
               <Button variant="default" onClick={() => { setWeightLigne(null); setEditWeightValue(''); }}>Annuler</Button>

@@ -1,11 +1,12 @@
 /**
- * Tests CashRegisterSessionClosePage — Story 5.3 (Vitest + RTL co-locés).
+ * Tests CashRegisterSessionClosePage — Story 5.3, 11.2 (Vitest + RTL + MantineProvider).
  * Affichage totaux, saisie closing/actual/variance_comment, envoi POST close, redirection.
  */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { MantineProvider } from '@mantine/core';
 import { AuthProvider, useAuth } from '../auth/AuthContext';
 import { CashRegisterSessionClosePage } from './CashRegisterSessionClosePage';
 
@@ -46,12 +47,14 @@ function SetToken({ token }: { token: string }) {
 
 function renderClosePage() {
   return render(
-    <AuthProvider>
-      <SetToken token="fake-token" />
-      <BrowserRouter>
-        <CashRegisterSessionClosePage />
-      </BrowserRouter>
-    </AuthProvider>
+    <MantineProvider>
+      <AuthProvider>
+        <SetToken token="fake-token" />
+        <BrowserRouter>
+          <CashRegisterSessionClosePage />
+        </BrowserRouter>
+      </AuthProvider>
+    </MantineProvider>
   );
 }
 

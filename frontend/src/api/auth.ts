@@ -1,6 +1,6 @@
 /**
- * Client API auth — Story 3.1, 3.3.
- * POST /v1/auth/login, POST /v1/auth/pin (déverrouillage caisse).
+ * Client API auth — Story 3.1, 3.3, 11.1.
+ * POST /v1/auth/login, pin, signup, forgot-password, reset-password.
  */
 
 const getBase = (): string =>
@@ -14,6 +14,92 @@ export interface UserInToken {
   status: string;
   first_name: string | null;
   last_name: string | null;
+}
+
+export interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  user: UserInToken;
+  permissions?: string[];
+}
+
+/**
+ * Connexion classique — POST /v1/auth/login.
+ */
+export async function postLogin(username: string, password: string): Promise<LoginResponse> {
+  const base = getBase();
+  const res = await fetch(`${base}/v1/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const message = typeof data?.detail === 'string' ? data.detail : 'Identifiant ou mot de passe incorrect';
+    throw new Error(message);
+  }
+  return res.json() as Promise<LoginResponse>;
+}
+
+/**
+ * Inscription — POST /v1/auth/signup.
+ */
+export async function postSignup(body: {
+  username: string;
+  email: string;
+  password: string;
+  first_name?: string | null;
+  last_name?: string | null;
+}): Promise<{ message: string }> {
+  const base = getBase();
+  const res = await fetch(`${base}/v1/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const message = typeof data?.detail === 'string' ? data.detail : 'Erreur d\'inscription';
+    throw new Error(message);
+  }
+  return data as { message: string };
+}
+
+/**
+ * Mot de passe oublié — POST /v1/auth/forgot-password.
+ */
+export async function postForgotPassword(email: string): Promise<{ message: string }> {
+  const base = getBase();
+  const res = await fetch(`${base}/v1/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const message = typeof data?.detail === 'string' ? data.detail : 'Erreur';
+    throw new Error(message);
+  }
+  return data as { message: string };
+}
+
+/**
+ * Réinitialisation mot de passe — POST /v1/auth/reset-password.
+ */
+export async function postResetPassword(token: string, new_password: string): Promise<{ message: string }> {
+  const base = getBase();
+  const res = await fetch(`${base}/v1/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, new_password }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const message = typeof data?.detail === 'string' ? data.detail : 'Token invalide ou expiré';
+    throw new Error(message);
+  }
+  return data as { message: string };
 }
 
 export interface PinLoginResponse {
@@ -41,4 +127,19 @@ export async function postPinUnlock(pin: string): Promise<PinLoginResponse> {
     throw new Error(message);
   }
   return res.json() as Promise<PinLoginResponse>;
+}
+
+/**
+ * Déconnexion — POST /v1/auth/logout (invalide le refresh_token).
+ */
+export async function postLogout(refresh_token: string): Promise<void> {
+  const base = getBase();
+  const res = await fetch(`${base}/v1/auth/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token }),
+  });
+  if (!res.ok) {
+    throw new Error('Erreur de déconnexion');
+  }
 }

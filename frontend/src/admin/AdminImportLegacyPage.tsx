@@ -2,7 +2,7 @@
  * Page admin Import legacy — Story 8.5.
  * Route : /admin/import/legacy. Étapes : analyze, preview, validate, execute (CSV + boutons).
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Stack,
   Title,
@@ -54,7 +54,7 @@ export function AdminImportLegacyPage() {
   }, [loadLlmModels]);
 
   const run = useCallback(
-    async (label: string, fn: () => Promise<unknown>, setResult: (r: unknown) => void) => {
+    async <T,>(label: string, fn: () => Promise<T>, setResult: (r: T) => void) => {
       if (!accessToken || !canAccess) return;
       setLoading(label);
       setError(null);
@@ -101,13 +101,13 @@ export function AdminImportLegacyPage() {
   return (
     <Stack gap="md" data-testid="admin-import-legacy-page">
       <Title order={2}>Import legacy</Title>
-      <Text size="sm" c="dimmed">
+      <Text size="sm" c="dimmed" mb="xs">
         Analyse, prévisualisation, validation et exécution d&apos;un import CSV (stub v1).
       </Text>
       {error && <Alert color="red">{error}</Alert>}
 
       {llmModels.length > 0 && (
-        <Card shadow="sm" padding="md" withBorder>
+        <Card withBorder padding="md" radius="md" shadow="sm">
           <Text fw={500} mb="xs">Modèles LLM</Text>
           <List size="sm">
             {llmModels.map((m) => (
@@ -117,7 +117,7 @@ export function AdminImportLegacyPage() {
         </Card>
       )}
 
-      <Card shadow="sm" padding="md" withBorder>
+      <Card withBorder padding="md" radius="md" shadow="sm">
         <Text fw={500} mb="xs">Fichier CSV</Text>
         <input
           type="file"
@@ -133,7 +133,7 @@ export function AdminImportLegacyPage() {
         />
       </Card>
 
-      <Card shadow="sm" padding="md" withBorder>
+      <Card withBorder padding="md" radius="md" shadow="sm">
         <Text fw={500} mb="xs">Étapes</Text>
         <Group mb="md">
           <Button

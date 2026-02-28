@@ -2,7 +2,7 @@
  * Page admin Réception — Story 8.4.
  * Route : /admin/reception. Stats, liste tickets, lien détail (APIs Epic 6).
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Stack,
@@ -16,6 +16,7 @@ import {
   Text,
   Select,
   Tabs,
+  SimpleGrid,
 } from '@mantine/core';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -113,60 +114,61 @@ export function AdminReceptionPage() {
           {stats === null ? (
             <Loader size="sm" data-testid="admin-reception-stats-loading" />
           ) : (
-            <Group gap="md" mt="md">
-              <Card shadow="sm" padding="md" withBorder>
+            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" mt="md">
+              <Card withBorder padding="md" radius="md" shadow="sm">
                 <Text size="sm" c="dimmed">Tickets aujourd&apos;hui</Text>
                 <Text fw={700} size="xl" data-testid="admin-reception-tickets-today">
                   {stats?.tickets_today ?? 0}
                 </Text>
               </Card>
-              <Card shadow="sm" padding="md" withBorder>
+              <Card withBorder padding="md" radius="md" shadow="sm">
                 <Text size="sm" c="dimmed">Poids total (kg)</Text>
                 <Text fw={700} size="xl" data-testid="admin-reception-weight">
                   {stats?.total_weight_kg ?? 0}
                 </Text>
               </Card>
-              <Card shadow="sm" padding="md" withBorder>
+              <Card withBorder padding="md" radius="md" shadow="sm">
                 <Text size="sm" c="dimmed">Lignes aujourd&apos;hui</Text>
                 <Text fw={700} size="xl" data-testid="admin-reception-lines">
                   {stats?.lines_count ?? 0}
                 </Text>
               </Card>
-            </Group>
+            </SimpleGrid>
           )}
         </Tabs.Panel>
 
         <Tabs.Panel value="tickets">
-          <Group gap="sm" mt="md">
-            <Select
-              placeholder="Statut"
-              clearable
-              data={[
-                { value: 'opened', label: 'Ouvert' },
-                { value: 'closed', label: 'Fermé' },
-              ]}
-              value={statusFilter}
-              onChange={setStatusFilter}
-              data-testid="filter-status"
-            />
-            <Button variant="subtle" onClick={() => { setStatusFilter(null); setPage(1); loadTickets(); }}>
-              Réinitialiser
-            </Button>
-            <Button
-              variant="light"
-              loading={exportBulkLoading}
-              onClick={handleExportBulk}
-              data-testid="btn-export-bulk-reception"
-            >
-              Export bulk tickets réception
-            </Button>
-          </Group>
-          {error && <Alert color="red">{error}</Alert>}
-          {loading ? (
-            <Loader size="sm" data-testid="admin-reception-tickets-loading" />
-          ) : (
-            <>
-              <Table striped highlightOnHover data-testid="admin-reception-tickets-table">
+          <Card withBorder padding="md" radius="md" mt="md">
+            <Group gap="sm" mb="md">
+              <Select
+                placeholder="Statut"
+                clearable
+                data={[
+                  { value: 'opened', label: 'Ouvert' },
+                  { value: 'closed', label: 'Fermé' },
+                ]}
+                value={statusFilter}
+                onChange={setStatusFilter}
+                data-testid="filter-status"
+              />
+              <Button variant="subtle" onClick={() => { setStatusFilter(null); setPage(1); loadTickets(); }}>
+                Réinitialiser
+              </Button>
+              <Button
+                variant="light"
+                loading={exportBulkLoading}
+                onClick={handleExportBulk}
+                data-testid="btn-export-bulk-reception"
+              >
+                Export bulk tickets réception
+              </Button>
+            </Group>
+            {error && <Alert color="red">{error}</Alert>}
+            {loading ? (
+              <Loader size="sm" data-testid="admin-reception-tickets-loading" />
+            ) : (
+              <>
+                <Table striped highlightOnHover data-testid="admin-reception-tickets-table">
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>ID</Table.Th>
@@ -200,7 +202,7 @@ export function AdminReceptionPage() {
                 <p data-testid="admin-reception-tickets-empty">Aucun ticket.</p>
               )}
               {total > PAGE_SIZE && (
-                <Group gap="sm" data-testid="admin-reception-pagination">
+                <Group gap="sm" data-testid="admin-reception-pagination" mt="md">
                   <Button
                     variant="subtle"
                     size="sm"
@@ -222,6 +224,7 @@ export function AdminReceptionPage() {
               )}
             </>
           )}
+          </Card>
         </Tabs.Panel>
       </Tabs>
     </Stack>

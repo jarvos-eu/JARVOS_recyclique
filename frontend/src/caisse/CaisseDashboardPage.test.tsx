@@ -1,10 +1,11 @@
 /**
- * Tests CaisseDashboardPage — Story 5.1, checklist v0.1 (Vitest + RTL co-locés).
+ * Tests CaisseDashboardPage — Story 5.1, 11.2 (Vitest + RTL + MantineProvider).
  */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { MantineProvider } from '@mantine/core';
 import { AuthProvider, useAuth } from '../auth/AuthContext';
 import { CaisseProvider } from './CaisseContext';
 import { CaisseDashboardPage } from './CaisseDashboardPage';
@@ -26,14 +27,16 @@ function SetToken({ token }: { token: string }) {
 
 function renderWithRouter() {
   return render(
-    <AuthProvider>
-      <SetToken token="fake-token" />
-      <CaisseProvider>
-        <BrowserRouter>
-          <CaisseDashboardPage />
-        </BrowserRouter>
-      </CaisseProvider>
-    </AuthProvider>
+    <MantineProvider>
+      <AuthProvider>
+        <SetToken token="fake-token" />
+        <CaisseProvider>
+          <BrowserRouter>
+            <CaisseDashboardPage />
+          </BrowserRouter>
+        </CaisseProvider>
+      </AuthProvider>
+    </MantineProvider>
   );
 }
 

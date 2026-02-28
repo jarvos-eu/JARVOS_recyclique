@@ -3,7 +3,7 @@
  * Vitest + React Testing Library + jsdom.
  * Couvre : chargement, erreur, ajout ligne, modification, suppression, modal poids.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -16,7 +16,7 @@ vi.mock('../auth/AuthContext', () => ({
 }));
 
 beforeAll(() => {
-  global.ResizeObserver = class ResizeObserver {
+  (globalThis as unknown as { ResizeObserver: typeof ResizeObserver }).ResizeObserver = class ResizeObserver {
     observe = vi.fn();
     unobserve = vi.fn();
     disconnect = vi.fn();
@@ -78,7 +78,7 @@ describe('ReceptionTicketDetailPage', () => {
     expect(screen.getByTestId('reception-ticket-detail-loading')).toBeInTheDocument();
     expect(await screen.findByTestId('reception-ticket-detail-page')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /ticket ticket-u/i })).toBeInTheDocument();
-    expect(screen.getByText(/statut : opened/i)).toBeInTheDocument();
+    expect(screen.getByText(/opened/)).toBeInTheDocument();
     expect(screen.getByTestId('reception-lignes-empty')).toBeInTheDocument();
   });
 
@@ -209,7 +209,7 @@ describe('ReceptionTicketDetailPage', () => {
     await user.click(weightBtn);
 
     expect(screen.getByTestId('reception-weight-ligne-modal')).toBeInTheDocument();
-    const modalPoidsInput = screen.getByDisplayValue('5');
+    const modalPoidsInput = screen.getByTestId('reception-weight-modal-poids-input');
     await user.clear(modalPoidsInput);
     await user.type(modalPoidsInput, '8');
 
