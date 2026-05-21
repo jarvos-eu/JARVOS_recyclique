@@ -30,7 +30,7 @@ Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponibl
 
 **Chantier Jarvos mémoire sessions (2026-05-21) :** Phases **0–3** livrées (pack [`jarvos-agentique/`](../references/jarvos-agentique/index.md), hooks `log/cursor-agent/`, scripts `jarvos-memoire-sessions/dev/`, skill `jarvos-session-memory`). **Batch Phase 5 partiel** : `consolidate_manifest` + triage `--limit 10` + fiche `c8a645ab` → [`sessions/`](../references/jarvos-agentique/sessions/) ; sync [`jarvos-memoire-sessions/00_SYNC_STATUS.md`](../jarvos-memoire-sessions/00_SYNC_STATUS.md). **Recharger la fenêtre Cursor** pour activer les hooks. QA2 mémoire : **pending**.
 
-**Chantier terrain / produit (2026-05-21) :** enquêtes et réunions ressourcerie → pipeline [`.transcription/`](../.transcription/README.md) (**6** meetings, 18–21 mai). **Priorité porteur (D1)** : module **Liaison Paheko** (fermeture caisse → écritures) avant réception complète. Décisions métier : [2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md). Matière brainstorm : [2026-05-21_02_recap-idees-paheko-reception-terrain.md](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md). Comptes / questions EC : [2026-05-21_repertoire-comptes-terrain-audio-recyclique.md](migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md).
+**Chantier terrain / produit (2026-05-21) :** enquêtes et réunions ressourcerie → pipeline [`.transcription/`](../.transcription/README.md) (**6** meetings, 18–21 mai). **Priorité porteur (D1)** : module **Liaison Paheko** (fermeture caisse → écritures) avant réception complète. Décisions métier : [2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md). Matière terrain : [2026-05-21_02_recap-idees-paheko-reception-terrain.md](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md). **Brainstorms BMAD lancés le 2026-05-21** : **Réception** — session clôturée (phases 1–4) → [`brainstorming-session-2026-05-21-180000.md`](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-180000.md) ; **Liaison Paheko** — consolidation / validation compta (courrier Corinne+Caro) → [`brainstorming-session-2026-05-21-paheko-compta-validation.md`](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-paheko-compta-validation.md) (**en attente EC** ; brainstorm UX fermeture caisse **après** validation).
 
 **Framework de modules v0.1 (fév. 2026, historique) :** artefact `references/artefacts/2026-02-24_07_design-systeme-modules.md` (TOML, ModuleBase, EventBus) — **remplacé** par pack v2 + **ADR-007 Accepted** (voir reco `2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`). **Product Brief v0.1.0 complété** (2026-02-25) : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`. **PRD complété** (2026-02-26) : `_bmad-output/planning-artifacts/prd.md` — exigences fonctionnelles (caisse, réception, compta, correspondance, auth, déploiement, vie asso, éco-organismes, extension points), NFR, scope v1 et hors scope (dont réception hors ligne = module complémentaire post-v1). **UX v1.0** : mêmes écrans que 1.4.4, copie du code des mises en page (copy+consolidate+security), pas de refonte écrans pour la v1.0.
 
@@ -48,7 +48,20 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
 ## Derniere session
 
-2026-05-21 — **Brainstorms BMAD — modules Liaison Paheko et Réception** : à partir du recap terrain et des décisions compta ; structuration v1 (écrans, API/events, accessoires, workflows objet) — **en cours**, pas de spec figée.
+2026-05-21 — **Brainstorm BMAD — module Réception v1** (`bmad-brainstorming`, progressive-flow) :
+
+Réalisé :
+- Session [**2026-05-21**](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-180000.md) — **clôturée** (phases 1–4 : Question Storming → Mind Mapping → Morphological Analysis → Decision Tree).
+- Périmètre v1 : REC-001, 002, 004, 008, 009, 012 ; REC-016 omnicanal → **parking v2**.
+- Livrables : parcours utilisateurs, machine à états objet, inventaire matériel, modèle config admin (48 idées structurées).
+- Entrée : recap [02](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md) + meetings 1246, 1301, 1401.
+
+2026-05-21 — **Chantier BMAD — Liaison Paheko / compta caisse** (consolidation + validation, **pas** brainstorm UX fermeture) :
+
+Réalisé :
+- Session [**2026-05-21**](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-paheko-compta-validation.md) — consolidation recherches Perplexity (3 passes) + terrain ; dossier [guide](migration-paheko/2026-05-21_guide-liaison-paheko-compta.md), [procédure clôture](migration-paheko/2026-05-21_procedure-cloture-liaison-paheko-recyclique.md), [courrier Corinne+Caro](migration-paheko/2026-05-21_courrier-validation-compta-paheko-corinne-caro.md).
+- **Statut :** **EN_ATTENTE_VALIDATION_COMPTABLE** (Corinne + Caro) — **pas de dev** ni brainstorm écran fermeture tant que non validé.
+- **Suite prévue :** brainstorm parcours fermeture caisse (UX bénévole) → puis stories epic liaison Paheko v1.
 
 2026-05-21 — **Terrain ressourcerie — transcription et matière produit** :
 
@@ -258,7 +271,7 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 
 ## Prochaine etape
 
-> **Note (2026-05-21)** : priorité **chantier terrain** — brainstorm **écran fermeture** + validation **EC** (voir [guide Paheko](migration-paheko/2026-05-21_guide-liaison-paheko-compta.md), D1–D38), puis brainstorm **Réception** ; en parallèle P1 modules (**story 9.6** Peintre) si reprise BMAD dev.
+> **Note (2026-05-21)** : **Réception** — brainstorm BMAD **clôturé** ([session 180000](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-180000.md)) ; suite = atelier terrain Q1–Q6 puis PRD/epics module. **Liaison Paheko** — attendre retour **Corinne/Caro** sur le [courrier](migration-paheko/2026-05-21_courrier-validation-compta-paheko-corinne-caro.md) ([session validation](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-paheko-compta-validation.md)), puis brainstorm **écran fermeture** ; en parallèle P1 modules (**story 9.6** Peintre) si reprise BMAD dev.
 
 > **Note (2026-04-23)** : le **backlog BMAD exécutable** suivant se lit dans les **cinq** epics **`backlog`** (**9**, **10**, **12**, **20**, **21**) — voir aussi le paragraphe **Pilotage BMAD** dans **Etat actuel**. Choisir l’epic et la première story à promouvoir ; pas d’autre story « en cours » dans le YAML à cette date.
 

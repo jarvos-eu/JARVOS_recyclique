@@ -509,6 +509,12 @@ erDiagram
 - Atelier terrain pour Q1–Q6 avant gel spec.
 - **Ne pas** confondre avec `references/artefacts/` — cette session est la **source BMAD** ; le recap `02` reste l’inventaire idées terrain.
 
+### Chantier parallèle — Liaison Paheko / compta (même jour)
+
+- Session consolidation : [brainstorming-session-2026-05-21-paheko-compta-validation.md](brainstorming-session-2026-05-21-paheko-compta-validation.md)
+- **Statut :** **en attente validation** par **Corinne (comptable)** et Caro — courrier `references/migration-paheko/2026-05-21_courrier-validation-compta-paheko-corinne-caro.md`
+- **Pas de dev** liaison Paheko ni brainstorm fermeture caisse tant que la compta n’est pas validée.
+
 ### Mapping REC → sources (§8 recap)
 
 | ID recap | Meeting | IDEA pipeline |
