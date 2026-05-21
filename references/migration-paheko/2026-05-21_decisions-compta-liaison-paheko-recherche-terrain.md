@@ -2,7 +2,7 @@
 
 **Date :** 2026-05-21  
 **Statut :** décisions **produit / brainstorm** — les points marqués **EC** restent à valider par l’expert-comptable avant figement BMAD ou implémentation.  
-**Sources :** [recherche Perplexity 1re passe](../recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md), [validation comptes 2e passe](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md), [multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md), [recap terrain](../artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md), [PRD caisse-compta](2026-04-15_prd-recyclique-caisse-compta-paheko.md), arbitrages porteur produit (2026-05-21).
+**Sources :** [1re passe](../recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md) · [2e passe validation](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md) · [3e passe trous](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_reponse.md) · [multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) · [procédure clôture](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) · [recap terrain](../artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md) · [PRD](2026-04-15_prd-recyclique-caisse-compta-paheko.md).
 
 **Ne remplace pas** le PRD du 15/04 pour l’implémentation technique (tables, API, outbox) : ce fichier **fige l’orientation métier** après recherche.
 
@@ -31,7 +31,17 @@
 | D17 | **Carte bancaire** → compte **`511`** (valeurs à l’encaissement), **pas** 512 direct | Validation 2e passe Q1 |
 | D18 | **511 205 / 511 210** = **comptage RecyClique uniquement**, pas des comptes du plan Paheko | Validation 2e passe D.1 |
 | D19 | **Écarts de caisse** (module comptage) → **`658`** / **`758`** (gestion courante), pas 678/778 du plugin | Validation 2e passe Q5 — **EC** confirme vs plugin Paheko |
-| D20 | Clôture session : **2 pièces type** — (1) ventes+dons ventilés ; (2) écart si comptage ≠ théorique | Validation 2e passe §6 |
+| D20 | Clôture session : **T1** ventes+dons + **T3** écart si besoin ; **T2** remboursements si présents (voir D29) | 3e passe R2 — [procédure](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) |
+| D29 | **3 transactions API** max par session : T1 (toujours), T2 (remb.), T3 (écart) — `ADVANCED`, `id_year: current` | 3e passe R2, C.2 |
+| D30 | **Désactiver synchro auto** extension Caisse Paheko (exercice vide) — RecyClique = seul producteur d’écritures | 3e passe R1 |
+| D31 | Remboursement **exercice courant** → débit **7070** (pas **709**) | 3e passe R2 |
+| D32 | Remboursement **exercice clos** → débit **672** ; **une pièce API par remboursement** | 3e passe R5 |
+| D33 | Écart caisse : seuil **±2 €** ; au-delà → **bloquer** clôture ; en deçà → T3 auto 658/758 | 3e passe R7 |
+| D34 | **7541 seul** en v1 ; **7542** si dons affectés projet ; fusion **754.xx** → début N+1 avec EC | 3e passe R3 |
+| D35 | **Ne pas reclasser** historique **707 → 7070** ; créer 7070, note N-1 au rapport | 3e passe R4 |
+| D36 | **Pas d’écriture Paheko** à l’ouverture de session ; fond = solde permanent **53x** (gestion RecyClique) | 3e passe R8 |
+| D37 | Libellé écriture API **≤ 200 car.** ; format `Z SESSION {id} – {type} – {date}` | 3e passe R7 |
+| D38 | Logger **toute réponse API ≠ 200** ; archiver `id` pièces Paheko sur la session | 3e passe C.2, C.7 |
 | D21 | Oral **« 53 »** = classe, pas un compte ; **`1630`** à supprimer | Validation 2e passe Q2, Q3 |
 | D22 | Compte **`58`** : **virements internes** trésorerie uniquement (solde ≈ 0), jamais achats espèces | Validation 2e passe Q7 |
 | D23 | **`471` / `472`** : pas en fonctionnement normal boutique ; sortie espèces connue = **53x** → 6xx direct | Validation 2e passe Q8 + multi-caisse |
@@ -50,7 +60,7 @@
 | Source de vérité paiements | `payment_transactions` | PRD §2.2 |
 | `free` | Vente à 0 €, pas moyen de paiement | PRD §4.4 |
 | Remboursement exercice clos | Compte **`672`** confirmé (pas 467 ni 772) ; **réimputation fin d’exercice** à valider EC | PRD §6.7 + validation 2e passe Q11 |
-| Batch Paheko | Stratégie B : ventes+dons / remb. courant / remb. antérieur | PRD §9.2 |
+| Batch Paheko | **T1** ventes+dons · **T2** remb. (7070 ou 672) · **T3** écart — voir [procédure](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) | PRD §9.2 (à aligner) |
 | Exercice Paheko | Saisie manuelle ID (pas API liste) | Spec SuperAdmin M5 |
 
 ---
@@ -69,6 +79,9 @@
 | **708**, **7041**, **7073** (seeds / erreurs) | Validation 2e passe D.3 |
 | **530** unique pour toutes les caisses en multi-postes | [Multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) — 1 caisse = 1 **53x** |
 | Transfert direct **531 ↔ 532** (sans 58) | Idem |
+| **709** pour remboursements après coup | 3e passe R2 — utiliser **7070** débit |
+| **531** en **mono-caisse** (une seule caisse) | 3e passe R8 — utiliser **530** |
+| Synchro auto Paheko caisse **+** API RecyClique en parallèle | 3e passe R1 — doublon écritures |
 
 ---
 
@@ -81,7 +94,10 @@
 | Compte chèques | **5112** | Validation §3 |
 | Compte carte | **511** | Validation §3 |
 | Compte espèces | **53x par poste** (530 si mono-caisse ; sinon 531, 532…) | [Multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) |
-| Écarts caisse | **658** / **758** | Validation §3 — écriture auto v2 |
+| Écarts caisse | **658** / **758** | Validation §3 — T3 si \|écart\| ≤ 2 € |
+| Seuil écart | **±2 €** (blocage au-delà) | 3e passe R7 |
+| API exercice | **`id_year: current`** | 3e passe R7 |
+| Synchro Paheko caisse | **Désactivée** (exercice config vide) | 3e passe R1 |
 
 ---
 
@@ -93,11 +109,13 @@ Voir [questions consolidées](#7-questions-expert-comptable-et-suite-porteur), [
 |--------|-------------------|---------------|
 | **Numérotation 53x** (531–5331 vs format long) | Grille 7 caisses proposée — doc multi-caisse | **EC** + param postes |
 | **5112 / 511** unique ou par lieu / banque / TPE | Selon nombre de banques et contrats | **EC** |
-| **7541** unique ou sous-comptes **754.11 / 754.115 / 754.111** | 7541 seul OK réglementairement | Non — granularité reporting |
-| **Migration historique 707 → 7070** | Ne pas reclasser sans accord EC | Non pour nouvelles écritures |
-| **672** : conditions + **réimputation obligatoire** fin d’exercice (PCG 2025) | Confirmé bon compte | Remboursements antérieurs |
-| **Plugin Paheko 678/778** vs RecyClique **658/758** | Cohabitation ou correction manuelle ? | Écarts si plugin utilisé en parallèle |
-| **754.900**, arborescence **754.10 / 754.11** double | Vérifier plan Paheko réel (Carole) | Risque double compta dons |
+| **672** : compte cible **réimputation** fin d’exercice (658 vs 671) | OD **débit 658 / crédit 672** proposée | **EC** — avant clôture exercice |
+| **Fusion 754.xx → 7541** | OD début **N+1** | **EC** |
+| **Journaux** Paheko (Recettes / OD / Banque) pour T1–T3 | À confirmer sur instance | **EC** |
+| **Caisse native Paheko** en parallèle (buvette, stand) | Procédure anti-doublon | **EC** si cas existant |
+| **7542** (dons affectés projet) | Créer seulement si subventionneur l’exige | **EC** / reporting |
+| **754.900** | Compte local non normé — identifier | Carole + **EC** |
+| Arborescence **754.xx** double | Contrôle C.6 avant go-live | Carole |
 | Classe 8 CVN textiles -18 | Recherche 1re passe | Non clôture v1 |
 | Bien don revendu, Cerfa boutique | Recherche 1re passe | Hors clôture v1 |
 
@@ -112,36 +130,37 @@ Voir [questions consolidées](#7-questions-expert-comptable-et-suite-porteur), [
 | Compte vente clôture | **7070** | Historique **707** (1re année) | EC migration ; nouvelles écritures → 7070 |
 | Chèques | **5112** | Tampon **511** + 511-205/210 | Aligner plan Paheko ; comptage hors plan |
 | Carte | **511** | Parfois en **512** | Corriger param Paheko |
-| Écarts caisse | **658/758** | Plugin **678/778** | EC + [recherche trous R1](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md) |
-| Lots clôture | PRD : 3 lots (ventes+dons / remb. courant / remb. ant.) | Validation : 2 pièces session + écart | [recherche trous R2](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md) |
-| Fond de caisse | Session RecyClique | Audio **531** ; multi-caisse → 53x par poste | [Multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) |
+| Écarts caisse | **658/758** (T3) | Ancienne hypothèse plugin 678/778 | **Résolu** — pas de 678/778 caisse native ; désactiver synchro auto |
+| Lots clôture | **T1/T2/T3** | PRD §9.2 ancien libellé T3=672 | **Résolu** — [procédure](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) ; aligner PRD |
+| Fond de caisse | Pas d’écriture ouverture ; fond hors T1 | Audio 531 / multi 53x | [Multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) + R8 |
+| Migration 707→7070 | Ne pas reclasser N-1 | Historique 707 | **Résolu** 3e passe — note annexe |
+| Remb. courant | **7070** débit | Recherche 04-02 citait 709 | **Résolu** 3e passe |
 | 511 220 virements | — | Tampon terrain | **512** ou **58** selon cas |
 
 ---
 
 ## 7. Questions expert-comptable et suite porteur
 
-### 7.1 Liste pour EC (après 2 passes Perplexity)
+### 7.1 Liste pour EC (après 3 passes Perplexity)
 
-1. **Grille 53x** pour N postes (ex. 531–5331) : valider avec EC — voir [multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md).
-2. **5112** et **511** : comptes uniques ou ventilés par établissement / banque / TPE (multi-caisse) ?
-3. **7541** seul ou sous-comptes **754.11 / 754.115 / 754.111** (volume dons, subventionneurs) ?
-4. **Migration 707 → 7070** sur exercices passés : oui/non, impact tableaux N-1 ?
-5. **672** : procédure réimputation fin d’exercice pour l’asso ?
-6. **658/758** (RecyClique) vs **678/778** (plugin Paheko) : un seul jeu acceptable ?
-7. Chèque vente + don : confirmer **2 lignes crédit** (7070 + 7541) sur **5112** débit — **confirmé recherche**, signature EC ?
-8. Seuil tolérance écart caisse (±1 à 2 € proposé) — règlement intérieur ?
-9. Textiles **-18**, Cerfa, bien don revendu : inchangé (hors clôture v1).
+1. **Grille 53x** multi-postes — [multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md).
+2. **Réimputation 672** fin d’exercice : compte cible (658 ou 671) et date OD.
+3. **Fusion 754.xx → 7541** : OD début N+1.
+4. **Journaux** exacts pour écritures importées RecyClique.
+5. **Caisse native Paheko** en parallèle : procédure anti-doublon si applicable.
+6. Chèque vente + don : **2 lignes crédit** sur **5112** — signature EC (déjà confirmé recherche).
+7. **7542** : créer ou non selon subventionneurs.
+8. Textiles **-18**, Cerfa, bien don revendu : hors clôture v1.
 
 ### 7.2 Suite porteur produit (hors EC)
 
 | Étape | Action |
 |-------|--------|
-| 1 | **3e passe Perplexity** — trous restants → [prompt](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md) |
-| 2 | Synthèses : [06](../artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md) · [09](../artefacts/2026-05-21_09_synthese-validation-comptes-perplexity.md) |
-| 3 | Réunion EC / Carole — [checklist répertoire §8](2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) + plan Paheko exporté |
-| 4 | Brainstorm **atelier fermeture** + module comptage |
-| 5 | Epic BMAD « Liaison Paheko v1 » quand stable |
+| 1 | Synthèses : [06](../artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md) · [09](../artefacts/2026-05-21_09_synthese-validation-comptes-perplexity.md) · [11](../artefacts/2026-05-21_11_synthese-trous-perplexity-liaison-paheko.md) |
+| 2 | Implémenter [procédure clôture](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) (T1/T2/T3, outbox, seuil 2 €) |
+| 3 | Aligner **PRD §9.2** (T3 = écart, T2 = remb. courant + 672) |
+| 4 | Réunion EC / Carole — [checklist répertoire §8](2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) + checklist prod §4 procédure |
+| 5 | Brainstorm écran fermeture + epic BMAD « Liaison Paheko v1 » |
 
 ---
 
@@ -150,5 +169,6 @@ Voir [questions consolidées](#7-questions-expert-comptable-et-suite-porteur), [
 - Répertoire comptes : [2026-05-21_repertoire-comptes-terrain-audio-recyclique.md](2026-05-21_repertoire-comptes-terrain-audio-recyclique.md)
 - Perplexity 1re passe : [prompt](../recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_prompt.md) · [réponse](../recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md)
 - Perplexity 2e passe (validation) : [prompt](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_prompt.md) · [réponse](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md)
-- Perplexity 3e passe (trous) : [prompt](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md)
-- Multi-caisse / lieux de vente : [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md)
+- Perplexity 3e passe : [prompt](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md) · [réponse](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_reponse.md)
+- Procédure clôture : [2026-05-21_procedure-cloture-liaison-paheko-recyclique.md](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md)
+- Multi-caisse : [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md)

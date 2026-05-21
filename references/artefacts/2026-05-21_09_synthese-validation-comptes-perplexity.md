@@ -13,9 +13,9 @@
 3. **511 205 / 511 210** = module comptage RecyClique uniquement, **pas** le plan Paheko.
 4. **1630** à oublier ; oral « 53 » = **classe**, pas un compte à saisir.
 5. Aligner Paheko terrain : chèques → **5112** (pas 511-205).
-6. Clôture = **2 pièces** (ventes+dons, puis écart) ; dépôt chèques plus tard (5112 → 512).
-7. **EC** : grille 53x, 754.x, migration 707, 672 fin d'exercice, plugin 678/778, 5112/511 multi-banques.
-8. **3e passe Perplexity** sur les trous → [prompt](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md).
+6. Clôture = **T1** ventes+dons + **T3** écart (+ **T2** remb.) — voir [procédure](../migration-paheko/2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) ; dépôt chèques plus tard (5112 → 512).
+7. **EC** : grille 53x, fusion 754.xx, réimputation 672, journaux Paheko — détail [synthèse 11](2026-05-21_11_synthese-trous-perplexity-liaison-paheko.md).
+8. **3e passe faite** — [réponse](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_reponse.md) ventilée ; synchro Paheko caisse **off**, seuil écart **±2 €**.
 9. Réunion EC / Carole : checklist [répertoire §8](../migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md).
 10. Ensuite : brainstorm fermeture + param SuperAdmin (compte **par poste**).
 
@@ -39,18 +39,17 @@
 
 ---
 
-## Ce qui reste ouvert
+## Ce qui reste ouvert (post 3e passe)
 
-| Sujet | Qui | Recherche avant ? |
-|--------|-----|------------------|
-| Plugin Paheko 678/778 | Perplexity + dev | Prompt trous **R1** |
-| 2 pièces vs 3 lots PRD | Perplexity | **R2** |
-| 754.1 unique ou sous-comptes | EC | **R3** |
+| Sujet | Qui | Statut |
+|--------|-----|--------|
 | Grille **53x** (7 postes) | EC | [multi-caisse](../migration-paheko/2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) |
-| Migration 707 → 7070 | EC | **R4** |
-| 672 fin d'exercice | EC | **R5** |
-| 754.900, arborescence 754 | Carole | Plan réel |
-| Cerfa, CVN -18, bien revendu | EC | Hors prompt 3e passe |
+| Réimputation **672**, fusion **754.xx**, journaux | EC | [synthèse 11](2026-05-21_11_synthese-trous-perplexity-liaison-paheko.md) |
+| **754.900**, arborescence 754 | Carole | Plan réel |
+| Implémentation T1/T2/T3 + désactiver synchro Paheko | Dev | [procédure](../migration-paheko/2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) |
+| Cerfa, CVN -18, bien revendu | EC | Hors clôture v1 |
+
+*Tranché en 3e passe : 678/778 (non), T1/T2/T3, 7541 seul v1, pas de migration 707 N-1, 709 (non), fond sans écriture ouverture.*
 
 ---
 

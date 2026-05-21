@@ -124,7 +124,7 @@ Checklist admin (Carole / EC) :
 1. Valider la **grille 531–5331** (ou format long 531001…) pour les 7 caisses prévues.
 2. **5112** unique ou ventilé par établissement / banque ?
 3. **511** unique ou par terminal CB ?
-4. Fond de caisse : mouvement **53x** à chaque ouverture RecyClique ou solde permanent sans écriture d'ouverture ?
+4. ~~Fond de caisse à l’ouverture~~ — **tranché** : solde permanent sur **53x**, **pas d’écriture** Paheko à l’ouverture ([3e passe R8](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_reponse.md), [procédure](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md)).
 5. Cohérence avec **projets analytiques** Paheko par site (PRD vision multisite).
 
 ---

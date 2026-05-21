@@ -2,7 +2,7 @@
 
 **Date :** 2026-05-21  
 **Usage :** vérifier avec l’**expert-comptable et Carole** (réunion ou retour écrit).  
-**Dernière validation Perplexity :** [réponse 2e passe](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md) (2026-05-21). **Multi-caisse :** [doctrine lieux de vente](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md). Trous restants → [prompt 3e passe](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md).  
+**Dernière validation Perplexity :** [2e passe](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md) · [3e passe trous](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_reponse.md) (2026-05-21). **Multi-caisse :** [lieux de vente](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md). **Clôture :** [procédure T1/T2/T3](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md).  
 **Légende statut :**
 
 | Statut | Signification |
@@ -58,7 +58,8 @@ Voir [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi
 | **7073** | Sous-compte textile (ex. seed test) | Ventilation par famille | — | **Ne pas utiliser** | Spec I1 : remplacer par 7070 |
 | **754** | Dons (globalité oral) | Regroupement oral des dons | — | **Terrain** | Plan : sous-comptes en dessous |
 | **754.1** / **754.10** / **754.11** | Dons manuels ; synthèse vs écriture courante | **754.11** = écritures quotidiennes dons (audio) | Dons caisse | **Terrain** + **Paheko existant** | 754.10 = synthèse (audio) |
-| **7541** | Dons manuels (PCA) | Crédit **dons en caisse** (surplus, don explicite) | Clôture ; moyen `donation` | **Retenu PRD** | Remplace ancien défaut **708** |
+| **7541** | Dons manuels (PCA) | Crédit **dons en caisse** (surplus, don explicite) | Clôture T1 ; moyen `donation` | **Retenu v1** | **Seul compte don caisse v1** ; fusion 754.xx → N+1 (EC) |
+| **7542** | Dons affectés projet | Si subventionneur l’exige | Clôture T1 | **À trancher EC** | 3e passe R3 — sinon rester sur **7541** |
 | **754.115** | Dons manuels **chèque** | Séparer dons chèque vs espèces | Clôture + rapprochement banque | **À trancher EC** | Utile si volume ; sinon fusion **7541** |
 | **754.111** | Dons **projet** | Affectation projet | Ateliers | **À trancher EC** / **Hors v1** | PKO-009 ; candidat **7542** dons affectés |
 | **754.12** | Abandon de frais bénévoles | Notes de frais / km | Module adjacent | **Hors v1** | PKO-023 |
@@ -75,10 +76,10 @@ Voir [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi
 |--------|---------|-----------------|----------|--------|-------|
 | **672** | Charges sur exercices antérieurs | **Débit** remboursement client si vente sur exercice **clos** | Opération spéciale remboursement | **Retenu v1** | Confirmé validation ; **réimputation fin d’exercice** — **EC** |
 | **467** | Comptes débiteurs/créditeurs | Ancien défaut remboursement | — | **Ne pas utiliser** | Spec B2 |
-| **658** | Charges diverses gestion courante | Écart caisse **manque** | Après module comptage | **Retenu v1** | Validation : écarts quotidiens = gestion courante ; seuil ±1–2 € à documenter |
-| **758** | Produits divers gestion courante | Écart caisse **trop-perçu** | Idem | **Retenu v1** | Idem |
-| **678** / **778** | Erreur de caisse (plugin Paheko) | Écart « exceptionnel » plugin | Clôture native Paheko | **Paheko existant** | RecyClique → **658/758** ; vérifier si plugin modifiable ([prompt trous](../recherche/2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md)) |
-| **709** | (avoir) | Contre-passation remboursement J+N | Remboursements | **Recherche 04-02** | Recyclique fait plutôt 7070 débit + trésorerie crédit |
+| **658** | Charges diverses gestion courante | Écart caisse **manque** (T3) | Après module comptage | **Retenu v1** | Seuil **±2 €** ; blocage clôture si dépassé |
+| **758** | Produits divers gestion courante | Écart caisse **trop-perçu** (T3) | Idem | **Retenu v1** | Idem |
+| **678** / **778** | Erreur de caisse (natif Paheko) | Clôture extension Caisse native | — | **Ne pas utiliser** (RecyClique) | Pas de 678/778 plugin documenté ; **désactiver synchro auto** Paheko — 3e passe R1 |
+| **709** | (avoir) | Contre-passation remboursement | — | **Ne pas utiliser** | Remb. courant → **7070** débit ; clos → **672** (T2) |
 | **772** | Produits exercices antérieurs | Remboursement client | — | **Ne pas utiliser** | PRD : inadapté remboursement |
 | **606** / **607** / **601** / **608** | Achats / charges | Décaissement achat courant (exemple 10 €) | Sortie caisse pour achat | **Hors v1** | Exemple conversation 471 — charge + banque ou 53 |
 
@@ -120,11 +121,11 @@ Journée caisse (Recyclique)
   → payment_transactions (espèces, chèque, CB, don surplus → 7541)
   → fin de journée : MODULE comptage (pièces/billets) → écart documenté [658/758 EC]
   → fermeture session : snapshot par moyen de paiement
-  → Paheko — pièce 1 (ventes + dons), **par poste** :
-        Débit 53x du poste (espèces) / 5112 (chèques) / 511 (CB)
-        Crédit 7070 (ventes) + 7541 (dons)
-  → Paheko — pièce 2 si écart comptage : 658 ou 758 ↔ 53x du poste
-  → Plus tard : dépôt chèques 512 débit / 5112 crédit ; idem CB 511 → 512
+  → Paheko **T1** (ventes + dons), **par poste** :
+        Débit 53x / 5112 / 511 — Crédit 7070 + 7541
+  → Paheko **T2** si remboursements : 7070 ou 672 débit — trésorerie crédit (1 pièce / remb.)
+  → Paheko **T3** si écart ≤ 2 € : 658 ou 758 ↔ 53x du poste
+  → Plus tard : chèques 5112→512 ; CB 511→512 ; virements 58
   → tickets PDF/CSV archivés dans Recyclique (justificatif)
 ```
 
@@ -139,8 +140,8 @@ Journée caisse (Recyclique)
 - [ ] Arborescence **754** : pas de double 754.xx + 7541
 - [ ] **Grille 53x** multi-postes (531–5331) validée EC — voir [multi-caisse](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md)
 - [ ] Tableau **poste RecyClique → lieu Paheko → compte 53x**
-- [ ] Écarts : **658/758** RecyClique vs plugin **678/778**
-- [ ] Migration **707 → 7070** historique : oui/non
+- [ ] Écarts : **658/758** (T3), seuil **±2 €** ; synchro auto Paheko caisse **désactivée**
+- [ ] Migration **707 → 7070** N-1 : **non** (note annexe seulement)
 - [ ] **672** : procédure fin d’exercice
 - [ ] Chèque mixte vente + don : 2 lignes crédit (confirmé recherche)
 - [ ] -18 kg : RecyClique seul OK v1
@@ -148,4 +149,4 @@ Journée caisse (Recyclique)
 
 ---
 
-*Dernière mise à jour : 2026-05-21 — validation 2e passe + doctrine multi-caisse.*
+*Dernière mise à jour : 2026-05-21 — 2e + 3e passe Perplexity, procédure T1/T2/T3.*

@@ -396,6 +396,8 @@ Principes imposés :
 - le processor d’outbox doit pouvoir relancer sans doublon ;
 - le statut de synchronisation doit être visible en back-office.
 
+**2026-05-21 — Extension Caisse native Paheko :** sur les postes pilotés par RecyClique, **désactiver** la synchronisation comptable automatique de l’extension (exercice vide en configuration) pour éviter les **doublons** avec les écritures API RecyClique. Voir [procédure clôture](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) et [décisions D30](2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md).
+
 ## 9. Construction de l’écriture Paheko
 
 ### 9.1 Principe
@@ -411,10 +413,12 @@ La stratégie A reste une option étudiée historiquement, mais **n'est plus** l
 
 ### 9.2 Recommandation de mise en œuvre
 
-La stratégie B est retenue :
-- transaction 1 : ventes + dons ;
-- transaction 2 : remboursements exercice courant ;
-- transaction 3 : remboursements exercice antérieur clos.
+La stratégie B est retenue (affinée 3e passe recherche 2026-05-21) :
+- **transaction 1 (T1)** : ventes + dons ;
+- **transaction 2 (T2)** : remboursements — débit **7070** (exercice courant) ou **672** (exercice clos), **une pièce API par remboursement** ;
+- **transaction 3 (T3)** : écart caisse (**658** / **758** ↔ **53x** du poste) si module comptage ≠ 0 et \|écart\| ≤ 2 € ; au-delà, clôture **bloquée**.
+
+Détail opérationnel : [procédure clôture](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md).
 
 ### 9.3 Exemple complet équilibré
 
@@ -442,14 +446,23 @@ Hypothèses :
 - Débit `7070` : 10 €
 - Crédit `530` : 10 €
 
-#### Transaction 3 — remboursements exercice antérieur clos
+#### Transaction 2 bis — remboursement exercice clos (même lot T2, pièce séparée)
 
 Hypothèses :
-- remboursements espèces exercice clos : 5 €
+- remboursement espèces : vente d’origine sur exercice **clos**, 5 €
 
 Écriture :
 - Débit `672` : 5 €
-- Crédit `530` : 5 €
+- Crédit `530` (ou **53x** du poste en multi-caisse) : 5 €
+
+#### Transaction 3 — écart caisse (comptage)
+
+Hypothèses :
+- écart espèces après comptage : manque 1,50 € (≤ seuil 2 €)
+
+Écriture :
+- Débit `658` : 1,50 €
+- Crédit `530` (ou **53x** du poste) : 1,50 €
 
 ## 10. Règles UX et assistance utilisateur
 

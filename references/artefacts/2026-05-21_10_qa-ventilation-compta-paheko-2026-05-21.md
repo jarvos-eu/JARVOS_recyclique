@@ -16,7 +16,7 @@
 | **B — Multi-caisse** | NO-GO | 4 correctifs | **GO** | **97 %** |
 | **C — Prompt 3e passe** | (déjà fait) | — | **GO** | **96 %** |
 
-**Verdict global :** **GO** — dépôt cohérent pour Perplexity 3e passe, réunion EC et brainstorm.
+**Verdict global :** **GO** — lots A/B/C (2e passe + multi-caisse). **Lot D (3e passe)** : voir [QA 12](2026-05-21_12_qa-ventilation-3e-passe-perplexity.md) — **GO 96 %**.
 
 ---
 
