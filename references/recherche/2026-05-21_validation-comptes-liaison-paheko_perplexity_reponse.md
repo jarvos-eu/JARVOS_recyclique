@@ -3,7 +3,7 @@
 **Fichier :** `2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md`  
 **Date :** 2026-05-21 · **IA :** Perplexity Pro  
 **Prompt :** [2026-05-21_validation-comptes-liaison-paheko_perplexity_prompt.md](2026-05-21_validation-comptes-liaison-paheko_perplexity_prompt.md)  
-**Ventilation :** [décisions](../migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) · [répertoire](../migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) · [synthèse](../artefacts/2026-05-21_09_synthese-validation-comptes-perplexity.md) · [multi-caisse](../migration-paheko/2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) · [QA ventilation](../artefacts/2026-05-21_10_qa-ventilation-compta-paheko-2026-05-21.md) · [prompt trous](2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md)
+**Ventilation :** [guide](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md) · [décisions](../migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) · [répertoire](../migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) · [multi-caisse](../migration-paheko/2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) · [prompt 3e passe](2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md)
 
 ---
 

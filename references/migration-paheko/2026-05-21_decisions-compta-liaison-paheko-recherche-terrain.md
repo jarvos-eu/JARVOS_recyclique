@@ -22,10 +22,10 @@
 | D8 | **Dons en caisse** (surplus volontaire) → **`7541`**, **séparés** des ventes dans l’écriture | PRD + recherche B |
 | D9 | **Surplus volontaire** : flux **don explicite** en caisse (pas noyé dans le paiement vente) | Recherche B4 |
 | D10 | **Chèque don + vente** : **une pièce, plusieurs lignes** comptables — **pas** de découpage physique du chèque | Terrain PKO-006/007 + recherche B3 |
-| D11 | **Ticket mixte** (don matière -18 + ligne payante) : **fréquent** → géré **v1** | Porteur produit |
-| D12 | **Ligne don matière / -18** : **aucun €** vers Paheko ; traçabilité **Recyclique** (kg, article) | Recherche C + recap PKO-016/016b |
+| D11 | **Ticket mixte** (don textile moins de 18 ans + ligne payante) : **fréquent** → géré **v1** | Porteur produit |
+| D12 | **Ligne don textile −18 ans** (pas une remise %) : **aucun €** vers Paheko ; traçabilité **RecyClique** (kg, article) | Recherche C + recap PKO-016/016b |
 | D13 | **Clôture Paheko** : envoyer **uniquement les totaux monétaires** du jour | Conséquence D11, D12 |
-| D14 | **Pas d’envoi Paheko** des sorties matière -18 sans décision EC sur CVN (classe 8) | Recherche C2, C4 |
+| D14 | **Pas d’envoi Paheko** des dons textile moins de 18 ans sans décision EC sur CVN (classe 8) | Recherche C2, C4 |
 | D15 | **Bug « don » par défaut** en caisse : **hors priorité** brainstorm (correctif attendu v2 caisse) | Porteur produit |
 | D16 | **Chèques** → compte **`5112`** (standard Paheko/PCG), pas 511 ni sous-comptes 511-205/210 | Validation 2e passe Q1, Q10 |
 | D17 | **Carte bancaire** → compte **`511`** (valeurs à l’encaissement), **pas** 512 direct | Validation 2e passe Q1 |
@@ -70,7 +70,7 @@
 | Sujet | Raison |
 |--------|--------|
 | Agréger don + vente sur **une seule ligne** crédit en clôture | Recherche B, terrain |
-| Envoyer sorties matière -18 à Paheko **sans** cadre EC (CVN / hors bilan) | Recherche C |
+| Envoyer dons textile moins de 18 ans à Paheko **sans** cadre EC (CVN / hors bilan) | Recherche C |
 | Ventilation par **famille produit** en clôture (ex. 7073 textile seul) | Décision PRD + spec I1 |
 | Prorata **physique** d’un chèque entre don et vente | Terrain PKO-006 |
 | Compte **1630** ; oral **« 53 »** utilisé comme numéro de compte (≠ classe 53) | Validation 2e passe Q2–Q3 |
@@ -116,7 +116,7 @@ Voir [questions consolidées](#7-questions-expert-comptable-et-suite-porteur), [
 | **7542** (dons affectés projet) | Créer seulement si subventionneur l’exige | **EC** / reporting |
 | **754.900** | Compte local non normé — identifier | Carole + **EC** |
 | Arborescence **754.xx** double | Contrôle C.6 avant go-live | Carole |
-| Classe 8 CVN textiles -18 | Recherche 1re passe | Non clôture v1 |
+| Classe 8 CVN dons textile moins de 18 ans | Recherche 1re passe | Non clôture v1 |
 | Bien don revendu, Cerfa boutique | Recherche 1re passe | Hors clôture v1 |
 
 **3 contrôles sur plan Paheko réel** (validation §5) : libellés 511-205/210 ; cohérence **5112** RecyClique vs 511-x terrain ; arborescence 754 sans doublon.
@@ -150,13 +150,13 @@ Voir [questions consolidées](#7-questions-expert-comptable-et-suite-porteur), [
 5. **Caisse native Paheko** en parallèle : procédure anti-doublon si applicable.
 6. Chèque vente + don : **2 lignes crédit** sur **5112** — signature EC (déjà confirmé recherche).
 7. **7542** : créer ou non selon subventionneurs.
-8. Textiles **-18**, Cerfa, bien don revendu : hors clôture v1.
+8. Dons textile **moins de 18 ans**, Cerfa, bien don revendu : hors clôture v1.
 
 ### 7.2 Suite porteur produit (hors EC)
 
 | Étape | Action |
 |-------|--------|
-| 1 | Synthèses : [06](../artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md) · [09](../artefacts/2026-05-21_09_synthese-validation-comptes-perplexity.md) · [11](../artefacts/2026-05-21_11_synthese-trous-perplexity-liaison-paheko.md) |
+| 1 | Lecture plancher : [guide liaison Paheko](2026-05-21_guide-liaison-paheko-compta.md) |
 | 2 | Implémenter [procédure clôture](2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) (T1/T2/T3, outbox, seuil 2 €) |
 | 3 | Aligner **PRD §9.2** (T3 = écart, T2 = remb. courant + 672) |
 | 4 | Réunion EC / Carole — [checklist répertoire §8](2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) + checklist prod §4 procédure |
@@ -166,6 +166,7 @@ Voir [questions consolidées](#7-questions-expert-comptable-et-suite-porteur), [
 
 ## 8. Liens
 
+- **Guide (entrée)** : [2026-05-21_guide-liaison-paheko-compta.md](2026-05-21_guide-liaison-paheko-compta.md)
 - Répertoire comptes : [2026-05-21_repertoire-comptes-terrain-audio-recyclique.md](2026-05-21_repertoire-comptes-terrain-audio-recyclique.md)
 - Perplexity 1re passe : [prompt](../recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_prompt.md) · [réponse](../recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md)
 - Perplexity 2e passe (validation) : [prompt](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_prompt.md) · [réponse](../recherche/2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md)

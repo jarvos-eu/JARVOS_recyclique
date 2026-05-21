@@ -3,7 +3,7 @@
 **Fichier :** `2026-05-21_liaison-paheko-trous-recherche_perplexity_reponse.md`  
 **Date :** 2026-05-21 · **IA :** Perplexity Pro  
 **Prompt :** [2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md](2026-05-21_liaison-paheko-trous-recherche_perplexity_prompt.md)  
-**Ventilation :** [décisions](../migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) · [procédure clôture](../migration-paheko/2026-05-21_procedure-cloture-liaison-paheko-recyclique.md) · [synthèse](../artefacts/2026-05-21_11_synthese-trous-perplexity-liaison-paheko.md) · [QA ventilation](../artefacts/2026-05-21_12_qa-ventilation-3e-passe-perplexity.md)
+**Ventilation :** [guide](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md) · [décisions](../migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) · [procédure](../migration-paheko/2026-05-21_procedure-cloture-liaison-paheko-recyclique.md)
 
 ---
 

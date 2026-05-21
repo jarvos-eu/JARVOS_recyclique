@@ -3,7 +3,7 @@
 **Fichier :** `2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md`  
 **Date :** 2026-05-21 · **IA :** Perplexity Pro  
 **Prompt :** [2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_prompt.md](2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_prompt.md)  
-**Ventilation :** [décisions](../migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) · [répertoire comptes](../migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) · [synthèse brainstorm](../artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md)
+**Ventilation :** [guide](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md) · [décisions](../migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) · [répertoire](../migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md)
 
 ---
 

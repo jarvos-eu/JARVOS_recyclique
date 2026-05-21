@@ -54,8 +54,8 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
 Réalisé :
 - Chantier `.transcription/` (profil, inbox, **6** meetings 18–21 mai, AssemblyAI + drafts/finals).
-- Recap exhaustif Réception + Liaison Paheko : [artefact 02](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md) ; révision éditoriale [04](artefacts/2026-05-21_04_revision-editoriale-transcriptions-appliquee.md).
-- Décisions produit compta liaison : [decisions](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) ; [répertoire comptes](migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) ; recherche [Perplexity](recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md) ; synthèse [06](artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md).
+- Recap exhaustif Réception + Liaison Paheko : [artefact 02](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md) ; transcriptions : [.transcription/README.md](../.transcription/README.md).
+- Liaison Paheko compta : [guide](migration-paheko/2026-05-21_guide-liaison-paheko-compta.md) · [décisions](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) · [répertoire](migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) · [procédure](migration-paheko/2026-05-21_procedure-cloture-liaison-paheko-recyclique.md).
 
 2026-05-21 — **Promotion chantier modules v2 dans PRD BMAD** :
 
@@ -258,7 +258,7 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 
 ## Prochaine etape
 
-> **Note (2026-05-21)** : priorité **chantier terrain** — finaliser brainstorm **Liaison Paheko** (fermeture, ventilation écritures, paramétrage SuperAdmin), **synthèse consultations** + validation **EC** (comptes 7070, 7541, 530/511/512 — voir [décisions D1–D15](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) et [synthèse 06](artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md)), puis brainstorm **Réception** ; en parallèle P1 modules (**story 9.6** Peintre) si reprise BMAD dev.
+> **Note (2026-05-21)** : priorité **chantier terrain** — brainstorm **écran fermeture** + validation **EC** (voir [guide Paheko](migration-paheko/2026-05-21_guide-liaison-paheko-compta.md), D1–D38), puis brainstorm **Réception** ; en parallèle P1 modules (**story 9.6** Peintre) si reprise BMAD dev.
 
 > **Note (2026-04-23)** : le **backlog BMAD exécutable** suivant se lit dans les **cinq** epics **`backlog`** (**9**, **10**, **12**, **20**, **21**) — voir aussi le paragraphe **Pilotage BMAD** dans **Etat actuel**. Choisir l’epic et la première story à promouvoir ; pas d’autre story « en cours » dans le YAML à cette date.
 

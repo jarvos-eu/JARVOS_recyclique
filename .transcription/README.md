@@ -41,4 +41,4 @@ Voir le skill **transcription-pipeline-v1.1** (étapes scan inbox, `run_pipeline
 
 ## Révision et QA2 (mai 2026)
 
-Révision consolidée des fichiers nécessaires (draft, final, rapports QA2, lacunes) : **`references/artefacts/2026-05-21_03_revision-transcriptions-terrain-qa2.md`**. **Révision éditoriale appliquée** (drafts corrigés + finaux régénérés) : **`references/artefacts/2026-05-21_04_revision-editoriale-transcriptions-appliquee.md`**. Les rapports adversariaux draft par meeting : `meetings/<MEETING_ID>/qa2-draft-fusion.md` lorsqu'ils existent.
+**État (2026-05-21) :** révision éditoriale appliquée sur les **6** meetings (drafts + finaux). Rapports `qa2-draft-fusion.md` : **4/6** présents ; absents pour `2026-05-21-terrain-1401` et `2026-05-21-recyclique-terrain-paheko`. Recap idées : **`references/artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md`**. Journaux de chantier archivés : `references/artefacts/archive/2026-05-21-menage-paheko-compta-qa/`.

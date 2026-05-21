@@ -1,15 +1,15 @@
 # Recap exhaustif — idées terrain pour modules **Réception** et **Liaison Paheko**
 
 **Date :** 2026-05-21  
-**Dernière alignement sources :** 2026-05-21 (révision éditoriale appliquée — voir [2026-05-21_04_revision-editoriale-transcriptions-appliquee.md](2026-05-21_04_revision-editoriale-transcriptions-appliquee.md))  
-**Sources de vérité :** pour chaque meeting, les **cinq** fichiers `working/draft/*.md` + `final/<MEETING_ID>.md` sous `.transcription/meetings/` (validation mécanique OK sur les six).  
+**Dernière alignement sources :** 2026-05-21 (révision éditoriale appliquée sur les **6** meetings ; finaux régénérés).  
+**Sources de vérité :** pour chaque meeting, les **cinq** fichiers `working/draft/*.md` + `final/<MEETING_ID>.md` sous `.transcription/meetings/` — voir [.transcription/README.md](../../.transcription/README.md).  
 **Volume indexé :** **49** idées pipeline au total (**48** IDEA in-scope, **1245** Peintre hors périmètre) ; **42** cartes REC·PKO dans ce recap (**+1** omnicanal 1246 IDEA-009 vs première passe).  
 **Objectif :** matière pour brainstorm affichages, backend, accessoires — **pas** une spec figée.  
 **Périmètre :** parcours objet (entrée → workflows → étiquettes → caisse) et chaîne caisse → Paheko (fermeture, plan comptable, tags).  
 **Hors périmètre direct :** liaison agentique Peintre seule (`2026-05-18`) ; notes de frais bénévoles (PKO-023, chantier adjacent).
 
 **Documents projet à croiser :** [PRD caisse-compta Paheko](../migration-paheko/2026-04-15_prd-recyclique-caisse-compta-paheko.md), [paramétrage SuperAdmin](../migration-paheko/2026-04-18_spec-corrections-qa-parametrage-comptable-superadmin.md), audits `references/migration-paheko/audits/`.  
-**Chantier transcription :** [2026-05-21_03_revision-transcriptions-terrain-qa2.md](2026-05-21_03_revision-transcriptions-terrain-qa2.md) (QA2 draft sur 4/6 meetings ; **1401** et **Paheko** sans `qa2-draft-fusion.md` au moment de la passe éditoriale).
+**Transcription — QA2 :** rapports `qa2-draft-fusion.md` présents pour **4/6** meetings ; **absents** pour `2026-05-21-terrain-1401` et `2026-05-21-recyclique-terrain-paheko` ; **aucun** `qa2-final-fusion.md` sur disque (optionnel si re-score formel).
 
 ---
 

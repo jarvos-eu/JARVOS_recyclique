@@ -2,8 +2,8 @@
 stepsCompleted: [1, 2, 3, 4]
 inputDocuments:
   - 'references/artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md'
-  - 'references/artefacts/2026-05-21_04_revision-editoriale-transcriptions-appliquee.md'
-  - 'references/artefacts/2026-05-21_05_qa2-loop-recap-paheko-reception.md'
+  - 'references/artefacts/archive/2026-05-21-menage-paheko-compta-qa/2026-05-21_04_revision-editoriale-transcriptions-appliquee.md'
+  - 'references/artefacts/archive/2026-05-21-menage-paheko-compta-qa/2026-05-21_05_qa2-loop-recap-paheko-reception.md'
   - '.transcription/meetings/2026-05-21-terrain-1246/working/draft/index-des-idees.md'
   - '.transcription/meetings/2026-05-21-terrain-1246/working/draft/fiches-d-idees.md'
   - '.transcription/meetings/2026-05-21-terrain-1301/working/draft/index-des-idees.md'
@@ -71,8 +71,8 @@ rec_ids_parking_v2: ['REC-016']
 | Document | Rôle session |
 |----------|----------------|
 | `references/artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md` | Source principale — §0, §3, §5, §6.1–6.2, §8 |
-| `references/artefacts/2026-05-21_04_revision-editoriale-transcriptions-appliquee.md` | Méthode STT |
-| `references/artefacts/2026-05-21_05_qa2-loop-recap-paheko-reception.md` | Gate GO brainstorm |
+| `references/artefacts/archive/2026-05-21-menage-paheko-compta-qa/2026-05-21_04_revision-editoriale-transcriptions-appliquee.md` | Méthode STT (archive) |
+| `references/artefacts/archive/2026-05-21-menage-paheko-compta-qa/2026-05-21_05_qa2-loop-recap-paheko-reception.md` | Gate GO brainstorm (archive) |
 | `.transcription/meetings/2026-05-21-terrain-1246/working/draft/*` | Poste pesée, tampon, besoins caisse |
 | `.transcription/meetings/2026-05-21-terrain-1301/working/draft/*` | Workflows, étiquette, pas de vente par lot |
 | `.transcription/meetings/2026-05-21-terrain-1401/final/*` | Besoins SMS |

@@ -1,7 +1,7 @@
 # Prompt recherche — Trous restants Liaison Paheko (3e passe)
 
 **Date :** 2026-05-21  
-**Dernière QA prompt :** 2026-05-21 — **GO** (voir [rapport QA](2026-05-21_liaison-paheko-trous-recherche_prompt-qa.md))  
+**Dernière QA prompt :** 2026-05-21 — **GO** (rapport archivé : `artefacts/archive/2026-05-21-menage-paheko-compta-qa/`)  
 **Cible :** Perplexity Pro  
 **Usage :** Compléter ce que les passes 1 et 2 n’ont **pas** tranché (Paheko opérationnel, plugin, lots d’écritures, procédures banque).  
 **Réponse :** coller dans `2026-05-21_liaison-paheko-trous-recherche_perplexity_reponse.md`  

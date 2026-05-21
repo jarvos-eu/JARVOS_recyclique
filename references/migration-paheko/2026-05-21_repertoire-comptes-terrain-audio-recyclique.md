@@ -99,7 +99,7 @@ Voir [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi
 
 | Compte | Libellé | Rôle Recyclique | Workflow | Statut | Notes |
 |--------|---------|-----------------|----------|--------|-------|
-| **86x / 87x** | Contributions volontaires en nature (emplois/ressources) | Valorisation optionnelle dons matière, bénévolat | Stats / rapport ; **pas** clôture caisse € | **Recherche** → **EC** | Textiles -18 : trace **kg** Recyclique v1 sans Paheko |
+| **86x / 87x** | Contributions volontaires en nature (emplois/ressources) | Valorisation optionnelle dons matière, bénévolat | Stats / rapport ; **pas** clôture caisse € | **Recherche** → **EC** | Dons textile **moins de 18 ans** : trace **kg** RecyClique v1 sans Paheko |
 | Engagements hors bilan | (pas de numéro unique) | Entrée don matière si valorisation | Réception / stock | **EC** | Recherche C1 — vente ultérieur bien donné : 7541 vs 7070 |
 
 ---
@@ -117,7 +117,7 @@ Voir [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi
 
 ```text
 Journée caisse (Recyclique)
-  → tickets (lignes payantes → futur 7070 ; lignes -18 → pas €)
+  → tickets (lignes payantes → futur 7070 ; lignes don textile −18 ans → pas €)
   → payment_transactions (espèces, chèque, CB, don surplus → 7541)
   → fin de journée : MODULE comptage (pièces/billets) → écart documenté [658/758 EC]
   → fermeture session : snapshot par moyen de paiement
@@ -144,7 +144,7 @@ Journée caisse (Recyclique)
 - [ ] Migration **707 → 7070** N-1 : **non** (note annexe seulement)
 - [ ] **672** : procédure fin d’exercice
 - [ ] Chèque mixte vente + don : 2 lignes crédit (confirmé recherche)
-- [ ] -18 kg : RecyClique seul OK v1
+- [ ] Dons textile moins de 18 ans (kg) : RecyClique seul OK v1
 - [ ] **754.900** identifié dans plan réel
 
 ---

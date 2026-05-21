@@ -17,6 +17,7 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 | `archive/2026-02-24_03_mission-rediger-procedure-git.md` | Mission : rediger `references/procedure-git-cursor.md` a partir du rapport |
 | `archive/2026-02-24_04_brief-create-subagent-git.md` | Brief pour Strophe : /create-subagent avec prompt Git |
 | `archive/2026-02-24_05_mission-creer-regle-git-workflow.md` | Mission : creer `.cursor/rules/git-workflow.mdc` et mettre a jour l'index principal |
+| `archive/2026-05-21-menage-paheko-compta-qa/` | **Archive 2026-05-21** — synthèses intermédiaires (06/09/11), rapports QA ventilation (08/10/12), QA prompts Perplexity, révisions transcription, QA2 recap — contenu fusionné dans [guide Paheko](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md) et docs `migration-paheko/`. |
 
 ---
 
@@ -24,16 +25,7 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
-| `2026-05-21_04_revision-editoriale-transcriptions-appliquee.md` | **Révision éditoriale exécutée** sur les **6** lots draft (STT, QA2 intégrés où rapport présent) + **validation_check** + **assemble_final** — finaux régénérés ; suite = QA2 manquants / atelier terrain. |
-| `2026-05-21_03_revision-transcriptions-terrain-qa2.md` | **Révision post-QA2** — inventaire fichiers nécessaires (draft ×5, final, transcript) pour **6** meetings ; synthèse des **4** `qa2-draft-fusion.md` existants ; **lacunes** (1401 + Paheko sans rapport draft ; **aucun** `qa2-final-fusion.md`) ; ordre de travail corrections + re-validation skill. |
-| `2026-05-21_05_qa2-loop-recap-paheko-reception.md` | **QA2 boucle** sur le recap `02` — 2 itérations, gate **95 %** atteint (**96 %**, 0 P0) ; lots correctifs structure/fidélité ; verdict **GO** brainstorm. |
-| `2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md` | **Synthèse** recherche Perplexity Liaison Paheko (1re passe) — langage plancher, décisions figées, questions suite (porteur + EC), liens vers répertoire comptes. |
-| `2026-05-21_09_synthese-validation-comptes-perplexity.md` | **Synthèse** validation comptes Perplexity (2e passe) — param figés, mono/multi 53x, exemple clôture, trous → prompt 3e passe. QA → `10_*`. |
-| `2026-05-21_10_qa-ventilation-compta-paheko-2026-05-21.md` | **QA** ventilations 2e passe + multi-caisse + re-vérif prompt R8 — lots A/B/C, **GO global**. |
-| `2026-05-21_11_synthese-trous-perplexity-liaison-paheko.md` | **Synthèse** 3e passe Perplexity — T1/T2/T3, synchro off, 709 rejeté, suite EC / implémentation. |
-| `2026-05-21_12_qa-ventilation-3e-passe-perplexity.md` | **QA** ventilation 3e passe — matrice R1–R8, cohérence PRD/multi-caisse, **GO 96 %**. |
-| `2026-05-21_02_recap-idees-paheko-reception-terrain.md` | **Recap exhaustif** idées transcripts terrain (mai 2026) pour modules **Réception** et **Liaison Paheko** — **aligné révision éditoriale 2026-05-21** + **QA2 boucle** (`05`, PKO-025, §8 explicite, §7 non-gate) ; qui dit/décide, dépendances, questions — matière brainstorm. Voir `04_*`, `05_*`. |
-| `2026-05-21_01_qa2-refactor-skill-workflow-rapport.md` | **QA2** refactor skill qa2-agent (SKILL trigger + `workflow.md`) — cycle 1 : 92 % ; Lot 1 + re-QA2 : **96 %**, gate ≥ 95 % **atteint**. |
+| `2026-05-21_02_recap-idees-paheko-reception-terrain.md` | **Recap exhaustif** idées transcripts terrain (mai 2026) pour modules **Réception** et **Liaison Paheko** — matière brainstorm ; compta : [guide](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md). |
 | `2026-05-21_07_contexte-chantier-memoire-jarvos.md` | **Handoff Phase 0.B** — pack `references/jarvos-agentique/` (porte d'entree normative, 4 types session, patterns, plans-index) ; ordre de demarrage agent ; suite Phase 1+ ; lien chantier modules / QA2. |
 | `2026-05-20_01_recommandations-outillage-cursor-bmad-jarvos.md` | **Outillage local** Cursor / BMAD / MCP — skills, agents, rules, plans ; tiers A/B/C, 10 actions, traces QA2. **Pont pack modules :** [`protocole-modules-recyclique/17-MOD-outillage-cursor-modules-2026-05-20.md`](../protocole-modules-recyclique/17-MOD-outillage-cursor-modules-2026-05-20.md). |
 | `2026-05-20_02_marketplace-cursor-com-evaluation-jarvos.md` | **Marketplace officiel** [cursor.com/marketplace](https://cursor.com/marketplace) — plugins (Sonatype, Modern Web Guidance…), automations (tests, CI, docs), canvas ; Top 10 install ; ~92 items « View more » non scorés. **Pont pack modules :** [`protocole-modules-recyclique/14-MOD-marketplace-post-v2-fiche-citation.md`](../protocole-modules-recyclique/14-MOD-marketplace-post-v2-fiche-citation.md) (L-14, post-v2 uniquement). |

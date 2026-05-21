@@ -1,7 +1,7 @@
 # Prompt recherche — Validation comptes Liaison Paheko (2e passe)
 
 **Date :** 2026-05-21  
-**Dernière QA prompt :** 2026-05-21 — **GO** (voir [rapport QA](2026-05-21_validation-comptes-liaison-paheko_prompt-qa.md))  
+**Dernière QA prompt :** 2026-05-21 — **GO** (rapport archivé : `artefacts/archive/2026-05-21-menage-paheko-compta-qa/`)  
 **Cible :** Perplexity Pro  
 **Usage :** Trancher les numéros de comptes et la conformité PCA / Paheko pour la clôture de caisse RecyClique.  
 **Réponse :** coller la réponse Perplexity dans un fichier dépôt nommé `2026-05-21_validation-comptes-liaison-paheko_perplexity_reponse.md` (archivage local uniquement — Perplexity n’y a pas accès).
