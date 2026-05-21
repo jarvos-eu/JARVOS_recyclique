@@ -6,6 +6,8 @@ Pack **normatif** pour la configuration des modules **persistée serveur**, **sc
 
 **Crosswalk pack (écarts L-04 / L-06, plan T-MOD-3) :** [`references/protocole-modules-recyclique/18-MOD-config-modules-crosswalk.md`](../protocole-modules-recyclique/18-MOD-config-modules-crosswalk.md).
 
+**Compta multi-caisse (Paheko 53x, lieux de vente)** : hors ce dossier — [`migration-paheko/2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md`](../migration-paheko/2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md) (`sites` + `cash_registers`).
+
 ---
 
 ## Fichiers principaux

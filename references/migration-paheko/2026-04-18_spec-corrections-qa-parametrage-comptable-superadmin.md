@@ -10,6 +10,7 @@ Les corrections ci-dessous restent la référence technique. Les **décisions su
 
 - **M1 — Comportement caisse :** hors périmètre des correctifs « surplus automatique » décrits plus bas. Le flux et les règles **caisse** (saisie du don, Story 22.4) ne sont **pas** modifiés par ce chantier. Le périmètre **M1** pour la livraison = **référentiel moyen de paiement `donation`** (seed / admin expert), pas un nouveau déclenchement automatique côté caisse.
 - **M5 — Exercice Paheko :** **Option B** — saisie manuelle de l’identifiant d’exercice recopié depuis Paheko ; pas d’appel HTTP GET vers Paheko dans ce chantier. Une **extension future** (liste / validation via API Paheko) est documentée dans le code (`PahekoAccountingClient`, écran clôture). Voir aussi `references/artefacts/2026-04-18_03_inventaire-qa-parametrage-comptable-superadmin.md`.
+- **Multi-caisse (2026-05-21) :** le seed `paheko_debit_account: "530"` pour espèces/don est **mono-caisse**. Cible = compte **53x par poste** (`cash_registers`) — voir [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md). Hors correctifs immédiats B1–B3 sauf mention explicite.
 
 ---
 

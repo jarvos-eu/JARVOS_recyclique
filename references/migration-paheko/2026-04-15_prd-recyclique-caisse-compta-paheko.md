@@ -163,6 +163,24 @@ Un écran séparé du paramétrage des moyens de paiement doit permettre de conf
 | `default_entry_label_prefix` | `Z caisse` | Préfixe du libellé d’écriture |
 | `special_case_admin_validation` | `true` | Validation renforcée sur cas spéciaux |
 
+### 5.3 Multi-sites et multi-caisses (comptes 53x)
+
+RecyClique prévoit **plusieurs sites** et **plusieurs postes de caisse** (`cash_registers`) par site. Paheko gère cela via les **Lieux de vente** : **un compte de classe 53 par caisse physique** (531, 5311, 532…), pas un `530` global pour toute l'association.
+
+**Doctrine complète :** [2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md](2026-05-21_multi-caisse-lieux-vente-paheko-recyclique.md).
+
+**Impacts sur ce PRD :**
+
+| Sujet | Règle cible |
+|--------|-------------|
+| `payment_methods.paheko_debit_account` (espèces) | **Par poste de caisse** (ou duplication des moyens par lieu, comme Paheko) — le défaut seed `530` ne suffit pas en multi-caisse |
+| Clôture / snapshot | Chaque `cash_session` porte le **`cash_register_id`** et le **compte 53x** du poste |
+| Module comptage | Rattaché à la **session du poste**, pas à un compte global |
+| Chèques / CB | 5112 et 511 peuvent rester **globaux** si une seule banque / un seul TPE — voir doc multi-caisse §4 |
+| Virements caisse ↔ banque ou caisse ↔ caisse | Compte **58** obligatoire en transit |
+
+**Alignement vision :** [PRD multisite kiosques](../vision-projet/2026-04-19_prd-recyclique-architecture-permissions-multisite-kiosques-bmad.md) (entités `sites`, sessions par caisse).
+
 ## 6. Règles comptables détaillées
 
 ### 6.1 Vente standard
