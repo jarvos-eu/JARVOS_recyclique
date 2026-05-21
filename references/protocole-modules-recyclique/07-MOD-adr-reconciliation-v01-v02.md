@@ -331,16 +331,17 @@ Référence complète : `_bmad-output/planning-artifacts/architecture/post-v2-hy
 
 ## Promotion `_bmad-output/` — stratégie `refs_first`
 
-Ce document et le pack `references/protocole-modules-recyclique/` **citent** la norme produit exécutable sous `_bmad-output/` **sans la promouvoir** tant qu’une validation HITL (Strophe) n’a pas tranché les questions de [`09-MOD-lacunes-et-questions-ouvertes.md`](09-MOD-lacunes-et-questions-ouvertes.md).
+HITL Strophe **clos** (2026-05-20). Ce pack et les artefacts BMAD **citent** `_bmad-output/` sans recopie integrale.
 
 | Règle | Application |
 |-------|-------------|
 | **Lecture** | Chemins relatifs vers `_bmad-output/planning-artifacts/prd.md`, `epics.md`, `architecture/`, `implementation-artifacts/` — alignement des protocoles, **pas** recopie intégrale |
 | **Miroir BMAD** | Copie faite : `_bmad-output/planning-artifacts/architecture/2026-05-20-adr-007-reconciliation-modularite-v01-v2.md` (pack = source de verite) |
-| **Interdit sans HITL** | Addendum PRD §4.2 recopie depuis le pack ; reecriture `epics.md` / stories sans decision Strophe |
-| **Ordre post-acceptation** (aligné [`00-MOD-cadrage-chantier.md`](00-MOD-cadrage-chantier.md) §7, [`22-MOD-dossier-architecte-pont-t-mod.md`](22-MOD-dossier-architecte-pont-t-mod.md)) | (1) ADR-007 **Accepted** dans `_bmad-output/planning-artifacts/architecture/` · (2) addendum ou correct-course PRD §4.2 si besoin · (3) Story **9.6** / epic config · (4) fusion `contracts/openapi/recyclique-api.yaml` + schémas CREOS |
-| **Pont exécutable** | Tableau T-MOD / T-MET → actions : [`22-MOD-dossier-architecte-pont-t-mod.md`](22-MOD-dossier-architecte-pont-t-mod.md) |
-| **Crosswalk v0.1** | Checklist arbitrée : [`19-MOD-checklist-v0-1-vs-pack.md`](19-MOD-checklist-v0-1-vs-pack.md) — clôture documentaire **L-03** en attendant **Accepted** |
+| **Interdit sans decision Strophe** | Reecriture `epics.md` / stories sans decision ; retour loader `module.toml` nominal v2 |
+| **Promotion documentaire (2026-05-21)** | **Fait** : ADR-007 Accepted (miroir BMAD) · addendum PRD **§4.2.1** · note Epic 9 · seed Story BMAD 9.6 · fusion OpenAPI T-MOD-3 |
+| **Ordre execution technique** | Story BMAD **9.6** (Peintre) · T-MOD-5 (schemas par cle) · Q-HITL-07 (TOML backend-only) |
+| **Pont exécutable** | Tableau T-MOD / T-MET : [`22-MOD-dossier-architecte-pont-t-mod.md`](22-MOD-dossier-architecte-pont-t-mod.md) |
+| **Crosswalk v0.1** | [`19-MOD-checklist-v0-1-vs-pack.md`](19-MOD-checklist-v0-1-vs-pack.md) — **L-03 clos** (ADR-007 Accepted) |
 
 **Critère de promotion :** statut **Proposed → Accepted** (§ ci-dessous) + cohérence confirmée avec [`01-MOD-matrice-choix-modularite.md`](01-MOD-matrice-choix-modularite.md) §3.1–3.6 + aucune story v2 ne dépend d’un loader `module.toml` comme AC nominal.
 

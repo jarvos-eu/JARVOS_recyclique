@@ -23,7 +23,7 @@ Entre **février 2026** et **mars–avril 2026**, le projet a porté **deux réc
 1. **v0.1** — monorepo Python/React, manifeste **`module.toml`**, contrat **`ModuleBase`**, activation **`config.toml`**, hooks **Redis Streams** / `EventBus`, slots React lazy dans le front.
 2. **v2** — brownfield `recyclique-1.4.4`, séparation **Recyclique / Paheko / Peintre_nano / CREOS**, modularité prouvée par une **chaîne contractuelle** (OpenAPI → manifests CREOS → registre widgets → runtime), activation et préférences par **`site_id` + `module_key`** (ADR-001), manifests **build-time** (pas de loader TOML documenté).
 
-**Décision de réconciliation (brouillon) :**
+**Décision de réconciliation (retenue — Accepted HITL 2026-05-20) :**
 
 | Famille | v0.1 | v2 retenu | Verdict |
 |---------|------|-----------|---------|
@@ -331,15 +331,17 @@ Référence complète : `_bmad-output/planning-artifacts/architecture/post-v2-hy
 
 ## Promotion `_bmad-output/` — stratégie `refs_first`
 
-Ce document et le pack `references/protocole-modules-recyclique/` **citent** la norme produit exécutable sous `_bmad-output/` **sans la promouvoir** tant qu’une validation HITL (Strophe) n’a pas tranché les questions de [`09-MOD-lacunes-et-questions-ouvertes.md`](09-MOD-lacunes-et-questions-ouvertes.md).
+HITL Strophe **clos** (2026-05-20). Ce miroir BMAD et le pack `references/protocole-modules-recyclique/` **citent** la norme produit sous `_bmad-output/` sans recopie integrale du pack.
 
 | Règle | Application |
 |-------|-------------|
 | **Lecture** | Chemins relatifs vers `_bmad-output/planning-artifacts/prd.md`, `epics.md`, `architecture/`, `implementation-artifacts/` — alignement des protocoles, **pas** recopie intégrale |
-| **Interdit avant HITL** | Copier cet ADR-007 vers `planning-artifacts/architecture/` avec statut **Accepted** ; addendum PRD §4.2 recopié depuis le pack ; réécriture `epics.md` / stories sans décision |
-| **Ordre post-acceptation** (aligné [`00-MOD-cadrage-chantier.md`](00-MOD-cadrage-chantier.md) §7, [`22-MOD-dossier-architecte-pont-t-mod.md`](22-MOD-dossier-architecte-pont-t-mod.md)) | (1) ADR-007 **Accepted** dans `_bmad-output/planning-artifacts/architecture/` · (2) addendum ou correct-course PRD §4.2 si besoin · (3) Story **9.6** / epic config · (4) fusion `contracts/openapi/recyclique-api.yaml` + schémas CREOS |
-| **Pont exécutable** | Tableau T-MOD / T-MET → actions : [`22-MOD-dossier-architecte-pont-t-mod.md`](22-MOD-dossier-architecte-pont-t-mod.md) |
-| **Crosswalk v0.1** | Checklist arbitrée : [`19-MOD-checklist-v0-1-vs-pack.md`](19-MOD-checklist-v0-1-vs-pack.md) — clôture documentaire **L-03** en attendant **Accepted** |
+| **Miroir BMAD** | Copie faite : ce fichier (pack `07-MOD-adr` = source de verite) |
+| **Interdit sans decision Strophe** | Reecriture `epics.md` / stories sans decision ; retour loader `module.toml` nominal v2 |
+| **Promotion documentaire (2026-05-21)** | **Fait** : ADR-007 Accepted ici · addendum PRD **§4.2.1** · note Epic 9 · seed Story BMAD 9.6 · fusion OpenAPI T-MOD-3 |
+| **Ordre execution technique** | Story BMAD **9.6** (Peintre `/admin/modules`) · T-MOD-5 (schemas par cle) · Q-HITL-07 (TOML backend-only) |
+| **Pont exécutable** | Tableau T-MOD / T-MET : [`22-MOD-dossier-architecte-pont-t-mod.md`](22-MOD-dossier-architecte-pont-t-mod.md) |
+| **Crosswalk v0.1** | [`19-MOD-checklist-v0-1-vs-pack.md`](19-MOD-checklist-v0-1-vs-pack.md) — **L-03 clos** (ADR-007 Accepted) |
 
 **Critère de promotion :** statut **Proposed → Accepted** (§ ci-dessous) + cohérence confirmée avec [`01-MOD-matrice-choix-modularite.md`](01-MOD-matrice-choix-modularite.md) §3.1–3.6 + aucune story v2 ne dépend d’un loader `module.toml` comme AC nominal.
 

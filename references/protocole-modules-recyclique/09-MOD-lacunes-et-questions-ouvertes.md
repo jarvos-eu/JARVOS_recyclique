@@ -224,7 +224,7 @@ Extrait initial dossier architecte ch. 07 — **enrichi** avec statut pack et pr
 
 | Zone | Interdit avant validation |
 |------|---------------------------|
-| `_bmad-output/planning-artifacts/prd.md` | Addendum §4.2 copié depuis le pack |
+| `_bmad-output/planning-artifacts/prd.md` | ~~Addendum §4.2 copié depuis le pack~~ → **Fait** (§4.2.1 distillé + liens, 2026-05-21) |
 | `_bmad-output/planning-artifacts/epics.md` | Réécriture stories 9.6 / nouvelles clés sans décision |
 | `_bmad-output/planning-artifacts/architecture/` | ADR-007 **Accepted** sans relecture Strophe |
 | `contracts/openapi/recyclique-api.yaml` | Fusion module-config si précédence Q-HITL-03 non tranchée |
@@ -240,7 +240,7 @@ Aligné [`00-MOD-cadrage-chantier.md`](00-MOD-cadrage-chantier.md) §7 et plan c
 | **1** | HITL : réponses §5 + validation ADR-007 | Strophe |
 | **2** | Relecture HITL **`06-cookbook`** et **`08-exemple-pilote`** (déjà livrés) | Étapes 1, Q-HITL-05/06/09–11 |
 | **3** | Promouvoir **ADR-007** → `_bmad-output/planning-artifacts/architecture/` | Étape 1 |
-| **4** | Correct-course ou **addendum PRD §4.2** (lien vers pack protocole) | Étape 3 |
+| **4** | ~~Correct-course ou **addendum PRD §4.2**~~ → **Fait** (`prd.md` §4.2.1, 2026-05-21) | Étape 3 |
 | **5** | **Create-story** / prioriser **9.6** dans epic 9 | Q-HITL-03, T-MOD-4 |
 | **6** | Fusion **T-MOD-3** → `contracts/` + codegen | Étapes 3–5 |
 | **7** | MAJ **`references/index.md`**, **`ou-on-en-est.md`** (pointeur pack, pas déplacement stories) | Livrables 06/08 stables |

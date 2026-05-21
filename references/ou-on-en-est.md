@@ -26,9 +26,11 @@ Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponibl
 
 **Repere BMAD Epics 6 a 10** : pour toute reprise ou create-story / dev-story sur la suite `6.x` a `10.x`, utiliser comme point d'entree documentaire [references/artefacts/2026-04-08_02_pack-lecture-epics-6-10-et-corpus-captures.md](artefacts/2026-04-08_02_pack-lecture-epics-6-10-et-corpus-captures.md) puis [references/artefacts/2026-04-08_03_tableau-ultra-operationnel-epics-6-10.md](artefacts/2026-04-08_03_tableau-ultra-operationnel-epics-6-10.md). Le pack `02` donne la vue de lecture par epic et le corpus de captures ; le tableau `03` donne la navigation **story par story**. Pour l'etat **story par story** (y compris cloture des Epics 6, 7, 8), se fier a `sprint-status.yaml` ; le pack et le tableau restent la lecture operationnelle des captures et de la matrice.
 
-**Pack protocole modules v2 (2026-05-20) :** [`protocole-modules-recyclique/index.md`](protocole-modules-recyclique/index.md) — **P0 clos** (ADR-007 Accepted, OpenAPI fusionne, handler `module-config` pilote `kpi-live-banner`, 5 tests). Reco : [`2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md). **P1 en cours :** story seed [`9-6-config-admin-simple-modules.md`](../_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md) ; agents : **`05` loup de mer → `04` bouclage → `06` cookbook**. **Peintre — gardien du seuil** (conscience d'affichage, hooks v2 + bypass) : **T-PEINT-1** / **L-16** — idée [`idees-kanban/a-creuser/2026-05-20_peintre-gardeien-seuil-conscience-affichage.md`](idees-kanban/a-creuser/2026-05-20_peintre-gardeien-seuil-conscience-affichage.md).
+**Pack protocole modules v2 (2026-05-20) :** [`protocole-modules-recyclique/index.md`](protocole-modules-recyclique/index.md) — **P0 clos** (ADR-007 Accepted, OpenAPI fusionne, handler `module-config` pilote `kpi-live-banner`, 5 tests). **PRD §4.2.1** aligne 2026-05-21 (`_bmad-output/planning-artifacts/prd.md`). Reco : [`2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md). **P1 en cours :** story seed [`9-6-config-admin-simple-modules.md`](../_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md) ; agents : **`05` loup de mer → `04` bouclage → `06` cookbook**. **Peintre — gardien du seuil** (conscience d'affichage, hooks v2 + bypass) : **T-PEINT-1** / **L-16** — idée [`idees-kanban/a-creuser/2026-05-20_peintre-gardeien-seuil-conscience-affichage.md`](idees-kanban/a-creuser/2026-05-20_peintre-gardeien-seuil-conscience-affichage.md).
 
 **Chantier Jarvos mémoire sessions (2026-05-21) :** Phases **0–3** livrées (pack [`jarvos-agentique/`](../references/jarvos-agentique/index.md), hooks `log/cursor-agent/`, scripts `jarvos-memoire-sessions/dev/`, skill `jarvos-session-memory`). **Batch Phase 5 partiel** : `consolidate_manifest` + triage `--limit 10` + fiche `c8a645ab` → [`sessions/`](../references/jarvos-agentique/sessions/) ; sync [`jarvos-memoire-sessions/00_SYNC_STATUS.md`](../jarvos-memoire-sessions/00_SYNC_STATUS.md). **Recharger la fenêtre Cursor** pour activer les hooks. QA2 mémoire : **pending**.
+
+**Chantier terrain / produit (2026-05-21) :** enquêtes et réunions ressourcerie → pipeline [`.transcription/`](../.transcription/README.md) (**6** meetings, 18–21 mai). **Priorité porteur (D1)** : module **Liaison Paheko** (fermeture caisse → écritures) avant réception complète. Décisions métier : [2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md). Matière brainstorm : [2026-05-21_02_recap-idees-paheko-reception-terrain.md](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md). Comptes / questions EC : [2026-05-21_repertoire-comptes-terrain-audio-recyclique.md](migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md).
 
 **Framework de modules v0.1 (fév. 2026, historique) :** artefact `references/artefacts/2026-02-24_07_design-systeme-modules.md` (TOML, ModuleBase, EventBus) — **remplacé** par pack v2 + **ADR-007 Accepted** (voir reco `2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`). **Product Brief v0.1.0 complété** (2026-02-25) : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`. **PRD complété** (2026-02-26) : `_bmad-output/planning-artifacts/prd.md` — exigences fonctionnelles (caisse, réception, compta, correspondance, auth, déploiement, vie asso, éco-organismes, extension points), NFR, scope v1 et hors scope (dont réception hors ligne = module complémentaire post-v1). **UX v1.0** : mêmes écrans que 1.4.4, copie du code des mises en page (copy+consolidate+security), pas de refonte écrans pour la v1.0.
 
@@ -45,6 +47,29 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 **Architecture complétée** (2026-02-26) : `_bmad-output/planning-artifacts/architecture.md` — décisions techniques, patterns, structure projet, validation ; statut READY FOR IMPLEMENTATION. Points à trancher en v0.1 : [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md).
 
 ## Derniere session
+
+2026-05-21 — **Brainstorms BMAD — modules Liaison Paheko et Réception** : à partir du recap terrain et des décisions compta ; structuration v1 (écrans, API/events, accessoires, workflows objet) — **en cours**, pas de spec figée.
+
+2026-05-21 — **Terrain ressourcerie — transcription et matière produit** :
+
+Réalisé :
+- Chantier `.transcription/` (profil, inbox, **6** meetings 18–21 mai, AssemblyAI + drafts/finals).
+- Recap exhaustif Réception + Liaison Paheko : [artefact 02](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md) ; révision éditoriale [04](artefacts/2026-05-21_04_revision-editoriale-transcriptions-appliquee.md).
+- Décisions produit compta liaison : [decisions](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) ; [répertoire comptes](migration-paheko/2026-05-21_repertoire-comptes-terrain-audio-recyclique.md) ; recherche [Perplexity](recherche/2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md) ; synthèse [06](artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md).
+
+2026-05-21 — **Promotion chantier modules v2 dans PRD BMAD** :
+
+Réalisé :
+- Addendum PRD **§4.2.1** (+ §7.1, glossaire `module_key`) ; `core-architectural-decisions.md` ; note Epic 9 dans `epics.md` ; ADR-007 miroir **Accepted**.
+- Synchronisation [`protocole-modules-recyclique/index.md`](protocole-modules-recyclique/index.md) et [`references/index.md`](index.md).
+
+2026-05-20 — **Chantier mémoire sessions Jarvos (plan + phases 0–3)** :
+
+Réalisé :
+- Pack [`jarvos-agentique/`](../references/jarvos-agentique/index.md), skill `jarvos-session-memory`, hooks `log/cursor-agent/`, scripts `jarvos-memoire-sessions/dev/`.
+- Handoff : [artefact 07](artefacts/2026-05-21_07_contexte-chantier-memoire-jarvos.md).
+
+---
 
 2026-04-23 — **Epic 26 — Dette qualité API (`recyclique/api/`, audit brownfield 2026-04-19)** : stories **26.1 … 26.5** livrées (pytest canonique + retrait `AdminService` orphelin, extraction service admin users/groups, convention async/ORM pilote catégories, PEP 604 vague 1 schémas, ruff + repository + ADR guide tests + trace **F7–F11**). **`epic-26`** et **`epic-26-retrospective`** → **`done`** dans **`_bmad-output/implementation-artifacts/sprint-status.yaml`** ; **rétrospective** [Epic 26 — 2026-04-23](../_bmad-output/implementation-artifacts/epic-26-retro-2026-04-23.md). Travail sur la branche **`epic/26`** ; fiche Kanban refactor API → [archive](idees-kanban/archive/2026-04-19_chantier-refactor-api-recyclique-audit-brownfield-handoff.md).
 
@@ -232,6 +257,8 @@ Ordre qui a ete suivi ; 1re passe cloturee (2026-02-25).
 5. **Restant Kanban** — nouvelles UI, module store, Le Fil, module correspondance, README, etc.
 
 ## Prochaine etape
+
+> **Note (2026-05-21)** : priorité **chantier terrain** — finaliser brainstorm **Liaison Paheko** (fermeture, ventilation écritures, paramétrage SuperAdmin), **synthèse consultations** + validation **EC** (comptes 7070, 7541, 530/511/512 — voir [décisions D1–D15](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md) et [synthèse 06](artefacts/2026-05-21_06_synthese-recherche-liaison-paheko-brainstorm.md)), puis brainstorm **Réception** ; en parallèle P1 modules (**story 9.6** Peintre) si reprise BMAD dev.
 
 > **Note (2026-04-23)** : le **backlog BMAD exécutable** suivant se lit dans les **cinq** epics **`backlog`** (**9**, **10**, **12**, **20**, **21**) — voir aussi le paragraphe **Pilotage BMAD** dans **Etat actuel**. Choisir l’epic et la première story à promouvoir ; pas d’autre story « en cours » dans le YAML à cette date.
 

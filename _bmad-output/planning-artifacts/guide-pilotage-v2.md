@@ -98,7 +98,7 @@ Pour toute **create-story / dev-story** sur les stories **6.x à 10.x**, conserv
 | Décisions courtes, handoffs agents | `references/artefacts/` (`YYYY-MM-DD_NN_…`) | `references/artefacts/index.md` **obligatoire à chaque nouvel artefact** |
 | Recherche externe | `references/recherche/` | `references/recherche/index.md` à l’ajout |
 | Interop Paheko / éco-organismes | `references/migration-paheko/`, `references/paheko/` | Index de chaque dossier |
-| PRD, archi, epics, readiness, **ce guide** | `_bmad-output/planning-artifacts/` | `_bmad-output/README.md` ; archi : `planning-artifacts/architecture/index.md` |
+| PRD, archi, epics, readiness, **ce guide** | `_bmad-output/planning-artifacts/` | `_bmad-output/README.md` ; archi : `planning-artifacts/architecture/index.md` ; modularite v2 : PRD **§4.2.1** + dev story **9.6** + [`references/protocole-modules-recyclique/`](../../references/protocole-modules-recyclique/index.md) |
 | Stories / sprint | `_bmad-output/implementation-artifacts/` | **`sprint-status.yaml`** |
 | **Tests (code)** | Backend API : `recyclique/api/` ; compose racine : `docker-compose.yml` ; raccourci `recyclique-1.4.4/docker-compose.yml` ; front v2 `peintre-nano/` (port **4444**) + legacy **4445** contre la même API | — |
 | **Rapports / stratégie de tests** (synthèse) | Consolidation 1.4.4 ; **v2** : artefacts datés dans `references/artefacts/` par défaut | Première fois : créer l’artefact **et** une entrée dans `references/artefacts/index.md` |

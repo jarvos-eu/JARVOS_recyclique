@@ -20,6 +20,8 @@ Tout le contenu précédent (PRD, epics, architecture, sprint-status, brief, rec
 
 Pour le contexte métier et les décisions hors BMAD, continuer à utiliser **`references/`** (dont `references/artefacts/`).
 
+**Brainstorming (sessions) :** `_bmad-output/brainstorming/` — format template BMAD (`stepsCompleted`, progressive flow, phases 1–4). Ex. module Réception v1 : `brainstorming-session-2026-05-21-180000.md` (entrée terrain : recap `references/artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md`).
+
 Les chemins configurés dans `_bmad/bmm/config.yaml` (`planning_artifacts`, `implementation_artifacts`) pointent toujours vers les dossiers **actifs** à la racine de `_bmad-output`, pas vers l’archive.
 
 **Note (chemins / onglets)** : la chaîne **v2 actuelle** (PRD, epics, architecture shardée, `guide-pilotage-v2.md`, sprint-status, etc.) vit sous `_bmad-output/planning-artifacts/` et `_bmad-output/implementation-artifacts/` **sans** passer par `archive/`. Utiliser `archive/2026-03-31_pivot-brownfield-recyclique-1.4.4/` **uniquement** pour lire l’**ancienne** ligne de planification (pré-pivot) ; un onglet ouvert sur un fichier **sous** ce préfixe d’archive ne remplace pas les artefacts actifs à la racine de `_bmad-output/`.

@@ -34,7 +34,7 @@
 
 ## Modularité v2 (pack protocole — ADR-007)
 
-- **[2026-05-20-adr-007-reconciliation-modularite-v01-v2.md](./2026-05-20-adr-007-reconciliation-modularite-v01-v2.md)** — **Accepted** HITL Strophe 2026-05-20 : abandon v0.1 (TOML UI, `ModuleBase`, EventBus module) ; v2 = CREOS + JSON `module_key` + routers explicites. Source pack : [`references/protocole-modules-recyclique/07-MOD-adr-reconciliation-v01-v02.md`](../../../references/protocole-modules-recyclique/07-MOD-adr-reconciliation-v01-v02.md) · reco : [`references/artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](../../../references/artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md).
+- **[2026-05-20-adr-007-reconciliation-modularite-v01-v2.md](./2026-05-20-adr-007-reconciliation-modularite-v01-v2.md)** — **Accepted** HITL Strophe 2026-05-20 : abandon v0.1 (TOML UI, `ModuleBase`, EventBus module) ; v2 = CREOS + JSON `module_key` + routers explicites. Addendum produit : [`prd.md`](../prd.md) **§4.2.1** · Source pack : [`references/protocole-modules-recyclique/07-MOD-adr-reconciliation-v01-v02.md`](../../../references/protocole-modules-recyclique/07-MOD-adr-reconciliation-v01-v02.md) · reco : [`references/artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](../../../references/artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md).
 
 ## Hypothèses post-V2 (hors backlog, non sprint)
 

@@ -22,6 +22,13 @@ references/archive/refonte-jarvos-v0.1/
 normalize_typographic_backup_*/
 normalize_typographic_chars_*.log
 
+# Transcription terrain (skill transcription-pipeline) — local uniquement (audios, transcripts, sorties)
+.transcription/*
+!.transcription/README.md
+!.transcription/transcription-profile.json
+!.transcription/_queue_run_pipeline.py
+.transcription/.env
+
 # Config locale (secrets)
 .env
 .env.*

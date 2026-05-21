@@ -1992,6 +1992,8 @@ So that the project can trust the accounting articulation before wider deploymen
 
 ## Epic 9: Livrer les modules metier complementaires v2
 
+**Modularite v2 (2026-05-20)** : avant create-story / dev-story sur cet epic, lire `prd.md` **§4.2.1** et la story seed [`9-6-config-admin-simple-modules.md`](../implementation-artifacts/9-6-config-admin-simple-modules.md) ; pack [`references/protocole-modules-recyclique/`](../../references/protocole-modules-recyclique/index.md) en refs_first.
+
 Les responsables et super-admins peuvent utiliser les modules metier complementaires attendus pour une v2 credible : declaration eco-organismes, adherents / vie associative minimale, integration `HelloAsso` et config admin simple, avec arbitrage `HelloAsso` explicite avant implementation large du connecteur.
 Ordre recommande dans cet epic : poser d'abord la gouvernance des mappings sensibles avant la consommation declarative a grande echelle, puis avancer sequentiellement sur `adherents`, arbitrage `HelloAsso`, integration minimale `HelloAsso`, `config admin simple`, ACL minimales, et validation finale.
 

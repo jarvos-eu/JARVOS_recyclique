@@ -153,7 +153,7 @@ Distinction taxonomique attendue dans `02-taxonomie` : pilote #1 ≠ pilote #2 (
 |-------|---------------------------|
 | **Citer, ne pas promouvoir** | Chemins relatifs vers `_bmad-output/planning-artifacts/` et `_bmad-output/implementation-artifacts/` ; **aucune** copie intégrale PRD / epics / stories. |
 | **Alignement, pas réécriture normative** | PRD §4.2, epics (Epic 3, 4, Story 9.6), stories `1-4`, `3-3`, `4-1`…`4-6b` = contrôle de cohérence des protocoles. |
-| **Promotion post-HITL** | **Fait** : (1) ADR-007 Accepted + miroir BMAD, (2) fusion OpenAPI T-MOD-3, (3) handler `module-config`, (4) seed story 9.6. **Reste** : addendum PRD §4.2, impl. 9.6 Peintre, schémas CREOS par clé (T-MOD-5). |
+| **Promotion post-HITL** | **Fait** : (1) ADR-007 Accepted + miroir BMAD, (2) fusion OpenAPI T-MOD-3, (3) handler `module-config`, (4) seed story 9.6, (5) addendum PRD **§4.2.1** (2026-05-21). **Reste** : impl. 9.6 Peintre, schémas CREOS par clé (T-MOD-5). |
 | **État projet** | Pointeur dans [`references/ou-on-en-est.md`](../ou-on-en-est.md) et [`references/index.md`](../index.md) — **pas** de déplacement des stories vers `references/`. |
 | **Contrats reviewables** | [`contracts/openapi/recyclique-api.yaml`](../../contracts/openapi/recyclique-api.yaml) (canonique) ; standalone module-config = **DEPRECATED**. |
 
@@ -161,7 +161,7 @@ Distinction taxonomique attendue dans `02-taxonomie` : pilote #1 ≠ pilote #2 (
 
 | Document | Usage pack |
 |----------|------------|
-| [`_bmad-output/planning-artifacts/prd.md`](../../_bmad-output/planning-artifacts/prd.md) | §4.2 chaîne 7 briques ; §7 modules obligatoires v2 ; glossaire `ModuleManifest`. |
+| [`_bmad-output/planning-artifacts/prd.md`](../../_bmad-output/planning-artifacts/prd.md) | §4.2 chaîne 6 briques ; **§4.2.1** addendum modularité v2 (2026-05-20) ; §7.1 config admin + `module_key` ; glossaire `ModuleManifest`. |
 | [`_bmad-output/planning-artifacts/epics.md`](../../_bmad-output/planning-artifacts/epics.md) | Epic 3 (socle Peintre), Epic 4 (preuve modulaire), Story 9.6 (config admin), AR45/AR46. |
 | [`_bmad-output/planning-artifacts/architecture/post-v2-hypothesis-marketplace-modules.md`](../../_bmad-output/planning-artifacts/architecture/post-v2-hypothesis-marketplace-modules.md) | §2–4 séparation domaines ; **citation post-v2 uniquement** — pas de procédure marketplace dans ce pack. |
 | [`_bmad-output/implementation-artifacts/sprint-status.yaml`](../../_bmad-output/implementation-artifacts/sprint-status.yaml) | Grain fin statuts stories (instantané : voir [ou-on-en-est](../ou-on-en-est.md)). |

@@ -53,6 +53,7 @@
 - Settings / manifests :
   - Decision : les schemas `CREOS` et manifests supportes en v2 sont versionnes dans le repo et valides par CI ; la base ou la configuration runtime ne peut porter que des overrides scopes et traçables relies a un identifiant/revision de manifest.
   - Decision **P2 (ADR)** : la configuration admin (modules actifs/inactifs, ordre de blocs, variantes simples, feature toggles dynamiques) est stockee en **PostgreSQL** (table dediee pour surcharges) ; defaults dans les manifests build ; pas de fichier JSON sur disque en production pour cette config dynamique ; traçabilite auteur/date. Voir `references/peintre/2026-04-01_adr-p1-p2-stack-css-et-config-admin.md`.
+  - **Configuration par `module_key` (ADR-001, post-HITL 2026-05-20)** : preferences / activation versionnees par `site_id` + `module_key` via API `module-config` (PostgreSQL `site_module_configs`, schemas JSON dans `references/config-modules-site-id/schemas/`) ; precedence **DEC-03** ; complete P2 sans la remplacer ; addendum produit : [`prd.md`](../prd.md) **§4.2.1** ; detail protocole : pack MOD + [`2026-05-20-adr-007-reconciliation-modularite-v01-v2.md`](2026-05-20-adr-007-reconciliation-modularite-v01-v2.md).
   - Rationale : proteger la coherence `OpenAPI` / `CREOS` / runtime, la reproductibilite des deploiements et l'absence de double verite.
 
 ## Authentication & Security

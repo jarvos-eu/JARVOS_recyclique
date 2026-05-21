@@ -140,7 +140,7 @@ En cas d'ecart avec d'anciens extraits, briefs ou archives, **l'ADR et cette ins
 
 **Priorite de resolution :** pour **P1** et **P2** uniquement, en cas d'ecart entre le **corps** de ce PRD et l'ADR, **l'ADR fait foi** (le present PRD et l'architecture BMAD restent la reference pour le reste du perimetre v2).
 
-**Decisions de perimetre et contrats (lecture WHAT/HOW) :** les choix explicitement nommes dans ce PRD — canal web et adaptateur **React**, surfaces **OpenAPI** / manifests **CREOS JSON**, persistance **PostgreSQL** pour la config admin simple (**P2**), environnement **Debian**, references **TypeScript** pour le pont semantique widget / etats CREOS — sont des **decisions de perimetre, de gouvernance contractuelle ou brownfield** alignees sur l'architecture BMAD active (`_bmad-output/planning-artifacts/architecture/`) et les ADR Peintre. Ils ne remplacent pas les specs d'implementation detaillees (stories, code, CI).
+**Decisions de perimetre et contrats (lecture WHAT/HOW) :** les choix explicitement nommes dans ce PRD — canal web et adaptateur **React**, surfaces **OpenAPI** / manifests **CREOS JSON**, persistance **PostgreSQL** pour la config admin simple (**P2**), couche **`module_key`** (§4.2.1), environnement **Debian**, references **TypeScript** pour le pont semantique widget / etats CREOS — sont des **decisions de perimetre, de gouvernance contractuelle ou brownfield** alignees sur l'architecture BMAD active (`_bmad-output/planning-artifacts/architecture/`) et les ADR Peintre. Ils ne remplacent pas les specs d'implementation detaillees (stories, code, CI).
 
 ---
 
@@ -343,6 +343,48 @@ Un module n'est considere comme modulaire que si la **chaine complete** existe :
 6. fallback, audit et feedback.
 
 Si une brique manque, un mock bien balise et explicite est acceptable en phase de construction, mais pas comme etat final.
+
+### 4.2.1 Addendum — modularite operationnelle v2 (2026-05-20)
+
+Addendum distillant le chantier modules v2 post-HITL. Le detail operationnel vit dans **`references/protocole-modules-recyclique/`** (refs_first, ne pas recopier ici). ADR canonique : [`_bmad-output/planning-artifacts/architecture/2026-05-20-adr-007-reconciliation-modularite-v01-v2.md`](architecture/2026-05-20-adr-007-reconciliation-modularite-v01-v2.md) — statut **Accepted**.
+
+#### Decisions gelees (ne pas rouvrir)
+
+- **ADR-007 Accepted** : reconciliation v0.1 (`module.toml`, `ModuleBase`, loader TOML) vers v2 (CREOS + JSON serveur + build-time) ; pas de loader `module.toml` / `ModuleBase` en chemin nominal v2.
+- **Marketplace / modules tiers** : hors scope v2 (hypothese post-v2 uniquement).
+- **Comptage pieces/billets (T-MET-1)** : reporte ; hors bouclage architecture actuel.
+- **DEC-03** : en conflit, le document JSON scope `module_key` **gagne** sur `sites.configuration` (ne reactive pas un module desactive).
+
+#### Identifiant `module_key`
+
+Identifiant stable d'un module optionnel (liste blanche, pattern, dependances). Registre normatif : [`references/protocole-modules-recyclique/05-MOD-registre-module-key.md`](../../references/protocole-modules-recyclique/05-MOD-registre-module-key.md). Persistance : table PostgreSQL `site_module_configs` (ADR-001).
+
+#### Contrats
+
+- **OpenAPI** : operations `recyclique_moduleConfig_*` fusionnees dans `contracts/openapi/recyclique-api.yaml` ; spec standalone `openapi-module-config.yaml` **DEPRECATED**.
+- **CREOS** : manifests **build-time** dans `contracts/creos/manifests/`.
+- **API `module-config`** : **interne** jusqu'a story **9.6** (F1 HITL) ; pas d'exposition multi-apps JARVOS avant stabilite du contrat.
+
+#### Chaine §4.2 — ou vivent les briques (v2)
+
+| # | Brique PRD §4.2 | Ou (v2) |
+|---|-----------------|---------|
+| 1 | Contrat metier (schema, regles) | `contracts/openapi/` ; schemas `references/config-modules-site-id/schemas/` |
+| 2 | Recepteur backend | `recyclique/api/modules/<module_key_snake>/` (**1 `module_key` = 1 package**, F3) |
+| 3 | Contrat UI (manifest CREOS) | `contracts/creos/manifests/` |
+| 4 | Runtime frontend (Peintre_nano) | Registre widgets/slots ; `data_contract.operation_id` |
+| 5 | Permissions et contexte | Recyclique auth + ContextEnvelope |
+| 6 | Fallback, audit et feedback | Epic 4 (`4-4`…`4-6b`) ; protocole front [`04-MOD-protocole-front-creos.md`](../../references/protocole-modules-recyclique/04-MOD-protocole-front-creos.md) |
+
+#### Pilote et migration
+
+- **Pilote** : `kpi-live-banner` — Epic 4 **done** ; preuve chaine complete bandeau live.
+- **Activation transitoire** : toggle admin (story 4-5) ; cible **Story BMAD 9.6** (config admin — fichier [`9-6-config-admin-simple-modules.md`](../implementation-artifacts/9-6-config-admin-simple-modules.md), distinct du **§9.6 PRD** adherents).
+- **Preuve produit config admin** : **§9.7** ci-dessous + Story BMAD 9.6 (`module-config` + merge P2 sur manifests).
+
+#### Documentation detaillee
+
+**Pointeur unique** : [`references/protocole-modules-recyclique/index.md`](../../references/protocole-modules-recyclique/index.md). Recette agents : **`05`** (loup de mer) → **`04`** (bouclage) → **`06`** (cookbook). Reco HITL : [`references/artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](../../references/artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md).
 
 ### 4.3 Robustesse et explicabilite
 
@@ -603,6 +645,10 @@ Ce n'est **pas** un grand panneau admin metier. C'est un pilotage minimal du she
 
 **Persistance de cette couche (P2, ADR)** : les reglages qui relevent du paragraphe ci-dessus (activation, ordre, variantes simples, parametres prevus par le build dans le perimetre « admin simple ») sont stockes en **PostgreSQL** comme **surcharges** fusionnees de maniere deterministe avec les **valeurs par defaut** des manifests livres au build — voir l'ADR P2 dans le bloc « Stack Peintre_nano ». **Pas de fichier JSON sur disque en production** pour cette configuration dynamique ; la **tracabilite** des changements (auteur, date, motif) suit la decision directrice.
 
+**Clarification modularite v2 (§4.2.1, Story BMAD 9.6)** : la couche **`module_key`** (activation et preferences par module, API `module-config`) est distincte des reglages **sensibles** hors perimetre « admin simple » (ci-dessous). En cas de chevauchement avec le toggle transitoire `sites.configuration`, **DEC-03** s'applique. Implementation Peintre/admin : **Story BMAD 9.6** ([`9-6-config-admin-simple-modules.md`](../implementation-artifacts/9-6-config-admin-simple-modules.md)) — **pas** le §9.6 PRD (adherents) ; preuve parcours : **§9.7**.
+
+> La regle *pas de fichier JSON sur disque en production* (§7.1 P2) s'applique a la **config admin simple dynamique** versionnee en PostgreSQL. La couche **`module_key`** (ADR-001, table `site_module_configs`, JSON **en base**) gouverne l'activation et les preferences par module ; elle **complete** P2 et obeit a **DEC-03** en cas de conflit avec `sites.configuration`.
+
 Les **mappings sensibles** et **reglages critiques** (hors perimetre « admin simple » ci-dessus) restent reserves au niveau **super-admin/expert**, avec forte tracabilite. Supports possibles : fichiers structures (TOML, YAML, JSON) ou base de donnees, selon le domaine, avec ouverture future a une assistance admin plus riche — **sans contredire** P2 pour ce qui est deja couvert par la config admin simple versionnee.
 
 **Clarification produit :** le parametrage des **moyens de paiement**, des **comptes globaux de cloture** et des **cas comptables speciaux** du domaine caisse/compta/Paheko fait partie de ces reglages **sensibles** et **n'entre pas** dans le perimetre de la `config admin simple`.
@@ -667,6 +713,7 @@ Ces sujets restent des ouvertures volontaires. L'architecture doit les rendre po
 
 | Objet | Description |
 |-------|-------------|
+| `module_key` | Identifiant stable d'un module optionnel v2 (liste blanche, activation par `site_id`) — registre : [`references/protocole-modules-recyclique/05-MOD-registre-module-key.md`](../../references/protocole-modules-recyclique/05-MOD-registre-module-key.md) ; voir §4.2.1 |
 | `ModuleManifest` | Declaration complete d'un module UI (routes, slots, widgets, actions, shortcuts, flows) |
 | `SlotDefinition` | Declaration d'un point d'extension dans le shell |
 | `WidgetDeclaration` | Declaration d'un widget avec type stable, meta_props et props_schema |
@@ -773,7 +820,7 @@ Exigences :
 Exigences :
 
 - premier module a prouver la chaine complete : contrat backend → manifest CREOS → registre Peintre_nano → slot → rendu → fallback ;
-- activation/desactivation via config admin ;
+- activation/desactivation via **`module_key`** (`kpi-live-banner`, §4.2.1) ; toggle transitoire `sites.configuration` soumis a **DEC-03** ; cible **Story BMAD 9.6** + parcours **§9.7** ;
 - preuve explicite du profil CREOS minimal sur au moins `ModuleManifest`, `WidgetDeclaration`, `SlotDefinition` et `ModuleAction` ;
 - si le bandeau live ne prouve pas la chaine modulaire, **la chaine doit etre corrigee avant d'aller plus loin**.
 

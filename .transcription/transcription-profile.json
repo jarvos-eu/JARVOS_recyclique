@@ -1,0 +1,14 @@
+{
+  "type": "multi",
+  "default_template": "brainstorming-organique",
+  "template": "brainstorming-organique",
+  "speakers": {
+    "A": "Intervenant A (a renommer)",
+    "B": "Intervenant B (a renommer)",
+    "C": "Intervenant C (a renommer)",
+    "D": "Intervenant D (a renommer)"
+  },
+  "language": "fr",
+  "diarization": true,
+  "meeting_id_pattern": "YYYY-MM-DD-recyclique-terrain"
+}
