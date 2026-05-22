@@ -25,6 +25,7 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
+| `2026-05-22_01_qa2-loop-vision-flux-objets-gate95.md` | **Boucle QA gate ≥ 95 %** sur la vision [2026-05-22 flux objets / étiquettes / webcam](../vision-projet/2026-05-22_vision-flux-objets-reception-etiquettes-webcam-superadmin.md) : P0 corrigés (PKO-000, critères scan, lien guide Paheko) ; **GO** 96 %. |
 | `2026-05-21_02_recap-idees-paheko-reception-terrain.md` | **Recap exhaustif** idées transcripts terrain (mai 2026) pour modules **Réception** et **Liaison Paheko** — matière brainstorm ; compta : [guide](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md). |
 | `2026-05-21_07_contexte-chantier-memoire-jarvos.md` | **Handoff Phase 0.B** — pack `references/jarvos-agentique/` (porte d'entree normative, 4 types session, patterns, plans-index) ; ordre de demarrage agent ; suite Phase 1+ ; lien chantier modules / QA2. |
 | `2026-05-20_01_recommandations-outillage-cursor-bmad-jarvos.md` | **Outillage local** Cursor / BMAD / MCP — skills, agents, rules, plans ; tiers A/B/C, 10 actions, traces QA2. **Pont pack modules :** [`protocole-modules-recyclique/17-MOD-outillage-cursor-modules-2026-05-20.md`](../protocole-modules-recyclique/17-MOD-outillage-cursor-modules-2026-05-20.md). |

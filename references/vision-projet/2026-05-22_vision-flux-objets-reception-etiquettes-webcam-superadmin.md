@@ -19,7 +19,7 @@ Les transcriptions terrain (mai 2026) et le recap associé ont fait émerger bea
 
 ## 2. L'énoncé en une phrase
 
-**Chaque objet qui entre dans l'asso porte une identité numérique stable (code-barres ou QR) qui relie la réception, le stock, la caisse et les exports comptables, sans refaire la saisie à chaque étape.**
+**Chaque objet qui entre dans l'asso porte une identité numérique stable (code-barres ou QR) qui relie la réception, le stock et la caisse, et alimente la traçabilité vers la compta (euros et matière selon les règles Paheko / **PKO-000**), sans refaire la saisie à chaque étape.**
 
 La **webcam** et la **bascule** ne sont pas la vision en elles-mêmes : ce sont des **moyens** pour enregistrer vite et bien **poids**, **catégorie** et **contexte visuel**, au service de cette identité et de ce parcours.
 
@@ -57,7 +57,7 @@ Le super admin ne « code » pas : il **cadre** pour un ou plusieurs sites :
 
 ## 6. Hors périmètre de cette vision (rappel)
 
-- Choix comptables précis (écritures, comptes, expert-comptable) : voir le guide Paheko et les fiches **PKO-*** du recap.
+- Choix comptables précis (écritures, comptes, expert-comptable) : voir [le guide liaison Paheko compta](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md) et les fiches **PKO-*** du recap.
 - Omnicanal, vente en ligne, mutualisation réseau des estimations : **pistes** (**REC-016**, **REC-014**), pas des engagements de cette vision v1.
 
 ---
@@ -65,7 +65,7 @@ Le super admin ne « code » pas : il **cadre** pour un ou plusieurs sites :
 ## 7. Critères de succès (comment savoir que la vision est atteinte)
 
 - Un bénévole peut expliquer en **deux phrases** le chemin d'un objet de l'entrée à la caisse.
-- **Un scan** suffit pour retrouver poids, photo, emplacement, état et prix (ou fourchette) sans ressaisir.
+- **Un scan** suffit pour retrouver au minimum poids, état et prix (ou fourchette) sans ressaisir ; **photo** et **emplacement** lorsque la fiche les enregistre (objectif cible aligné **REC-007** / entrée **REC-001**).
 - Le super admin peut **expliquer** à une nouvelle ressourcerie **où** elle se différencie des autres surtout sur **étapes** et **moment d'étiquetage**, sans casser la logique commune.
 
 ---
