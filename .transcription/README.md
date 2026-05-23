@@ -2,13 +2,15 @@
 
 ## Déposer les audios
 
-Copier les fichiers dans **`inbox/`** (ce dossier n'est pas versionné).
+Copier les fichiers dans **`inbox/`** (contenu local non versionné ; seul `inbox/README.md` peut être suivi par Git).
 
-Chemin complet sur cette machine :
-
-`JARVOS_recyclique/.transcription/inbox/`
+Chemin type : **`<racine-repo>/.transcription/inbox/`** (voir aussi [inbox/README.md](inbox/README.md)).
 
 Formats pris en charge par le skill : `.mp3`, `.wav`, `.m4a`, `.flac`, `.ogg`.
+
+### File d’attente `_queue/` (optionnel)
+
+Le script versionné **`_queue_run_pipeline.py`** lit **`_queue/`** (à créer à la racine de `.transcription/`), copie chaque audio vers `inbox/`, lance `run_pipeline.py`, puis retire la copie dans `inbox/`. Chemins **portables** (Linux / macOS / Windows). Racine du skill : variable d’environnement **`TRANSCRIPTION_SKILL_ROOT`** si le skill n’est pas dans `~/.cursor/skills/transcription-pipeline-v1.1`.
 
 ## Clé API AssemblyAI
 
@@ -42,3 +44,5 @@ Voir le skill **transcription-pipeline-v1.1** (étapes scan inbox, `run_pipeline
 ## Révision et QA2 (mai 2026)
 
 **État (2026-05-21) :** révision éditoriale appliquée sur les **6** meetings (drafts + finaux). Rapports `qa2-draft-fusion.md` : **4/6** présents ; absents pour `2026-05-21-terrain-1401` et `2026-05-21-recyclique-terrain-paheko`. Recap idées : **`references/artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md`**. Journaux de chantier archivés : `references/artefacts/archive/2026-05-21-menage-paheko-compta-qa/`.
+
+**Compte rendu structurant (2026-05-23) :** synthèse directions + dépendances + intégration futurs audios — [`references/artefacts/2026-05-23_01_compte-rendu-audit-terrain-directions-futures.md`](../references/artefacts/2026-05-23_01_compte-rendu-audit-terrain-directions-futures.md). Dossier **`inbox/`** documenté : [`inbox/README.md`](inbox/README.md).

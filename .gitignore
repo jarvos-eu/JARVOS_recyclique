@@ -27,6 +27,8 @@ normalize_typographic_chars_*.log
 !.transcription/README.md
 !.transcription/transcription-profile.json
 !.transcription/_queue_run_pipeline.py
+!.transcription/inbox/
+!.transcription/inbox/README.md
 .transcription/.env
 
 # Config locale (secrets)
