@@ -1,6 +1,6 @@
 # Ou on en est — JARVOS Recyclique
 
-Mis a jour : 2026-05-21
+Mis a jour : 2026-05-23
 
 **Perimetre par version** : voir [references/versioning.md](versioning.md) (v0.1.0 → v1.0.0).
 
@@ -30,7 +30,7 @@ Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponibl
 
 **Chantier Jarvos mémoire sessions (2026-05-21) :** Phases **0–3** livrées (pack [`jarvos-agentique/`](../references/jarvos-agentique/index.md), hooks `log/cursor-agent/`, scripts `jarvos-memoire-sessions/dev/`, skill `jarvos-session-memory`). **Batch Phase 5 partiel** : `consolidate_manifest` + triage `--limit 10` + fiche `c8a645ab` → [`sessions/`](../references/jarvos-agentique/sessions/) ; sync [`jarvos-memoire-sessions/00_SYNC_STATUS.md`](../jarvos-memoire-sessions/00_SYNC_STATUS.md). **Recharger la fenêtre Cursor** pour activer les hooks. QA2 mémoire : **pending**.
 
-**Chantier terrain / produit (2026-05-21) :** enquêtes et réunions ressourcerie → pipeline [`.transcription/`](../.transcription/README.md) (**6** meetings, 18–21 mai). **Priorité porteur (D1)** : module **Liaison Paheko** (fermeture caisse → écritures) avant réception complète. Décisions métier : [2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md). Matière terrain : [2026-05-21_02_recap-idees-paheko-reception-terrain.md](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md). **Brainstorms BMAD lancés le 2026-05-21** : **Réception** — session clôturée (phases 1–4) → [`brainstorming-session-2026-05-21-180000.md`](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-180000.md) ; **Liaison Paheko** — consolidation / validation compta (courrier Corinne+Caro) → [`brainstorming-session-2026-05-21-paheko-compta-validation.md`](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-paheko-compta-validation.md) (**en attente EC** ; brainstorm UX fermeture caisse **après** validation).
+**Chantier terrain / produit (2026-05-21) :** enquêtes et réunions ressourcerie → pipeline [`.transcription/`](../.transcription/README.md) (**6** meetings, 18–21 mai). **Priorité porteur (D1)** : module **Liaison Paheko** (fermeture caisse → écritures) avant réception complète. Décisions métier : [2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md](migration-paheko/2026-05-21_decisions-compta-liaison-paheko-recherche-terrain.md). Matière terrain : [2026-05-21_02_recap-idees-paheko-reception-terrain.md](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md). **Compte rendu structurant (2026-05-23)** — directions, dépendances, intégration futurs audios : [2026-05-23_01_compte-rendu-audit-terrain-directions-futures.md](artefacts/2026-05-23_01_compte-rendu-audit-terrain-directions-futures.md). **Brainstorms BMAD lancés le 2026-05-21** : **Réception** — session clôturée (phases 1–4) → [`brainstorming-session-2026-05-21-180000.md`](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-180000.md) ; **Liaison Paheko** — consolidation / validation compta (courrier Corinne+Caro) → [`brainstorming-session-2026-05-21-paheko-compta-validation.md`](../_bmad-output/brainstorming/brainstorming-session-2026-05-21-paheko-compta-validation.md) (**en attente EC** ; brainstorm UX fermeture caisse **après** validation).
 
 **Framework de modules v0.1 (fév. 2026, historique) :** artefact `references/artefacts/2026-02-24_07_design-systeme-modules.md` (TOML, ModuleBase, EventBus) — **remplacé** par pack v2 + **ADR-007 Accepted** (voir reco `2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`). **Product Brief v0.1.0 complété** (2026-02-25) : `_bmad-output/planning-artifacts/product-brief-JARVOS_recyclique-2026-02-25.md`. **PRD complété** (2026-02-26) : `_bmad-output/planning-artifacts/prd.md` — exigences fonctionnelles (caisse, réception, compta, correspondance, auth, déploiement, vie asso, éco-organismes, extension points), NFR, scope v1 et hors scope (dont réception hors ligne = module complémentaire post-v1). **UX v1.0** : mêmes écrans que 1.4.4, copie du code des mises en page (copy+consolidate+security), pas de refonte écrans pour la v1.0.
 
@@ -47,6 +47,12 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 **Architecture complétée** (2026-02-26) : `_bmad-output/planning-artifacts/architecture.md` — décisions techniques, patterns, structure projet, validation ; statut READY FOR IMPLEMENTATION. Points à trancher en v0.1 : [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md).
 
 ## Derniere session
+
+2026-05-23 — **Compte rendu canonique audit terrain + structure transcription** :
+
+Réalisé :
+- Artefact [2026-05-23_01_compte-rendu-audit-terrain-directions-futures.md](artefacts/2026-05-23_01_compte-rendu-audit-terrain-directions-futures.md) : synthèse directions, dépendances REC/PKO ↔ vision/BMAD, procédure pour intégrer un nouvel audio ; renvoie au recap [02](artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md) pour le détail exhaustif des idées.
+- Dossier [`.transcription/inbox/`](../.transcription/inbox/README.md) documenté ; script [`_queue_run_pipeline.py`](../.transcription/_queue_run_pipeline.py) rendu portable (`TRANSCRIPTION_SKILL_ROOT`). **Aucun fichier audio** dans le dépôt distant à cette date — pipeline AssemblyAI non exécuté sur l’agent cloud.
 
 2026-05-21 — **Brainstorm BMAD — module Réception v1** (`bmad-brainstorming`, progressive-flow) :
 

@@ -1,19 +1,35 @@
 #!/usr/bin/env python3
-"""Boucle locale : un fichier _queue -> inbox -> run_pipeline -> vider inbox."""
+"""Boucle locale : un fichier _queue -> inbox -> run_pipeline -> vider inbox.
+
+Chemins : relatifs à ce fichier (portable Linux/macOS/Windows).
+Skill : ~/.cursor/skills/transcription-pipeline-v1.1 ou TRANSCRIPTION_SKILL_ROOT.
+"""
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
-TRANSCRIPTION_ROOT = Path(
-    r"d:\users\Strophe\Documents\1-IA\La Clique Qui Recycle\JARVOS_recyclique\.transcription"
-)
-SKILL_ROOT = Path(r"C:\Users\Strophe\.cursor\skills\transcription-pipeline-v1.1")
-REPO_ROOT = Path(r"d:\users\Strophe\Documents\1-IA\La Clique Qui Recycle\JARVOS_recyclique")
+SCRIPT_DIR = Path(__file__).resolve().parent
+TRANSCRIPTION_ROOT = SCRIPT_DIR
+REPO_ROOT = SCRIPT_DIR.parent
 AUDIO_EXT = {".m4a", ".mp3", ".wav", ".flac", ".ogg"}
+
+
+def skill_root() -> Path:
+    env = os.environ.get("TRANSCRIPTION_SKILL_ROOT")
+    if env:
+        return Path(env)
+    default = Path.home() / ".cursor" / "skills" / "transcription-pipeline-v1.1"
+    if default.is_dir():
+        return default
+    legacy_win = Path(r"C:\Users\Strophe\.cursor\skills\transcription-pipeline-v1.1")
+    if legacy_win.is_dir():
+        return legacy_win
+    return default
 
 
 def meeting_id_for(filename: str) -> str:
@@ -36,6 +52,13 @@ def main() -> int:
     inbox = TRANSCRIPTION_ROOT / "inbox"
     inbox.mkdir(parents=True, exist_ok=True)
 
+    if not queue.is_dir():
+        print(
+            f"[queue] Dossier absent : {queue} (créer _queue/ et y déposer les audios)",
+            file=sys.stderr,
+        )
+        return 1
+
     files = sorted(
         (f for f in queue.iterdir() if f.is_file() and f.suffix.lower() in AUDIO_EXT),
         key=lambda p: p.name.lower(),
@@ -44,7 +67,16 @@ def main() -> int:
         print("[queue] Aucun fichier audio dans _queue/", file=sys.stderr)
         return 1
 
-    run_script = SKILL_ROOT / "scripts" / "run_pipeline.py"
+    skill = skill_root()
+    run_script = skill / "scripts" / "run_pipeline.py"
+    if not run_script.is_file():
+        print(
+            f"[queue] Script introuvable : {run_script}\n"
+            "  Définir TRANSCRIPTION_SKILL_ROOT vers transcription-pipeline-v1.1",
+            file=sys.stderr,
+        )
+        return 1
+
     exit_summary: list[tuple[str, str, int, str]] = []
 
     for src in files:
@@ -67,7 +99,7 @@ def main() -> int:
         err = ""
         if proc.returncode != 0:
             err = f"exit_code={proc.returncode}"
-            print(f"[ERREUR] {src.name} ({mid}): {err}", flush=True)
+            print(f"[ERREUR] {src.name} ({mid}): {err}", file=sys.stderr)
         if dest.exists():
             dest.unlink()
         exit_summary.append((src.name, mid, proc.returncode, err))
