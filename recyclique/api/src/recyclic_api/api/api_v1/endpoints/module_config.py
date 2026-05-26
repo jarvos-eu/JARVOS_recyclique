@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 import uuid
 from typing import Optional, Union
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from recyclic_api.core.auth import CachedUser, get_current_user_strict
@@ -20,6 +21,8 @@ from recyclic_api.models.user import User, UserRole
 from recyclic_api.modules.module_config.service import ModuleConfigService
 from recyclic_api.modules.module_config.validation import format_etag
 from recyclic_api.schemas.module_config import ModuleConfigDocument
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -72,6 +75,7 @@ def get_site_module_config(
     except ValidationError as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
 
+    response.headers["Cache-Control"] = "private, no-store"
     response.headers["ETag"] = format_etag(etag_version)
     return doc
 
@@ -93,10 +97,12 @@ def patch_site_module_config(
     site_id: str,
     module_key: str,
     body: ModuleConfigDocument,
+    request: Request,
     response: Response,
     db: Session = Depends(get_db),
     current_user: Union[User, CachedUser] = Depends(get_current_user_strict),
     if_match: Optional[str] = Header(default=None, alias="If-Match"),
+    change_reason: Optional[str] = Header(default=None, alias="X-Module-Config-Change-Reason"),
 ) -> ModuleConfigDocument:
     _require_admin_subject(current_user)
     svc = ModuleConfigService(db)
@@ -116,6 +122,17 @@ def patch_site_module_config(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=exc.detail) from exc
     except ValidationError as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+
+    motif = (change_reason or "").strip() or None
+    logger.info(
+        "module_config_patch user_id=%s site_id=%s module_key=%s version=%s motif=%r ip=%s",
+        current_user.id,
+        site_id,
+        module_key,
+        etag_version,
+        motif,
+        request.client.host if request.client else None,
+    )
 
     response.headers["ETag"] = format_etag(etag_version)
     return doc

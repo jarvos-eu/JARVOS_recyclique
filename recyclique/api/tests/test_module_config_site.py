@@ -10,7 +10,9 @@ from sqlalchemy.orm import Session
 from recyclic_api.core.config import settings
 from recyclic_api.core.security import create_access_token, hash_password
 from recyclic_api.models.site import Site
+from recyclic_api.models.site_module_config import SiteModuleConfig
 from recyclic_api.models.user import User, UserRole, UserStatus
+from recyclic_api.modules.module_config.registry import MODULE_KEY_KPI_LIVE_BANNER, SCHEMA_VERSION_KPI_LIVE_BANNER_V1
 
 _V1 = settings.API_V1_STR.rstrip("/")
 _MODULE_KEY = "kpi-live-banner"
@@ -144,3 +146,96 @@ def test_patch_if_match_wrong_409(client: TestClient, db_session: Session):
         },
     )
     assert r.status_code == 409
+
+
+def test_get_without_valid_auth_401(client: TestClient, db_session: Session):
+    site = Site(id=uuid.uuid4(), name="Site noauth", is_active=True)
+    db_session.add(site)
+    db_session.commit()
+
+    r = client.get(
+        _url(site.id),
+        headers={"Authorization": "Bearer not-a-valid-jwt"},
+    )
+    assert r.status_code == 401
+
+
+def test_get_cache_control_private_no_store(client: TestClient, db_session: Session):
+    site = Site(id=uuid.uuid4(), name="Site cache", is_active=True)
+    db_session.add(site)
+    db_session.commit()
+    _, token = _admin_for_site(db_session, site)
+
+    r = client.get(
+        _url(site.id),
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert r.status_code == 200
+    assert r.headers.get("cache-control") == "private, no-store"
+
+
+def test_patch_if_match_malformed_422(client: TestClient, db_session: Session):
+    site = Site(id=uuid.uuid4(), name="Site bad etag", is_active=True)
+    db_session.add(site)
+    db_session.commit()
+    _, token = _admin_for_site(db_session, site)
+
+    body = {
+        "schema_version": "1.0.0",
+        "payload": _DEFAULT_PAYLOAD,
+    }
+    r = client.patch(
+        _url(site.id),
+        json=body,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "If-Match": "not-a-version",
+        },
+    )
+    assert r.status_code == 422
+
+
+def test_live_snapshot_dec03_pg_json_overrides_legacy_config(
+    client: TestClient, db_session: Session
+):
+    """DEC-03 : ligne PG avec slice off — legacy sites.configuration ne réactive pas."""
+    site = Site(
+        id=uuid.uuid4(),
+        name="DEC03 site",
+        is_active=True,
+        configuration={"bandeau_live_slice_enabled": True},
+    )
+    db_session.add(site)
+    db_session.add(
+        SiteModuleConfig(
+            site_id=site.id,
+            module_key=MODULE_KEY_KPI_LIVE_BANNER,
+            schema_version=SCHEMA_VERSION_KPI_LIVE_BANNER_V1,
+            payload={
+                "show_on_caisse": False,
+                "show_on_reception": False,
+                "refresh_interval_seconds": 60,
+            },
+            version=1,
+        )
+    )
+    uid = uuid.uuid4()
+    user = User(
+        id=uid,
+        username=f"u_dec03_{uid.hex[:8]}@test.com",
+        hashed_password=hash_password("pw"),
+        role=UserRole.USER,
+        status=UserStatus.ACTIVE,
+        legacy_external_contact_id=f"leg_{uid.hex[:12]}",
+        site_id=site.id,
+    )
+    db_session.add(user)
+    db_session.commit()
+    token = create_access_token(data={"sub": str(uid)})
+
+    r = client.get(
+        "/v2/exploitation/live-snapshot",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["bandeau_live_slice_enabled"] is False

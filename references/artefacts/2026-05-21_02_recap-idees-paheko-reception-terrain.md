@@ -3,7 +3,7 @@
 **Date :** 2026-05-21  
 **Dernière alignement sources :** 2026-05-21 (révision éditoriale appliquée sur les **6** meetings ; finaux régénérés).  
 **Sources de vérité :** pour chaque meeting, les **cinq** fichiers `working/draft/*.md` + `final/<MEETING_ID>.md` sous `.transcription/meetings/` — voir [.transcription/README.md](../../.transcription/README.md).  
-**Volume indexé :** **49** idées pipeline au total (**48** IDEA in-scope, **1245** Peintre hors périmètre) ; **42** cartes REC·PKO dans ce recap (**+1** omnicanal 1246 IDEA-009 vs première passe).  
+**Volume indexé :** **49** idées pipeline (18–21 mai, **48** in-scope + **1245** Peintre hors périmètre) ; **42** cartes REC·PKO. **Addendum 23/05 :** **+24** idées — voir [2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md](2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md) (**ORG/WFL/VIS**, upgrades **REC-008**, **REC-001**).  
 **Objectif :** matière pour brainstorm affichages, backend, accessoires — **pas** une spec figée.  
 **Périmètre :** parcours objet (entrée → workflows → étiquettes → caisse) et chaîne caisse → Paheko (fermeture, plan comptable, tags).  
 **Hors périmètre direct :** liaison agentique Peintre seule (`2026-05-18`) ; notes de frais bénévoles (PKO-023, chantier adjacent).
@@ -25,6 +25,7 @@
 | **IDEA-002** (1333) | *Agent* = composant logiciel ou règle auto (pas « agent IA » sans preuve audio). |
 | Paheko | Volume élevé ; fiches = agrégats contigus ; valider décisions sur l’audio. |
 | **1401** | Final peut afficher durée **0m** (JSON ~38 s) ; Q « Depuis combien de temps… » = **ouverture** audio, pas fin — voir `qa2-*-fusion.md` 1401. |
+| **23/05/2026** | Addendum **1423** (workflows org) + **visions** (VIS-001…020) — hors corps REC/PKO ; voir artefact `2026-05-23_01_*`. |
 
 Les IDs **REC-*** / **PKO-*** de ce document restent stables pour le brainstorm ; la colonne **IDEA pipeline** pointe vers les fiches à jour sur disque.
 
@@ -158,7 +159,7 @@ Les meetings utilisent **A / B / C / D**. Hypothèses déduites du contenu (noms
 
 | Champ | Valeur |
 |-------|--------|
-| **Sources** | 1301 IDEA-008 |
+| **Sources** | 1301 IDEA-008 ; **addendum 23/05** : 1423 IDEA-001–003, visions **VIS-010**, **VIS-019** |
 | **Qui propose** | **A** |
 | **Statut** | **Intuition à affiner** (révision) — cœur configurateur visé, mais **réserve QA** : ton oral « idéal cible » ; ne pas sur-classer en spec avant cadrage règles |
 | **Tags draft** | *flux, paramétrage* — pas le mot « orchestration » à l’oral |

@@ -1,3 +1,6 @@
+# last_updated: 2026-05-26 — Story Runner BMAD story **9.6** : **`9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples`** **`review`** → **`done`** ; **CR1** CHANGES_REQUESTED → **DS** (guards `/admin/modules` + PATCH sans ETag) ; **GATE** pytest **22 passed** (~303 s : relever `timeout_sec` > 300 si gate shell) + Vitest **47 passed** ; **QA** `bmad-qa-generate-e2e-tests` PASS ; **CR2** APPROVE ; `vs_loop=0` `qa_loop=0` `cr_loop=1` ; prochaine story Epic 9 : **9-7** backlog (ordre `epics.md`).
+# last_updated: 2026-05-26 — story **9.6** DS bmad-dev-story : **`9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples`** **`in-progress`** → **`review`** ; gates pytest module-config + snapshot **22 passed** ; Vitest admin-modules **5 passed** ; prochaine étape **CR** BMAD.
+# last_updated: 2026-05-26 — PM Strophe (Option C, brief 02) : **`epic-9`** **`backlog`** → **`in-progress`** ; lancement **`bmad-dev-story`** 9.6 ; plancher **v2.0** (parité gestes 1.4.4 autre dépôt) puis modules **2.0.1**, **2.0.2**… ; **HelloAsso** parking module ultérieur.
 # last_updated: 2026-04-23 — pilotage : **`epic-10`** **`in-progress`** → **`backlog`** ; stories **10.x** inchangées (dont **10.6b–10.6e** **`done`**).
 # last_updated: 2026-04-23 — clôture pilotage **Epic 14** / stories **14.3–14.5** : **`14-3`…`14-5`** **`review`** → **`done`** ; **`epic-14`** **`in-progress`** → **`done`** ; **`epic-14-retrospective`** **`optional`** → **`done`** ; artefact **`epic-14-retro-2026-04-23.md`** ; travaux résiduels et validations poursuivis hors traces BMAD (runs ultérieurs), alignement documentaire demandé par l'équipe
 # last_updated: 2026-04-23 — clôture pilotage **Epic 13** / **Story 13.8** : **`13-8-implementer-la-traduction-kiosque-legacy-retenue-dans-peintre-nano`** **`review`** → **`done`** ; **`epic-13`** **`in-progress`** → **`done`** (stories **13.1–13.8** **`done`**) ; **`epic-13-retrospective`** **`optional`** → **`done`** ; artefact **`epic-13-retro-2026-04-23.md`** ; compléments **T2/T4** réalisés hors fichier story (runs ultérieurs sur `peintre-nano`, voir story § Dev Agent Record)
@@ -350,7 +353,7 @@ generated: "2026-04-01"
 # last_updated: 2026-04-20 (suite doc §25) — slugs **25-10** / **25-13** alignes titres epics (`versus` / `poste-ou-kiosque`) ; DAG en commentaire sous bloc phase 2 ; note readiness §3 + rapport readiness encadre ; matrice convention 25.2 vs ADR 25-2.
 # Fraicheur canonique pour outils / grep : utiliser la cle YAML `last_updated` (racine) ci-dessous ; les lignes `# last_updated:` en tete de fichier sont historique operationnel (ne pas les confondre avec la racine).
 # last_updated: 2026-04-23 — epic-15 **done** ; 15-1…15-4 **review→done** (clôture fondation admin obsolète vs chantier 16–19+ ; détail `epics.md` §15 + fiches story).
-last_updated: "2026-04-23"
+last_updated: "2026-05-26"
 # last_updated: 2026-04-20 — story 25-7 DS bmad-dev-story Task : 25-7-traduire-la-spec-25-4-sections-2-3-en-checklist-developpement-executable ready-for-dev → review ; checklist `_bmad-output/implementation-artifacts/checklists/25-7-checklist-spec-25-4-sections-2-3.md` ; epic-25 inchangé in-progress
 # last_updated: 2026-04-20 — story 25-7 Story Runner fin : 25-7 review→done (CR×2, cr_loop=1 ; gates git ; QA doc `_bmad-output/implementation-artifacts/25-7-qa-checklist-verification.md`) ; correctifs YAML/story post-CR1 ; epic-25 inchangé in-progress
 # last_updated: "2026-04-16" # story 22.5 Story Runner fin : VS→DS→GATE→QA→CR APPROVE ; 22-5 review→done ; vs=0 qa=0 cr=0 ; gates pytest+npm (e2e 22-5 inclus post-QA)
@@ -469,13 +472,13 @@ development_status:
   8-7-valider-la-reconciliation-reelle-avec-paheko: done
   epic-8-retrospective: done
 
-  epic-9: backlog
+  epic-9: in-progress
   9-1-livrer-le-module-declaration-eco-organismes: backlog
   9-2-gerer-les-mappings-sensibles-et-leur-gouvernance-super-admin: backlog
   9-3-livrer-le-module-adherents-vie-associative-minimale: backlog
   9-4-arbitrer-le-niveau-dintegration-helloasso-avant-implementation-large: backlog
   9-5-integrer-le-minimum-utile-de-helloasso-au-parcours-adherents: backlog
-  9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples: backlog
+  9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples: done
   9-7-livrer-les-acl-minimales-de-fonctionnalites-sensibles: backlog
   9-8-valider-la-coherence-des-modules-complementaires-v2: backlog
   epic-9-retrospective: optional

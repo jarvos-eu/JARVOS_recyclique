@@ -1,12 +1,12 @@
 {
   "version": "1",
   "page_key": "transverse-admin-modules",
-  "required_permission_keys": ["transverse.admin.view", "caisse.sale_correct"],
+  "required_permission_keys": ["transverse.admin.view"],
   "requires_site": true,
   "slots": [
     {
       "slot_id": "admin.transverse-list.main",
-      "widget_type": "admin.kpi.live.banner.settings",
+      "widget_type": "admin.modules",
       "widget_props": {}
     }
   ]

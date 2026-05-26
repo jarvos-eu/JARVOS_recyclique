@@ -56,7 +56,7 @@ rg "module-config|bandeau-live-slice" "contracts/openapi/recyclique-api.yaml"
 
 **Conclusion L-06 :** validation payload `module-config` possible **uniquement** pour `kpi-live-banner` / `schema_version` `1.0.0`. Les autres `module_key` du registre sont **réservés** sans schéma publié.
 
-**Lien L-08 (hors owner principal de ce doc) :** le toggle Epic **4-5** reste **transitoire** ; la cible ADR-001 (`module_key=kpi-live-banner`) est **fusionnée** dans `recyclique-api.yaml` (L-04 **clos**) — **double chemin activation** (toggle + `module-config` + localStorage Peintre) jusqu'à story **9.6** (§4).
+**Lien L-08 — clos documentaire 2026-05-26 (story 9.6 DS) :** activation bandeau = **`PATCH module-config/kpi-live-banner`** + lecture `bandeau_live_slice_enabled` depuis PG (DEC-03). `PATCH bandeau-live-slice` **DEPRECATED** (redirige vers PG). Peintre `/admin/modules` — plus de `localStorage` comme vérité. §4 historique conservé.
 
 ---
 
@@ -77,7 +77,7 @@ rg "module-config|bandeau-live-slice" "contracts/openapi/recyclique-api.yaml"
 | **Codegen TS** | [`contracts/openapi/generated/recyclique-api.ts`](../../contracts/openapi/generated/recyclique-api.ts) | **Dérivé** YAML canon | Types module-config **générés** (post `npm run generate` 2026-05-20) |
 | **Gouvernance contrats** | [`contracts/README.md`](../../contracts/README.md) | **Référence** | Documente bandeau `live-snapshot` ; pas `module-config` (→ [`21-MOD-gouvernance-contrats-modules.md`](21-MOD-gouvernance-contrats-modules.md) prévu) |
 | **Données métier bandeau (pilote)** | `GET /v2/exploitation/live-snapshot` · `recyclique_exploitation_getLiveSnapshot` | **Fusionné** | Orthogonal à `module-config` — lecture KPI, pas préférences UI versionnées |
-| **Toggle transitoire bandeau** | `PATCH /v2/exploitation/bandeau-live-slice` · `recyclique_exploitation_patchBandeauLiveSlice` | **Fusionné** (dette) | Écrit `sites.configuration.bandeau_live_slice_enabled` ; **remplacement** par `patchSiteModuleConfig` + Story **9.6** (L-08, T-MOD-4) |
+| **Toggle transitoire bandeau** | `PATCH /v2/exploitation/bandeau-live-slice` · `recyclique_exploitation_patchBandeauLiveSlice` | **Fusionné** (dette) | **DEPRECATED** : redirige vers PG / `module-config` ; `sites.configuration.bandeau_live_slice_enabled` reste un signal legacy de lecture, plus la vérité d’écriture |
 | **CREOS widget bandeau** | [`contracts/creos/manifests/widgets-catalog-bandeau-live.json`](../../contracts/creos/manifests/widgets-catalog-bandeau-live.json) | **Fusionné** Epic 4.1 | `data_contract.operation_id` → snapshot ; pas vers `module-config` |
 | **Signaux métier bandeau** | [`artefacts/2026-04-02_07_signaux-exploitation-bandeau-live-premiers-slices.md`](../artefacts/2026-04-02_07_signaux-exploitation-bandeau-live-premiers-slices.md) | **Référence** sémantique | Champs snapshot ≠ payload `kpi-live-banner.v1.json` (`show_on_caisse`, `refresh_interval_seconds`, …) |
 
@@ -103,11 +103,11 @@ flowchart LR
     SCH["schemas/kpi-live-banner.v1.json"]
   end
   subgraph stockage ["Backend (impl.)"]
-    SC["sites.configuration.bandeau_live_slice_enabled"]
+    SC["lecture legacy : sites.configuration.bandeau_live_slice_enabled"]
     JSONB["site_id + module_key JSONB (cible ADR-001)"]
   end
   SNAP --> SC
-  TOG --> SC
+  TOG -->|"DEPRECATED : redirige vers PG"| JSONB
   MC -.->|"T-MOD-3"| canon
   MC --> SCH
   MC --> JSONB
@@ -116,7 +116,7 @@ flowchart LR
 | Besoin produit | Chemin actuel (canon) | Chemin cible (ADR-001 + brouillon) | Écart |
 |----------------|----------------------|-----------------------------------|-------|
 | KPIs jour bandeau | `recyclique_exploitation_getLiveSnapshot` | Inchangé (données métier / agrégats) | Aucun — ne pas confondre avec config UI |
-| Activer/couper slice | `recyclique_exploitation_patchBandeauLiveSlice` | `patchSiteModuleConfig` + payload schéma v1 | L-04 + L-08 |
+| Activer/couper slice | `recyclique_exploitation_patchBandeauLiveSlice` (**DEPRECATED**, redirige vers PG) | `patchSiteModuleConfig` + payload schéma v1 | L-04 + L-08 |
 | Afficher caisse/réception, intervalle refresh | *Non exposé* OpenAPI canon | `payload` `kpi-live-banner.v1.json` | L-04 + L-06 (schéma doc seul) |
 | Liste blanche clé | Registre pack `05` (documentaire) | Registre serveur + CREOS | L-05 (whitelist code) |
 

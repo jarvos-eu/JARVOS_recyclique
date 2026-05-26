@@ -2915,15 +2915,15 @@ paths:
   /v2/exploitation/bandeau-live-slice:
     patch:
       operationId: recyclique_exploitation_patchBandeauLiveSlice
+      deprecated: true
       tags:
         - exploitation
-      summary: Activer ou desactiver le slice bandeau live (admin site, Story 4.5)
+      summary: "[DEPRECATED] Activer ou desactiver le slice bandeau live (Story 4.5)"
       description: |
-        **Story 4.5** — ecriture bornee : met a jour `sites.configuration.bandeau_live_slice_enabled`
-        pour le site de l'utilisateur authentifie. **Roles** : `admin` ou `super-admin` uniquement.
-        La lecture publique du drapeau se fait via `GET /v2/exploitation/live-snapshot` (champ
-        `bandeau_live_slice_enabled`) — l'`operationId` du GET reste `recyclique_exploitation_getLiveSnapshot` (regle B4).
-        Remplacement prevu : Epic 9.6 (config admin simple).
+        **DEPRECATED (Story 9.6)** — preferer `PATCH /v1/sites/{site_id}/module-config/kpi-live-banner`
+        (`recyclique_moduleConfig_patchSiteModuleConfig`). Cette route redirige vers `site_module_configs`
+        via ModuleConfigService. Lecture : `GET /v2/exploitation/live-snapshot` (`bandeau_live_slice_enabled`,
+        `operationId` **`recyclique_exploitation_getLiveSnapshot`** inchangé).
       security:
         - bearerOrCookie: []
       requestBody:

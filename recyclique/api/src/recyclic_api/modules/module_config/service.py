@@ -13,6 +13,7 @@ from recyclic_api.models.site import Site
 from recyclic_api.models.site_module_config import SiteModuleConfig
 from recyclic_api.models.user import User, UserRole
 from recyclic_api.modules.module_config.registry import (
+    MODULE_KEY_KPI_LIVE_BANNER,
     SCHEMA_VERSION_KPI_LIVE_BANNER_V1,
     get_registry_entry,
     is_active_module_key,
@@ -23,11 +24,18 @@ from recyclic_api.modules.module_config.validation import (
 )
 from recyclic_api.schemas.module_config import ModuleConfigDocument
 
+LEGACY_CONFIG_KEY_BANDEAU_LIVE_SLICE_ENABLED = "bandeau_live_slice_enabled"
+
 KPI_LIVE_BANNER_DEFAULT_PAYLOAD: dict[str, Any] = {
     "show_on_caisse": True,
     "show_on_reception": True,
     "refresh_interval_seconds": 60,
 }
+
+
+def kpi_live_banner_slice_enabled_from_payload(payload: dict[str, Any]) -> bool:
+    """Slice actif si au moins un flux d'affichage est activé."""
+    return bool(payload.get("show_on_caisse")) or bool(payload.get("show_on_reception"))
 
 
 class ModuleConfigService:
@@ -109,6 +117,32 @@ class ModuleConfigService:
             version=row.version,
         )
         return doc, int(row.version)
+
+    def resolve_bandeau_live_slice_enabled(self, site: Site | None) -> bool:
+        """
+        Merge P2 + DEC-03 : défauts registre → ligne PG `site_module_configs` → legacy
+        `sites.configuration.bandeau_live_slice_enabled` uniquement sans ligne PG.
+        """
+        if site is None:
+            return kpi_live_banner_slice_enabled_from_payload(KPI_LIVE_BANNER_DEFAULT_PAYLOAD)
+
+        row = (
+            self.db.query(SiteModuleConfig)
+            .filter(
+                SiteModuleConfig.site_id == site.id,
+                SiteModuleConfig.module_key == MODULE_KEY_KPI_LIVE_BANNER,
+            )
+            .one_or_none()
+        )
+        if row is not None:
+            payload = dict(row.payload) if isinstance(row.payload, dict) else {}
+            return kpi_live_banner_slice_enabled_from_payload(payload)
+
+        enabled = kpi_live_banner_slice_enabled_from_payload(KPI_LIVE_BANNER_DEFAULT_PAYLOAD)
+        cfg = site.configuration if isinstance(site.configuration, dict) else {}
+        if cfg.get(LEGACY_CONFIG_KEY_BANDEAU_LIVE_SLICE_ENABLED) is False:
+            return False
+        return enabled
 
     def patch_site_module_config(
         self,

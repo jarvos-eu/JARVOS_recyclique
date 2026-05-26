@@ -474,7 +474,7 @@ describe('contract — navigation transverse servie (story 5.1)', () => {
         pageKey: 'transverse-admin-modules',
         path: '/admin/modules',
         navId: 'transverse-admin-modules',
-        mainWidget: 'admin.kpi.live.banner.settings',
+        mainWidget: 'admin.modules',
       },
       {
         pageKey: 'transverse-admin-health',
@@ -506,7 +506,6 @@ describe('contract — navigation transverse servie (story 5.1)', () => {
       if (!page) continue;
       const superKeys = new Set([
         'transverse-admin-settings',
-        'transverse-admin-modules',
         'transverse-admin-health',
         'transverse-admin-sites-and-registers',
         'transverse-admin-accounting-expert',
@@ -572,9 +571,9 @@ describe('contract — navigation transverse servie (story 5.1)', () => {
     const ids = filtered.entries.map((e) => e.id);
     expect(ids).toContain('transverse-admin-accounting');
     expect(ids).toContain('transverse-admin-sites');
+    expect(ids).toContain('transverse-admin-modules');
     expect(ids).not.toContain('transverse-admin-sites-and-registers');
     expect(ids).not.toContain('transverse-admin-settings');
-    expect(ids).not.toContain('transverse-admin-modules');
     expect(ids).not.toContain('transverse-admin-health');
     expect(ids).not.toContain('transverse-admin-accounting-expert');
   });

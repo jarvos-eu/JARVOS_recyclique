@@ -6,8 +6,10 @@ Convention de versions et tags Git. Peut evoluer selon BMAD ou les besoins du pr
 
 ## Contexte
 
-- **Ancien repo (archive)** : Recyclique **v1.4.4** — une ressourcerie test, code a refactorer.
-- **Ce repo** : JARVOS Recyclique — refonte complete, nouveau backend.
+- **Ancien repo (archive / prod actuelle)** : Recyclique **v1.4.4** — **depot Git separe** ; une ressourcerie test, code a refactorer. Reference brownfield dans ce mono-repo : `recyclique-1.4.4/`.
+- **Ce repo** : **JARVOS Recyclique v2.0** — refonte complete, nouveau backend (cible livrable plancher = equivalence robuste 1.4.4, puis **v2.0.1**, **v2.0.2**… = un module metier a la fois).
+
+**Note (2026-05-26) :** certains documents BMAD parlent encore de « v1.0 » pour la premiere mise en prod ; pour Strophe / pilotage courant, lire **v2.0** = plancher dans **ce** depot, **1.4.4** = reference dans l'autre depot.
 
 ---
 

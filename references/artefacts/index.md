@@ -25,6 +25,8 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
+| `2026-05-26_02_brief-bmad-remise-a-flot-modules-9-6.md` | **Brief PM** — remise a flot Epic 9 / story 9.6 ; **Option C tranchee** (2026-05-26) : plancher v2.0, 9.6 in-progress, HelloAsso parking, modules 2.0.1+ ; parite gestes 1.4.4. |
+| `2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md` | **Addendum 23/05** — +24 idees (1423 ORG/WFL ; visions VIS-001…020) ; upgrades REC-008/001 ; pont [recap 21/05](2026-05-21_02_recap-idees-paheko-reception-terrain.md). |
 | `2026-05-22_01_qa2-loop-vision-flux-objets-gate95.md` | **Boucle QA gate ≥ 95 %** sur la vision [2026-05-22 flux objets / étiquettes / webcam](../vision-projet/2026-05-22_vision-flux-objets-reception-etiquettes-webcam-superadmin.md) : P0 corrigés (PKO-000, critères scan, lien guide Paheko) ; **GO** 96 %. |
 | `2026-05-21_02_recap-idees-paheko-reception-terrain.md` | **Recap exhaustif** idées transcripts terrain (mai 2026) pour modules **Réception** et **Liaison Paheko** — matière brainstorm ; compta : [guide](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md). |
 | `2026-05-21_07_contexte-chantier-memoire-jarvos.md` | **Handoff Phase 0.B** — pack `references/jarvos-agentique/` (porte d'entree normative, 4 types session, patterns, plans-index) ; ordre de demarrage agent ; suite Phase 1+ ; lien chantier modules / QA2. |

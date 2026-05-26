@@ -1,48 +1,174 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
-  KPI_LIVE_BANNER_SETTINGS_EVENT,
-  KPI_LIVE_BANNER_SETTINGS_STORAGE_KEY,
-  readKpiLiveBannerSettingsFromStorage,
-  writeKpiLiveBannerSettings,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import {
+  buildKpiLiveBannerModuleDocument,
+  getSiteModuleConfig,
+  KPI_LIVE_BANNER_MODULE_KEY,
+  parseKpiLiveBannerPayload,
+  patchSiteModuleConfig,
+} from '../../api/module-config-client';
+import { useAuthPort } from '../../app/auth/AuthRuntimeProvider';
+import {
+  KPI_LIVE_BANNER_DEFAULTS,
+  kpiLiveBannerPayloadToSettings,
+  kpiLiveBannerSettingsToPayload,
+  mergeKpiLiveBannerSettings,
   type KpiLiveBannerSettings,
 } from './kpi-live-banner-settings';
 
+export type KpiLiveBannerSettingsUpdateOptions = {
+  /** Motif saisi en UI admin (traçabilité locale jusqu’à journalisation serveur P2). */
+  readonly motif?: string;
+};
+
 export type KpiLiveBannerSettingsContextValue = {
   readonly settings: KpiLiveBannerSettings;
-  readonly updateSettings: (partial: Partial<KpiLiveBannerSettings>) => void;
+  readonly updateSettings: (
+    partial: Partial<KpiLiveBannerSettings>,
+    options?: KpiLiveBannerSettingsUpdateOptions,
+  ) => Promise<boolean>;
+  readonly isLoading: boolean;
+  readonly saveError: string | null;
+  /** `true` lorsque les réglages proviennent du GET module-config (site connu). */
+  readonly isServerSource: boolean;
+  /** `true` quand un PATCH peut être tenté sans risquer d'écraser la vérité serveur. */
+  readonly canSave: boolean;
+  readonly lastSavedAt: number | null;
+  readonly lastSaveMotif: string | null;
 };
 
 const KpiLiveBannerSettingsReactContext = createContext<KpiLiveBannerSettingsContextValue | null>(null);
 
 /**
- * Source unique pour la visibilité / intervalle du bandeau KPI — doit envelopper tout l’arbre qui affiche admin + caisse + réception.
+ * Source unique pour la visibilité / intervalle du bandeau KPI — charge l’API module-config par site
+ * quand `siteId` est présent dans l’enveloppe ; défauts locaux sinon.
  */
 export function KpiLiveBannerSettingsProvider({ children }: { readonly children: ReactNode }): ReactNode {
-  const [settings, setSettings] = useState<KpiLiveBannerSettings>(() => readKpiLiveBannerSettingsFromStorage());
+  const auth = useAuthPort();
+  const siteId = auth.getContextEnvelope().siteId;
+  const [settings, setSettings] = useState<KpiLiveBannerSettings>(KPI_LIVE_BANNER_DEFAULTS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isServerSource, setIsServerSource] = useState(false);
+  const [canSave, setCanSave] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+  const [lastSaveMotif, setLastSaveMotif] = useState<string | null>(null);
+  const etagRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const syncFromStorage = () => setSettings(readKpiLiveBannerSettingsFromStorage());
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === KPI_LIVE_BANNER_SETTINGS_STORAGE_KEY || e.key === null) {
-        syncFromStorage();
-      }
-    };
-    window.addEventListener('storage', onStorage);
-    window.addEventListener(KPI_LIVE_BANNER_SETTINGS_EVENT, syncFromStorage as EventListener);
-    return () => {
-      window.removeEventListener('storage', onStorage);
-      window.removeEventListener(KPI_LIVE_BANNER_SETTINGS_EVENT, syncFromStorage as EventListener);
-    };
-  }, []);
+    if (!siteId) {
+      setSettings({ ...KPI_LIVE_BANNER_DEFAULTS });
+      setIsServerSource(false);
+      setCanSave(false);
+      etagRef.current = null;
+      setSaveError(null);
+      return;
+    }
 
-  const updateSettings = useCallback((partial: Partial<KpiLiveBannerSettings>) => {
-    writeKpiLiveBannerSettings(partial);
-    setSettings(readKpiLiveBannerSettingsFromStorage());
-  }, []);
+    let cancelled = false;
+    const ac = new AbortController();
+    setIsLoading(true);
+    setSaveError(null);
+
+    void (async () => {
+      const res = await getSiteModuleConfig(auth, siteId, KPI_LIVE_BANNER_MODULE_KEY, ac.signal);
+      if (cancelled) return;
+      if (res.ok) {
+        etagRef.current = res.etag;
+        const payload = parseKpiLiveBannerPayload(res.data.payload);
+        if (payload) {
+          setSettings(kpiLiveBannerPayloadToSettings(payload));
+          setIsServerSource(true);
+          setCanSave(Boolean(res.etag));
+        } else {
+          setSettings({ ...KPI_LIVE_BANNER_DEFAULTS });
+          setIsServerSource(false);
+          setCanSave(false);
+          setSaveError(
+            'Configuration bandeau KPI invalide côté serveur. Rechargez avant toute tentative d’enregistrement.',
+          );
+        }
+      } else {
+        etagRef.current = null;
+        setSettings({ ...KPI_LIVE_BANNER_DEFAULTS });
+        setIsServerSource(false);
+        setCanSave(false);
+        setSaveError(`${res.detail} Rechargez avant toute tentative d’enregistrement.`);
+      }
+      setIsLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+      ac.abort();
+    };
+  }, [auth, siteId]);
+
+  const updateSettings = useCallback(
+    async (
+      partial: Partial<KpiLiveBannerSettings>,
+      options?: KpiLiveBannerSettingsUpdateOptions,
+    ): Promise<boolean> => {
+      const next = mergeKpiLiveBannerSettings(settings, partial);
+      if (!siteId) {
+        setSettings(next);
+        setSaveError('Aucun site actif — enregistrement serveur impossible.');
+        return false;
+      }
+      if (!etagRef.current || !canSave) {
+        setSaveError(
+          'Configuration serveur non chargée. Rechargez les réglages avant toute tentative d’enregistrement.',
+        );
+        return false;
+      }
+
+      setSaveError(null);
+      const payload = kpiLiveBannerSettingsToPayload(next);
+      const body = buildKpiLiveBannerModuleDocument(payload);
+      const res = await patchSiteModuleConfig(auth, siteId, KPI_LIVE_BANNER_MODULE_KEY, body, {
+        ifMatch: etagRef.current,
+        changeReason: options?.motif,
+      });
+      if (!res.ok) {
+        setSaveError(res.detail);
+        return false;
+      }
+      etagRef.current = res.etag;
+      const parsed = parseKpiLiveBannerPayload(res.data.payload);
+      if (parsed) {
+        setSettings(kpiLiveBannerPayloadToSettings(parsed));
+      } else {
+        setSettings(next);
+      }
+      setIsServerSource(true);
+      setCanSave(true);
+      setLastSavedAt(Date.now());
+      setLastSaveMotif(options?.motif?.trim() ? options.motif.trim() : null);
+      return true;
+    },
+    [auth, canSave, settings, siteId],
+  );
 
   const value = useMemo<KpiLiveBannerSettingsContextValue>(
-    () => ({ settings, updateSettings }),
-    [settings, updateSettings],
+    () => ({
+      settings,
+      updateSettings,
+      isLoading,
+      saveError,
+      isServerSource,
+      canSave,
+      lastSavedAt,
+      lastSaveMotif,
+    }),
+    [settings, updateSettings, isLoading, saveError, isServerSource, canSave, lastSavedAt, lastSaveMotif],
   );
 
   return (

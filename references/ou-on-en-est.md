@@ -1,8 +1,8 @@
 # Ou on en est — JARVOS Recyclique
 
-Mis a jour : 2026-05-21
+Mis a jour : 2026-05-26
 
-**Perimetre par version** : voir [references/versioning.md](versioning.md) (v0.1.0 → v1.0.0).
+**Perimetre par version** : voir [references/versioning.md](versioning.md). **Ce depot Git** = developpement **JARVOS Recyclique v2.0** ; la prod actuelle **1.4.4** vit dans **un autre depot** (reference brownfield : `recyclique-1.4.4/` dans ce mono-repo).
 
 ## Bascule BMAD (2026-03-31)
 
@@ -22,11 +22,23 @@ Dans les sections historiques **datées d’avant le 2026-03-31**, lorsqu’un j
 
 Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponible** dans `references/ancien-repo/`. **Analyse brownfield Paheko faite** : extensions (plugins/modules), API HTTP, gestion des fichiers et upload, WebDAV — voir [references/paheko/analyse-brownfield-paheko.md](paheko/analyse-brownfield-paheko.md) (index : [references/paheko/index.md](paheko/index.md)). Workflow Git en place. **Code et contrats dans le mono-repo** : notamment `recyclique/`, `peintre-nano/`, reference d'import `recyclique-1.4.4/`, contrats `contracts/` ; le grain fin des stories = `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Pilotage BMAD (instantané — cle racine `last_updated` du YAML : 2026-04-23) :** tous les epics **sauf cinq** sont **`done`** au niveau cle `epic-*` (**1** … **8**, **11**, **13** … **15**, **16** … **19**, **22** … **26**). Les **cinq** epics encore en **`backlog`** sont **9**, **10**, **12**, **20**, **21** (leurs stories sont en **`backlog`**, avec sous-ensemble déjà **`done`** pour l’Epic **10**, ex. **10-6b** … **10-6e**). **Aucune** story en **`review`**, **`ready-for-dev`** ou **`in-progress`** : rien n’est **engagé** dans le YAML à cette date. La suite = **choisir** l’un des cinq epics backlog et **promouvoir** une story (**create-story** / **dev-story**) selon la priorité.
+**Pilotage BMAD (instantane — cle racine `last_updated` du YAML : **2026-05-26**) :** epics **1** … **8**, **11**, **13** … **15**, **16** … **19**, **22** … **26** = **`done`** au niveau `epic-*`. **Epic 9** = **`in-progress`** — story [**9.6**](../_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md) **`review`** (DS 2026-05-26 : `/admin/modules`, module-config, L-08 bandeau). Epics **10**, **12**, **20**, **21** restent **`backlog`** (sous-ensemble **10.6b** … **10.6e** deja **`done`**).
 
 **Repere BMAD Epics 6 a 10** : pour toute reprise ou create-story / dev-story sur la suite `6.x` a `10.x`, utiliser comme point d'entree documentaire [references/artefacts/2026-04-08_02_pack-lecture-epics-6-10-et-corpus-captures.md](artefacts/2026-04-08_02_pack-lecture-epics-6-10-et-corpus-captures.md) puis [references/artefacts/2026-04-08_03_tableau-ultra-operationnel-epics-6-10.md](artefacts/2026-04-08_03_tableau-ultra-operationnel-epics-6-10.md). Le pack `02` donne la vue de lecture par epic et le corpus de captures ; le tableau `03` donne la navigation **story par story**. Pour l'etat **story par story** (y compris cloture des Epics 6, 7, 8), se fier a `sprint-status.yaml` ; le pack et le tableau restent la lecture operationnelle des captures et de la matrice.
 
-**Pack protocole modules v2 (2026-05-20) :** [`protocole-modules-recyclique/index.md`](protocole-modules-recyclique/index.md) — **P0 clos** (ADR-007 Accepted, OpenAPI fusionne, handler `module-config` pilote `kpi-live-banner`, 5 tests). **PRD §4.2.1** aligne 2026-05-21 (`_bmad-output/planning-artifacts/prd.md`). Reco : [`2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md). **P1 en cours :** story seed [`9-6-config-admin-simple-modules.md`](../_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md) ; agents : **`05` loup de mer → `04` bouclage → `06` cookbook**. **Peintre — gardien du seuil** (conscience d'affichage, hooks v2 + bypass) : **T-PEINT-1** / **L-16** — idée [`idees-kanban/a-creuser/2026-05-20_peintre-gardeien-seuil-conscience-affichage.md`](idees-kanban/a-creuser/2026-05-20_peintre-gardeien-seuil-conscience-affichage.md).
+**Pack protocole modules v2 (2026-05-20) :** [`protocole-modules-recyclique/index.md`](protocole-modules-recyclique/index.md) — **P0 clos** (ADR-007 Accepted, OpenAPI fusionne, handler `module-config` pilote `kpi-live-banner`). **PRD §4.2.1** aligne 2026-05-21. **P1 story 9.6** **`review`** (2026-05-26) : Peintre `/admin/modules`, merge DEC-03 live-snapshot, **L-08** clos (activation via `module_key` JSON). Prochaine : **CR** puis cookbook module N+1. Brief PM [`2026-05-26_02`](artefacts/2026-05-26_02_brief-bmad-remise-a-flot-modules-9-6.md). **Peintre — gardien du seuil** : **T-PEINT-1** / **L-16** — idee kanban dediee.
+
+**Addendum terrain 23/05 :** [`2026-05-23_01_addendum`](artefacts/2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md) — **+24 idees** (VIS, ORG/WFL) ; **reserve produit** (pas dans 9.6). Finaux : [1423](../.transcription/meetings/2026-05-23-terrain-1423/final/2026-05-23-terrain-1423.md), [visions](../.transcription/meetings/2026-05-23-recyclique-bilans-audit-visions/final/2026-05-23-recyclique-bilans-audit-visions.md).
+
+## Strategie livraison v2.0 (decision 2026-05-26)
+
+| Jalon | Contenu |
+|-------|---------|
+| **v2.0 (plancher)** | Equivalence **robuste** avec **1.4.4** en prod (autre depot) : caisse, reception, compta, parcours deja livres ; **socle pret** pour brancher les modules (`/admin/modules` via story **9.6**) |
+| **Parite gestes (critere plancher)** | Workflows caisse et reception, **raccourcis clavier**, enchainements = **strictement** comme 1.4.4 (audit terrain : benevoles ont acquis les gestes) ; verification dediee avant « 2.0 pret pour prod » — voir [checklist-import-1.4.4](ancien-repo/checklist-import-1.4.4.md) |
+| **v2.0.1, v2.0.2…** | **Un module metier a la fois** apres plancher ; priorites porteur : **cockpit compta**, **eco-organismes**, etc. |
+| **HelloAsso** | **Parking** — module prevu, **pas** priorite maintenant ; ne pas perdre (stories 9.4/9.5 = doc / arbitrage sans dev large) |
+| **Ordre Epic 9** | **9.6 d'abord**, puis modules metier ; note dans [`epics.md`](../_bmad-output/planning-artifacts/epics.md) § Epic 9 |
 
 **Chantier Jarvos mémoire sessions (2026-05-21) :** Phases **0–3** livrées (pack [`jarvos-agentique/`](../references/jarvos-agentique/index.md), hooks `log/cursor-agent/`, scripts `jarvos-memoire-sessions/dev/`, skill `jarvos-session-memory`). **Batch Phase 5 partiel** : `consolidate_manifest` + triage `--limit 10` + fiche `c8a645ab` → [`sessions/`](../references/jarvos-agentique/sessions/) ; sync [`jarvos-memoire-sessions/00_SYNC_STATUS.md`](../jarvos-memoire-sessions/00_SYNC_STATUS.md). **Recharger la fenêtre Cursor** pour activer les hooks. QA2 mémoire : **pending**.
 
@@ -47,6 +59,22 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 **Architecture complétée** (2026-02-26) : `_bmad-output/planning-artifacts/architecture.md` — décisions techniques, patterns, structure projet, validation ; statut READY FOR IMPLEMENTATION. Points à trancher en v0.1 : [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md).
 
 ## Derniere session
+
+2026-05-26 — **Decision PM plancher v2.0 + lancement 9.6** :
+
+Realise :
+- Session `@bmad-agent-pm` : **Option C** (plancher + **9.6** d'abord ; HelloAsso parking ; modules incrementaux 2.0.1+).
+- Alignement doc : [brief 02](artefacts/2026-05-26_02_brief-bmad-remise-a-flot-modules-9-6.md), `sprint-status.yaml` (`epic-9` + **9.6** `in-progress`), `epics.md` (note ordre 9.6), ce journal (§ strategie v2.0).
+- Story [**9.6**](../_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md) : enrichie puis promotion sprint **`in-progress`**.
+
+A faire (action humaine) :
+- **Nouveau chat** : `@bmad-dev-story` sur story 9.6 (prompt dans echange PM du 2026-05-26).
+- **Avant prod 2.0** : session verification **parite gestes** caisse / reception vs 1.4.4 (hors scope 9.6).
+
+2026-05-26 (matinee) — **Handoff BMAD modules v2 + addendum 23/05** :
+
+Realise :
+- Story 9.6 enrichie ; brief 02 ; QA2 plan post-addendum gate **96 %**.
 
 2026-05-21 — **Brainstorm BMAD — module Réception v1** (`bmad-brainstorming`, progressive-flow) :
 

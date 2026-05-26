@@ -1,25 +1,58 @@
-import { Alert, NumberInput, Paper, Stack, Switch, Text, Title } from '@mantine/core';
+import { Alert, Button, Group, Paper, Stack, Text, Textarea, Title } from '@mantine/core';
 import { BarChart3 } from 'lucide-react';
-import { ADMIN_SUPER_PAGE_MANIFEST_GUARDS } from './admin-super-page-guards';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuthPort } from '../../app/auth/AuthRuntimeProvider';
 import type { RegisteredWidgetProps } from '../../registry/widget-registry';
 import {
-  KPI_LIVE_BANNER_REFRESH_MAX_MS,
-  KPI_LIVE_BANNER_REFRESH_MIN_MS,
+  mergeKpiLiveBannerSettings,
+  type KpiLiveBannerSettings,
 } from '../bandeau-live/kpi-live-banner-settings';
 import { useKpiLiveBannerSettings } from '../bandeau-live/kpi-live-banner-settings-provider';
+import { ADMIN_SUPER_PAGE_MANIFEST_GUARDS } from './admin-super-page-guards';
+import { KpiLiveBannerSettingsFields } from './KpiLiveBannerSettingsFields';
 
 /**
- * Super-admin : visibilité du bandeau KPI unifié (caisse / réception) + période de rafraîchissement.
- * Persistance `localStorage` (même onglet + `storage` inter-onglets) — synchronisation serveur possible en itération ultérieure.
+ * Réglages bandeau KPI — préférez la page « Gestion des modules » (`/admin/modules`).
+ * Même API module-config serveur que {@link AdminModulesWidget}.
  */
 export function AdminKpiLiveBannerSettingsWidget(_props: RegisteredWidgetProps) {
   const auth = useAuthPort();
   const envelope = auth.getContextEnvelope();
+  const siteId = envelope.siteId;
   const isSuperAdminUi = ADMIN_SUPER_PAGE_MANIFEST_GUARDS.requiredPermissionKeys.every((key) =>
     envelope.permissions.permissionKeys.includes(key),
   );
-  const { settings, updateSettings } = useKpiLiveBannerSettings();
+  const { settings, updateSettings, isLoading, saveError, isServerSource } = useKpiLiveBannerSettings();
+  const [draft, setDraft] = useState<KpiLiveBannerSettings>(settings);
+  const [dirty, setDirty] = useState(false);
+  const [motif, setMotif] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setDraft(settings);
+    setDirty(false);
+  }, [settings]);
+
+  const onDraftChange = useCallback((partial: Partial<KpiLiveBannerSettings>) => {
+    setDraft((prev) => mergeKpiLiveBannerSettings(prev, partial));
+    setDirty(true);
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    setSaving(true);
+    const ok = await updateSettings(
+      {
+        showOnCaisse: draft.showOnCaisse,
+        showOnReception: draft.showOnReception,
+        refreshIntervalMs: draft.refreshIntervalMs,
+      },
+      { motif: motif.trim() || undefined },
+    );
+    setSaving(false);
+    if (ok) {
+      setDirty(false);
+    }
+  }, [draft, motif, updateSettings]);
 
   if (!isSuperAdminUi) {
     return (
@@ -29,9 +62,13 @@ export function AdminKpiLiveBannerSettingsWidget(_props: RegisteredWidgetProps) 
     );
   }
 
-  const minS = KPI_LIVE_BANNER_REFRESH_MIN_MS / 1000;
-  const maxS = KPI_LIVE_BANNER_REFRESH_MAX_MS / 1000;
-  const intervalSeconds = settings.refreshIntervalMs / 1000;
+  if (!siteId) {
+    return (
+      <Alert color="yellow" title="Site requis" data-testid="admin-kpi-live-settings-no-site">
+        Aucun site dans l’enveloppe de contexte — impossible de charger la configuration serveur.
+      </Alert>
+    );
+  }
 
   return (
     <Stack gap="md" data-testid="admin-kpi-live-banner-settings">
@@ -46,43 +83,46 @@ export function AdminKpiLiveBannerSettingsWidget(_props: RegisteredWidgetProps) 
           Bandeau indicateurs live (KPI)
         </Title>
         <Text size="sm" c="dimmed" mt={4}>
-          Contrôlez l’affichage du bandeau unifié (mêmes indicateurs que la caisse et la réception) et la fréquence
-          d’appel à l’API. Les réglages s’appliquent sur ce poste (navigateur) et se propagent aux autres onglets
-          ouverts.
+          Réglages du module <code>kpi-live-banner</code> pour le site{' '}
+          <strong data-testid="admin-kpi-live-settings-site-id">{siteId}</strong>. Source de vérité : API{' '}
+          <code>module-config</code> (pas le stockage local). Accès : super-admin sur le site actif de
+          l’enveloppe.
         </Text>
+        {isServerSource ? (
+          <Text size="xs" c="teal" mt={4} data-testid="admin-kpi-live-settings-server-sync">
+            Synchronisé avec le serveur.
+          </Text>
+        ) : null}
       </div>
 
+      <Textarea
+        label="Motif (optionnel)"
+        value={motif}
+        onChange={(e) => setMotif(e.currentTarget.value)}
+        minRows={2}
+        data-testid="admin-kpi-live-settings-motif"
+      />
+
+      {saveError ? (
+        <Alert color="red" data-testid="admin-kpi-live-settings-error">
+          {saveError}
+        </Alert>
+      ) : null}
+
       <Paper p="md" withBorder radius="md">
-        <Stack gap="md">
-          <Switch
-            label="Afficher sur la caisse (kiosque vente)"
-            description="Bandeau sous l’en-tête de session sur l’écran de vente."
-            checked={settings.showOnCaisse}
-            onChange={(e) => updateSettings({ showOnCaisse: e.currentTarget.checked })}
-            data-testid="admin-kpi-live-toggle-caisse"
-          />
-          <Switch
-            label="Afficher sur la réception"
-            description="Bandeau dans le chrome de l’écran réception."
-            checked={settings.showOnReception}
-            onChange={(e) => updateSettings({ showOnReception: e.currentTarget.checked })}
-            data-testid="admin-kpi-live-toggle-reception"
-          />
-          <NumberInput
-            label="Période de rafraîchissement (secondes)"
-            description={`Entre ${minS} et ${maxS} secondes (plancher aligné sur l’API unifiée).`}
-            min={minS}
-            max={maxS}
-            value={intervalSeconds}
-            onChange={(v) => {
-              const n = typeof v === 'number' ? v : Number(v);
-              if (!Number.isFinite(n)) return;
-              updateSettings({ refreshIntervalMs: Math.round(n * 1000) });
-            }}
-            data-testid="admin-kpi-live-refresh-seconds"
-          />
-        </Stack>
+        <KpiLiveBannerSettingsFields value={draft} onChange={onDraftChange} disabled={isLoading || saving} />
       </Paper>
+
+      <Group justify="flex-end">
+        <Button
+          onClick={() => void handleSave()}
+          loading={saving}
+          disabled={!dirty || isLoading}
+          data-testid="admin-kpi-live-settings-save"
+        >
+          Enregistrer
+        </Button>
+      </Group>
     </Stack>
   );
 }

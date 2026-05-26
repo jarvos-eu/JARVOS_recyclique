@@ -26,6 +26,7 @@ def format_etag(version: int) -> str:
 
 
 def parse_if_match(header: str | None) -> int | None:
+    """Retourne None si absent/vide ; lève ValidationError si présent mais non parseable."""
     if header is None or not str(header).strip():
         return None
     raw = str(header).strip()
@@ -35,8 +36,8 @@ def parse_if_match(header: str | None) -> int | None:
         raw = raw[1:-1]
     try:
         return int(raw)
-    except ValueError:
-        return None
+    except ValueError as exc:
+        raise ValidationError("En-tête If-Match malformé.") from exc
 
 
 @lru_cache(maxsize=16)
