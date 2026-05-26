@@ -2146,6 +2146,8 @@ So that the product gains pilotage simple sans transformer cette story en refont
 **Then** durable storage for this perimeter uses **PostgreSQL** (dedicated model/table) with **deterministic merge** over manifest defaults from the build, not a JSON file on disk in **production**
 **And** changes record **author**, **timestamp**, and **reason** where the product requires traceability for supervision
 
+**Pilotage YAML :** cle **`9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples`** en **`done`** au 2026-05-26 (`_bmad-output/implementation-artifacts/sprint-status.yaml`, `last_updated` racine **2026-05-26**). Story file [`9-6-config-admin-simple-modules.md`](../implementation-artifacts/9-6-config-admin-simple-modules.md) : Story Runner BMAD 2026-05-26 — CR2 **APPROVE** (`cr_loop=1`) ; gates pytest **22 passed**, Vitest **47 passed**. Livrables : Peintre `/admin/modules`, API `module-config`, merge DEC-03 live-snapshot, **L-08** clos, route `bandeau-live-slice` **deprecated**. Prochaine candidate Epic 9 : **9.7** (`backlog`).
+
 ### Story 9.7: Livrer les ACL minimales de fonctionnalites sensibles
 
 As a super-admin or responsible administrator,

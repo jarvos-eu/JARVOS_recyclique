@@ -88,7 +88,7 @@ Les capacités **Adhérents**, **Synchronisation Paheko** et **Config admin simp
 
 | `module_key` | Statut produit | Type | Registre serveur | Schéma JSON config | Ops OpenAPI config (générique) | Ops OpenAPI données (principales) | Epic / story pivot |
 |--------------|----------------|------|------------------|-------------------|-------------------------------|-----------------------------------|-------------------|
-| **`kpi-live-banner`** | **pilote** (+ obligatoire v2 bandeau) | slice-transverse | **actif** (handler + tests 2026-05-20) | `1.0.0` → [`kpi-live-banner.v1.json`](../config-modules-site-id/schemas/kpi-live-banner.v1.json) | `recyclique_moduleConfig_getSiteModuleConfig`, `recyclique_moduleConfig_patchSiteModuleConfig` | `recyclique_exploitation_getLiveSnapshot` ; transitoire `recyclique_exploitation_patchBandeauLiveSlice` | Epic 4 · `4-1`…`4-6b` · Epic 9.6 (cible) |
+| **`kpi-live-banner`** | **pilote** (+ obligatoire v2 bandeau) | slice-transverse | **actif** (handler + tests 2026-05-20) | `1.0.0` → [`kpi-live-banner.v1.json`](../config-modules-site-id/schemas/kpi-live-banner.v1.json) | `recyclique_moduleConfig_getSiteModuleConfig`, `recyclique_moduleConfig_patchSiteModuleConfig` | `recyclique_exploitation_getLiveSnapshot` ; **deprecated** `recyclique_exploitation_patchBandeauLiveSlice` | Epic 4 · `4-1`…`4-6b` · Epic 9.6 **done** |
 | **`cashflow`** | **obligatoire v2** | domaine-parcours | **réservé** | *À définir* (ex. `1.0.0`) | idem générique (post-fusion) | Famille `recyclique_cashSessions_*`, `POST /v1/sales/`, etc. | Epic 6 · PRD §7 |
 | **`reception`** | **obligatoire v2** | domaine-parcours | **réservé** | *À définir* | idem | Famille `recyclique_reception_*` sous `/v1/reception/` | Epic 7 · PRD §7 |
 | **`comptage-pieces-billets`** | **optionnel** (pilote #2 protocole) | workflow-step | **réservé** | *À définir* — **données métier en tables**, pas god-namespace JSON | idem | Clôture caisse + outbox Paheko (pas d’op unique figée) | Epic 6 clôture · T-MET-1 · [`08-MOD-exemple-pilote-comptage-pieces-billets.md`](08-MOD-exemple-pilote-comptage-pieces-billets.md) |
@@ -105,13 +105,13 @@ Les capacités **Adhérents**, **Synchronisation Paheko** et **Config admin simp
 | Couche | État 2026-05-20 | Règle |
 |--------|-----------------|-------|
 | **Ce registre (`05`)** | Tableau §3 = **vérité produit** pour agents et revue | Toute nouvelle clé : §9 + mise à jour [`schemas/README.md`](../config-modules-site-id/schemas/README.md) |
-| **Contrat OpenAPI canon** | Routes fusionnees ; exemple liste blanche **`kpi-live-banner`** dans la description du param `module_key` ; `operationId` **`recyclique_moduleConfig_*`** | API tag **`ModuleConfig`** = **interne** jusqu'a Story **9.6** stable (reco 06 F1) |
-| **Code backend (handler)** | **Impl. pilote** (2026-05-20) — `recyclic_api/modules/module_config/` ; whitelist **`kpi-live-banner`** ; tests `test_module_config_site.py` ; toggle Epic **4.5** encore actif (migration UI → 9.6) | **T-MOD-5** : etendre whitelist + schemas par cle **actif** |
+| **Contrat OpenAPI canon** | Routes fusionnees ; exemple liste blanche **`kpi-live-banner`** dans la description du param `module_key` ; `operationId` **`recyclique_moduleConfig_*`** | API tag **`ModuleConfig`** — Peintre `/admin/modules` livre (9.6 **done**) |
+| **Code backend (handler)** | **Impl. pilote** (2026-05-20) — `recyclique/api/modules/module_config/` ; whitelist **`kpi-live-banner`** ; tests `test_module_config_site.py` ; merge DEC-03 live-snapshot (9.6) ; route 4.5 **deprecated** | **T-MOD-5** : etendre whitelist + schemas par cle **actif** |
 | **CREOS / Peintre** | `widget_type` ≠ `module_key` — pas de whitelist parallelle cote JSON manifests | Activation long terme : **serveur** + registre ; pas de packaging UI sans politique equivalente (livrable §2.2) |
 
 **L-05 pilote clos (2026-05-20) :** handler rejette les cles inconnues (**404**) ; tests IDOR + cle inconnue dans `recyclique/api/tests/test_module_config_site.py`. **L-05 complet** = chaque nouvelle cle **actif** du §3 ajoutee au registry + schema + tests.
 
-**Story 9.6 :** seed [`9-6-config-admin-simple-modules.md`](../../_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md) — UI admin + bascule lecture bandeau depuis `module-config` (au lieu du seul toggle `sites.configuration`).
+**Story 9.6 :** **done** (2026-05-26) — [`9-6-config-admin-simple-modules.md`](../../_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md) : UI admin `/admin/modules` + lecture bandeau depuis `module-config` (plus toggle seul `sites.configuration` ni `localStorage`).
 
 ### 3.2 Schémas JSON — publiés vs réservés (lacune **L-06**)
 
@@ -164,7 +164,7 @@ En cas de divergence **`sites.configuration`** vs document **JSON `module_key`**
 | **Type** | slice-transverse |
 | **Registre serveur** | **actif** (documentaire) |
 | **Widget CREOS** | `bandeau-live` · catalogues `contracts/creos/manifests/widgets-catalog-bandeau-live.json` |
-| **Remplacement transitoire** | `sites.configuration.bandeau_live_slice_enabled` + `PATCH /v2/exploitation/bandeau-live-slice` → **à migrer** vers ce `module_key` (Story 9.6) |
+| **Remplacement transitoire** | ~~`sites.configuration.bandeau_live_slice_enabled` + `PATCH /v2/exploitation/bandeau-live-slice`~~ → **migre** vers ce `module_key` (Story 9.6 **done**) |
 
 #### Dépendances
 
@@ -174,7 +174,7 @@ En cas de divergence **`sites.configuration`** vs document **JSON `module_key`**
 | **Backend snapshot** | Story **2.7** — `GET /v2/exploitation/live-snapshot` |
 | **CREOS / Peintre** | Stories **4-1** → **4-6b** — manifests, widget, polling, fallbacks, app servie |
 | **Contexte** | `ContextEnvelope` — pas de recalcul périmètre côté client (gouvernance 1.4) |
-| **Config admin** | Story **9.6** absorbe toggle 4.5 et panneau « Gestion des modules » |
+| **Config admin** | Story **9.6** **done** — `/admin/modules` ; toggle 4.5 **deprecated** |
 
 #### Schéma JSON config (`schema_version` = `1.0.0`)
 
@@ -205,7 +205,7 @@ Fichier : [`references/config-modules-site-id/schemas/kpi-live-banner.v1.json`](
 | **4-2** | Widget `bandeau-live` dans registre Peintre |
 | **4-3** | Source backend réelle, polling, `X-Correlation-ID` |
 | **4-4** | Fallbacks visibles (`BANDEAU_LIVE_*`) |
-| **4-5** | Toggle admin transitoire (à généraliser 9.6) |
+| **4-5** | Toggle admin transitoire — **deprecated** ; remplace par 9.6 `/admin/modules` |
 | **4-6** | Preuve E2E chaîne complète |
 | **4-6b** | Raccordement app Peintre réellement servie |
 
@@ -378,19 +378,19 @@ Non centralisées dans ce registre — dépendent de l’arbitrage API v5 vs plu
 
 | Mécanisme actuel | Cible `module_key` | Lacune | Action |
 |------------------|-------------------|--------|--------|
-| `sites.configuration.bandeau_live_slice_enabled` | `kpi-live-banner` (`payload` v1) | **L-08** | Story **9.6** : persistance JSONB / merge PG ; précédence → [`03-MOD-protocole-backend.md`](03-MOD-protocole-backend.md) §7.1 |
-| `PATCH /v2/exploitation/bandeau-live-slice` (`recyclique_exploitation_patchBandeauLiveSlice`) | `patchSiteModuleConfig` + `module_key=kpi-live-banner` | **L-04**, **L-08** | Déprécier après T-MOD-3 + 9.6 ([`18-MOD-config-modules-crosswalk.md`](18-MOD-config-modules-crosswalk.md) T3.6) |
-| Préférences bandeau en `localStorage` / bundle KPI (transcript `0c9a9709`) | `GET/PATCH module-config` | **L-06**, **L-08** | Migration idempotente (livrable §3.10) ; serveur **prime** post-sync |
+| `sites.configuration.bandeau_live_slice_enabled` | `kpi-live-banner` (`payload` v1) | **L-08** | **Fait** (9.6) — merge PG DEC-03 ; legacy lu en fallback lecture |
+| `PATCH /v2/exploitation/bandeau-live-slice` (`recyclique_exploitation_patchBandeauLiveSlice`) | `patchSiteModuleConfig` + `module_key=kpi-live-banner` | **L-04**, **L-08** | **Deprecated** OpenAPI + ecrit via `ModuleConfigService` (9.6) |
+| Preferences bandeau en `localStorage` / bundle KPI | `GET/PATCH module-config` | **L-06**, **L-08** | **Fait** (9.6) — serveur **prime** ; `localStorage` retire |
 | Registre **documentaire** seul (`05` §3) | Whitelist **code** alignée | **L-05** | T-MOD-5 : impl. liste blanche = tableau §3 états **actif** |
 
-### 6.2 Règles pendant la double piste (Epic 4.5 → 9.6)
+### 6.2 Règles post-migration (Epic 4.5 → 9.6) — **double piste close**
 
-- **Écriture toggle :** le chemin **canon** reste `PATCH …/bandeau-live-slice` jusqu’à dépréciation — **ne pas** ajouter un second PATCH ad hoc par champ pour les modules suivants.
-- **Lecture snapshot :** `GET …/live-snapshot` continue d’exposer `bandeau_live_slice_enabled` — le widget **ne change pas** l’`operationId` du poll (Stories **4-5**, **4-6**).
-- **Préférences UI** (`show_on_caisse`, `refresh_interval_seconds`) : **non** dans le snapshot ; cible = schéma [`kpi-live-banner.v1.json`](../config-modules-site-id/schemas/kpi-live-banner.v1.json) après fusion OpenAPI (**L-04**).
-- **Front :** signal « module off » **backend-autoritaire** — pas de contournement `localStorage` comme vérité métier ([`04-MOD-protocole-front-creos.md`](04-MOD-protocole-front-creos.md) §9).
+- **Écriture activation bandeau :** chemin **canon** = `PATCH module-config` (`module_key=kpi-live-banner`) via `/admin/modules` ; `PATCH …/bandeau-live-slice` **deprecated** (réécrit via `ModuleConfigService`).
+- **Lecture snapshot :** `GET …/live-snapshot` continue d'exposer `bandeau_live_slice_enabled` — merge DEC-03 (`site_module_configs` > legacy).
+- **Préférences UI** (`show_on_caisse`, `refresh_interval_seconds`) : schéma [`kpi-live-banner.v1.json`](../config-modules-site-id/schemas/kpi-live-banner.v1.json) via API — plus de vérité `localStorage`.
+- **Front :** signal « module off » **backend-autoritaire** ([`04-MOD-protocole-front-creos.md`](04-MOD-protocole-front-creos.md) §9).
 
-**Clôture L-08 :** une seule source d’écriture activation + merge documenté (Q-HITL-03) — pas fermeture par ce registre seul.
+**L-08 clos** (2026-05-26) : une seule source d'écriture activation + merge documenté (DEC-03).
 
 ---
 
@@ -461,7 +461,7 @@ Pour un **workflow step** ou un **module métier** : en plus, spec OpenAPI méti
 |----|--------|-----------|
 | T-MOD-3 | Fusion OpenAPI `module-config/{module_key}` dans `contracts/` | `openapi-module-config.yaml` |
 | T-MOD-5 | Registre commun | **ce document** — à promouvoir post-HITL |
-| T-MOD-4 | Story 9.6 — généralisation admin | `_bmad-output/planning-artifacts/epics.md` |
+| T-MOD-4 | Story 9.6 — generalisation admin | **done** (2026-05-26) — `_bmad-output/planning-artifacts/epics.md` |
 | T-MET-1 | Pilote comptage | [`08-MOD-exemple-pilote-comptage-pieces-billets.md`](08-MOD-exemple-pilote-comptage-pieces-billets.md) |
 | Précédence config (DEC-03) | JSON `module_key` > `sites.configuration` | [`03-MOD-protocole-backend.md`](03-MOD-protocole-backend.md) §D.3.5 · **L-07 OK** doc (2026-05-20) |
 | Crosswalk OpenAPI / schémas | L-04, L-06, L-08 | [`18-MOD-config-modules-crosswalk.md`](18-MOD-config-modules-crosswalk.md) |

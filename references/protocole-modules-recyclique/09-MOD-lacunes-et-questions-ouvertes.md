@@ -19,7 +19,7 @@
 | **Pack protocole** : livrables `01`–`08`, `09`, `prompt-agent` en **brouillon normatif** (2026-05-20) | Checklist unifiée : [`06-cookbook`](06-MOD-cookbook-nouveau-module-optionnel.md) ; lacunes résiduelles = impl., HITL, promotion BMAD (§3). |
 | **ADR-007** | **Accepted** HITL 2026-05-20 — voir [`2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](../artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md) et miroir BMAD `architecture/2026-05-20-adr-007-…`. |
 | **Registre `module_key`** pack (`05`) — une seule clé avec schéma JSON publié (`kpi-live-banner`) | T-MOD-3 **livré** (OpenAPI + handler) ; T-MOD-5 = autres clés + schémas JSON |
-| **Cinq epics BMAD encore `backlog`** (9, 10, 12, 20, 21) | Story **9.6**, **Epic 10** (CI CREOS), et modules métier **bloquent** une partie des lacunes ci-dessous. |
+| **Cinq epics BMAD encore `backlog`** (10, 12, 20, 21) ; **Epic 9** **`in-progress`** (9.6 **done**) | Story **9.7** / modules metier, **Epic 10** (CI CREOS), et modules metier **bloquent** une partie des lacunes ci-dessous. |
 
 **Décision attendue de Strophe :** valider ou corriger les tableaux §4–§6, puis déclencher la **promotion ordonnée** §8 (ou reporter explicitement des lignes).
 
@@ -75,8 +75,8 @@ Priorité : **P0** = bloque agents / industrialisation ; **P1** = dette produit 
 | **L-04** | — | API `module-config` **fusionnée** dans `recyclique-api.yaml` (2026-05-20) ; codegen OK | — | Clos T-MOD-3 — standalone **DEPRECATED** | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-3** |
 | **L-05** | — | Whitelist **`kpi-live-banner`** en code (`modules/module_config/registry.py`) + registre `05` ; tests `test_module_config_site.py` | — | Clos pilote ; etendre whitelist = **T-MOD-5** | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-5** |
 | **L-06** | **P1** | Schémas JSON config absents (clés **réservées** + placeholders PRD §7 : `cashflow`, `reception`, `comptage-pieces-billets`, `helloasso`, `eco-organismes`, `adherents`, `synchronisation-paheko`, `config-admin-simple`) | Validation payload impossible | `config-modules-site-id/schemas/` · [`18`](18-MOD-config-modules-crosswalk.md) §7 | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-3** / **T-MOD-5** |
-| **L-07** | **P1** | ~~**Précédence** `sites.configuration` vs JSON `module_key`~~ | **OK** doc — DEC-03 : JSON fait foi ([`03`](03-MOD-protocole-backend.md) §D.3.5, artefact 04 §C) | Clôture doc 2026-05-20 ; impl. merge UI = Story **9.6** | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-4** |
-| **L-08** | ~~**P1**~~ **OK** (2026-05-26) | Toggle transitoire `bandeau_live_slice_enabled` + `PATCH bandeau-live-slice` | **Clos** — activation via `module-config/kpi-live-banner` ; Peintre `/admin/modules` ; route 4.5 **deprecated** | Story **9.6** **review** (T-MOD-4) · [`18`](18-MOD-config-modules-crosswalk.md) §2 | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-4** |
+| **L-07** | **P1** | ~~**Précédence** `sites.configuration` vs JSON `module_key`~~ | **OK** doc + impl. — DEC-03 : JSON fait foi ; merge PG **9.6** **done** | **Clos** 2026-05-26 | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-4** **clos** |
+| **L-08** | ~~**P1**~~ **OK** (2026-05-26) | Toggle transitoire `bandeau_live_slice_enabled` + `PATCH bandeau-live-slice` | **Clos** — activation via `module-config/kpi-live-banner` ; Peintre `/admin/modules` ; route 4.5 **deprecated** | Story **9.6** **done** (T-MOD-4) · [`18`](18-MOD-config-modules-crosswalk.md) §2 | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-4** **clos** |
 | **L-09** | **P1** | ~~**Convention unique** enregistrement routes/services « module optionnel »~~ | **OK** doc — [`03`](03-MOD-protocole-backend.md) §6 C.4 (artefact 04 §B.1) | Clôture doc 2026-05-20 ; HITL **Q-HITL-06** avant promotion BMAD | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MOD-1** |
 | **L-10** | **P1** | **Slice header** vs **workflow step** : protocoles partiellement séparés (`04` §9 vs `02` §4.5) | Risque de modéliser clôture comme simple widget | [`08`](08-MOD-exemple-pilote-comptage-pieces-billets.md) · [`06`](06-MOD-cookbook-nouveau-module-optionnel.md) §10 | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) **T-MET-1** |
 | **L-11** | **P1** | **CI CREOS** (validation schémas manifests) — Epic 10 backlog | Règles + checklist merge : [`21-MOD-gouvernance-contrats-modules.md`](21-MOD-gouvernance-contrats-modules.md) §7–§8 ; **pipeline CI bloquant** = Epic 10 | Epic 10 ; `04` § CI ; [`21`](21-MOD-gouvernance-contrats-modules.md) **livré** | [`22`](22-MOD-dossier-architecte-pont-t-mod.md) — Epic **10** |
@@ -137,7 +137,7 @@ Aligné [`dossier-architecte-externe-v2/07-ARCH-todos-et-questions-architecte.md
 
 | ID | Question | Priorité | Références `refs_first` |
 |----|----------|----------|-------------------------|
-| **Q-HITL-13** | Prioriser **Story 9.6** (config admin) vs **Epic 10** (CI CREOS) vs **acceptation ADR-007** ? | **P0** | `ou-on-en-est` (epics backlog 9, 10) ; T-MOD-2, T-MOD-4 |
+| **Q-HITL-13** | ~~Prioriser **Story 9.6**~~ — **9.6 done** ; prioriser **Epic 10** (CI CREOS) vs **9.7** / cookbook module N+1 ? | **P0** | `ou-on-en-est` ; T-MOD-5, Epic 10 |
 | **Q-HITL-14** | **QA2** formelle du pack (modèle `config-modules-site-id/livrable-normatif-architecture.md`) — cycles 1–3 faits ; cycle 4 v2 **97 % GO** ; correctifs doc résiduels ? | P1 | [`qa2-rapport-final-v2.md`](qa2-rapport-final-v2.md) (cycle 4) · [`qa2-rapport-final.md`](qa2-rapport-final.md) (cycles 1–3) ; `00-cadrage` §9.3 |
 | **Q-HITL-15** | Promotion **`05-registre`** vers contrat d’interface public (OpenAPI `tags: ModuleConfig`) : timing par rapport à T-MOD-3 ? | P1 | T-MOD-3, T-MOD-5 |
 | **Q-HITL-16** | **Gardien du seuil** : quels hooks runtime v2 (bypass par défaut) et quels **outils agent** pour corriger slot/props/flow/manifest ? | P1 | **L-16** · **T-PEINT-1** · idée Kanban 2026-05-20 |
@@ -155,7 +155,7 @@ Extrait initial dossier architecte ch. 07 — **enrichi** avec statut pack et pr
 | **T-MOD-1** | Protocole modules unifié | **Clos documentaire** (2026-05-20) : `03`+`04`+`05`+`06` livrés ; validation HITL §5 | **P1** | Promotion BMAD post-relecture cookbook |
 | **T-MOD-2** | ADR réconciliation v0.1 ↔ v2 | **Accepted** : `07-MOD-adr-reconciliation-v01-v02.md` | — | Miroir BMAD `2026-05-20-adr-007-…` |
 | **T-MOD-3** | Fusion OpenAPI `module-config/{module_key}` | **Livré** (2026-05-20) : `recyclique-api.yaml` + handler + tests | — | Standalone **DEPRECATED** | — |
-| **T-MOD-4** | Story **9.6** config admin généralisée | **review** (DS 2026-05-26) | **P1** | `_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md` ; remplace toggle 4.5 |
+| **T-MOD-4** | Story **9.6** config admin generalisee | **done** (2026-05-26) | — | `_bmad-output/implementation-artifacts/9-6-config-admin-simple-modules.md` ; remplace toggle 4.5 |
 | **T-MOD-5** | Registre `module_key` commun | **Brouillon pack** : `05-MOD-registre-module-key.md` | **P1** | Impl. whitelist backend + sync CREOS ; promotion contrats si besoin |
 | **T-MET-1** | Module comptage pièces/billets (fermeture caisse) | **Fiche livrée** (`08`) ; impl. et HITL Q-HITL-09–11 en attente | **P1** | Stories Epic 6 **après** validation architecte sur `08` |
 | **T-PEINT-1** | Gardien du seuil — conscience d'affichage | **À cadrer** (2026-05-20) — réceptacles v2, bypass, outils agent TBD | **P1** | Hooks `peintre-nano/src/runtime/` · feature flag · **Q-HITL-16** · pas de story BMAD avant cadrage |
@@ -179,10 +179,10 @@ Extrait initial dossier architecte ch. 07 — **enrichi** avec statut pack et pr
 - [x] Crosswalk écarts documenté : [`18-MOD-config-modules-crosswalk.md`](18-MOD-config-modules-crosswalk.md).
 - [x] `recyclique_moduleConfig_getSiteModuleConfig` / `recyclique_moduleConfig_patchSiteModuleConfig` dans `recyclique-api.yaml`.
 - [x] `npm run generate` ; handler `module_config` + migration `site_module_configs`.
-- [x] Tests pytest `test_module_config_site.py` (5) — IDOR GET, 409, happy path ; [ ] etendre PATCH IDOR / 401 / 422 (story 9.6).
-- [ ] Dépréciation documentée de `recyclique_exploitation_patchBandeauLiveSlice` (après migration 9.6).
+- [x] Tests pytest `test_module_config_site.py` — IDOR GET, 409, happy path ; PATCH IDOR / 401 / 422 etendus (story 9.6 **done**).
+- [x] Deprecation documentee de `recyclique_exploitation_patchBandeauLiveSlice` (migration 9.6 **done**).
 
-**T-MOD-4 — Story 9.6**
+**T-MOD-4 — Story 9.6** — **clos 2026-05-26**
 
 **Prep P1 (2026-05-20)**
 
@@ -190,11 +190,11 @@ Extrait initial dossier architecte ch. 07 — **enrichi** avec statut pack et pr
 - [x] Stub schema [`config-admin-simple.v1.json`](../config-modules-site-id/schemas/config-admin-simple.v1.json) + README `schemas/`.
 - [x] Index transcript [`12-MOD-index-transcripts-modularite.md`](12-MOD-index-transcripts-modularite.md) UUID `c8a645ab` (export TEMP integre puis supprime).
 
-**Implementation**
+**Implementation** — **fait** (Story Runner 2026-05-26, CR2 APPROVE)
 
-- [ ] Panneau SuperAdmin « Gestion des modules » (périmètre **simple** PRD §7.1).
-- [ ] Merge déterministe manifest build + PG P2 + JSON ADR-001 (ordre validé par Q-HITL-03).
-- [ ] Traçabilité auteur / date / motif sur changements.
+- [x] Panneau SuperAdmin « Gestion des modules » (perimetre **simple** PRD §7.1) — `/admin/modules`.
+- [x] Merge deterministe manifest build + PG P2 + JSON ADR-001 (ordre DEC-03).
+- [x] Tracabilite auteur / date / motif sur changements (`X-Module-Config-Change-Reason`, log structure).
 
 **T-MOD-5 — Registre commun**
 

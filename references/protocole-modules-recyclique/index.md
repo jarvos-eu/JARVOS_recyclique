@@ -16,7 +16,7 @@ Recyclique v2 compose l'UI via **Peintre_nano** + manifests **CREOS**, expose l'
 
 **Critère de succès (chantier rédactionnel) :** un lecteur ouvre ce fichier → enchaîne jusqu'au [06-MOD-cookbook-nouveau-module-optionnel.md](06-MOD-cookbook-nouveau-module-optionnel.md) et sait quels fichiers créer (back, front, contrats), comment activer par `site_id`, quand JSON config vs tables métier, comment insérer une **étape de workflow** Peintre — **sans** parcourir quinze dossiers dispersés. Les **vérités produit** restent dans `_bmad-output/` (citation `refs_first`, pas copie).
 
-**État du pack (2026-05-20, post-HITL) :** **GO architecture** — ADR-007 **Accepted** ; OpenAPI + handler `module-config` (**T-MOD-3** clos) ; convention back + patron CREOS promus. Reco : [`../artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](../artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md). **QA2 global :** [`qa2-rapport-global-chantier-modules-2026-05-20.md`](qa2-rapport-global-chantier-modules-2026-05-20.md) (**96 % GO**). **P1 :** Story **9.6**, registre schémas (`T-MOD-5`), durcissement code (404 membership, If-Match, tests). Lacunes : [`09-MOD-lacunes-et-questions-ouvertes.md`](09-MOD-lacunes-et-questions-ouvertes.md).
+**État du pack (2026-05-26, post-9.6) :** **GO architecture** — ADR-007 **Accepted** ; OpenAPI + handler `module-config` (**T-MOD-3** clos) ; **Story 9.6** **done** (**T-MOD-4** clos, **L-08** clos). Reco : [`../artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md`](../artefacts/2026-05-20_06_reco-hitl-post-bouclage-modules-v2.md). **QA2 global :** [`qa2-rapport-global-chantier-modules-2026-05-20.md`](qa2-rapport-global-chantier-modules-2026-05-20.md) (**96 % GO**). **P1 restant :** registre schémas (`T-MOD-5`), CI CREOS (**L-11** / Epic 10). Lacunes : [`09-MOD-lacunes-et-questions-ouvertes.md`](09-MOD-lacunes-et-questions-ouvertes.md).
 
 **Prérequis lecture externe :**
 
@@ -153,7 +153,7 @@ Distinction taxonomique attendue dans `02-taxonomie` : pilote #1 ≠ pilote #2 (
 |-------|---------------------------|
 | **Citer, ne pas promouvoir** | Chemins relatifs vers `_bmad-output/planning-artifacts/` et `_bmad-output/implementation-artifacts/` ; **aucune** copie intégrale PRD / epics / stories. |
 | **Alignement, pas réécriture normative** | PRD §4.2, epics (Epic 3, 4, Story 9.6), stories `1-4`, `3-3`, `4-1`…`4-6b` = contrôle de cohérence des protocoles. |
-| **Promotion post-HITL** | **Fait** : (1) ADR-007 Accepted + miroir BMAD, (2) fusion OpenAPI T-MOD-3, (3) handler `module-config`, (4) seed story 9.6, (5) addendum PRD **§4.2.1** (2026-05-21). **Reste** : impl. 9.6 Peintre, schémas CREOS par clé (T-MOD-5). |
+| **Promotion post-HITL** | **Fait** : (1) ADR-007 Accepted + miroir BMAD, (2) fusion OpenAPI T-MOD-3, (3) handler `module-config`, (4) seed story 9.6, (5) addendum PRD **§4.2.1** (2026-05-21), (6) **impl. 9.6** Peintre + back (**done** 2026-05-26). **Reste** : schémas CREOS par clé (T-MOD-5), CI Epic 10. |
 | **État projet** | Pointeur dans [`references/ou-on-en-est.md`](../ou-on-en-est.md) et [`references/index.md`](../index.md) — **pas** de déplacement des stories vers `references/`. |
 | **Contrats reviewables** | [`contracts/openapi/recyclique-api.yaml`](../../contracts/openapi/recyclique-api.yaml) (canonique) ; standalone module-config = **DEPRECATED**. |
 

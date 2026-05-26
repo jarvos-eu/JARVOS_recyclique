@@ -25,6 +25,7 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
+| `2026-05-26_04_qa2-plan-post-9-6-plancher-compta.md` | **QA2 gate plan** — audit `.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md` (A/B/Coordinateur) ; score **97/100**, P0=0, gate 95 % atteint (it. 2/3) ; méta-gate C0bis. |
 | `2026-05-26_02_brief-bmad-remise-a-flot-modules-9-6.md` | **Brief PM** — remise a flot Epic 9 / story 9.6 ; **Option C tranchee** (2026-05-26) : plancher v2.0, 9.6 in-progress, HelloAsso parking, modules 2.0.1+ ; parite gestes 1.4.4. |
 | `2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md` | **Addendum 23/05** — +24 idees (1423 ORG/WFL ; visions VIS-001…020) ; upgrades REC-008/001 ; pont [recap 21/05](2026-05-21_02_recap-idees-paheko-reception-terrain.md). |
 | `2026-05-22_01_qa2-loop-vision-flux-objets-gate95.md` | **Boucle QA gate ≥ 95 %** sur la vision [2026-05-22 flux objets / étiquettes / webcam](../vision-projet/2026-05-22_vision-flux-objets-reception-etiquettes-webcam-superadmin.md) : P0 corrigés (PKO-000, critères scan, lien guide Paheko) ; **GO** 96 %. |
