@@ -1539,6 +1539,11 @@ paths:
         (`PAHEKO_SYNC_A1_BLOCKED_SESSION_OUTBOX_QUARANTINE` ou `PAHEKO_SYNC_A1_BLOCKED_CLOSE_MAPPING`),
         `mapping_resolution_code`, `blocking_outbox_item_id`, etc. **Distinct** d'une clôture **200**
         avec outbox en file (`paheko_outbox_item_id` présent) — le client ne doit pas les confondre.
+
+        **Story 9.10** — seuil D33 : si |écart espèces| **strictement supérieur** au seuil site
+        (`GET /v1/admin/settings/cash-close-variance-max`, défaut 2,00 €), réponse **422** avec `detail`
+        explicite (ex. « Écart de caisse (+X.XX€) supérieur au seuil autorisé (Y.YY€)… »). Distinct de la
+        tolérance commentaire obligatoire 0,05 € côté métier caisse.
       security:
         - bearerOrCookie: []
       parameters:
@@ -1613,7 +1618,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/RecycliqueApiError"
         "422":
-          description: Corps JSON invalide
+          description: |
+            Corps JSON invalide **ou** **Story 9.10** dépassement seuil D33 : |écart espèces| > seuil site
+            configuré (`CashCloseVarianceExceededError`). Le champ `detail` indique l'écart constaté et le
+            seuil autorisé (ex. « Écart de caisse (+3.00€) supérieur au seuil autorisé (2.00€)… »).
           content:
             application/json:
               schema:
@@ -2271,7 +2279,7 @@ paths:
         - accounting-expert
       summary: Comptes globaux Paheko (paramétrage expert)
       description: |
-        Stories **22.3** (fondation API) et **23.3** (cockpit Peintre) — **SUPER_ADMIN** uniquement. Comptes globaux (`default_sales_account`, etc.), distincts
+        Stories **22.3** (fondation API), **23.3** (cockpit Peintre) et **9.10** (écarts clôture 658/758) — **SUPER_ADMIN** uniquement. Comptes globaux (`default_sales_account`, `cash_shortage_account`, `cash_surplus_account`, etc.), distincts
         de la config admin « simple » (Epic 9.6). Source vérité encaissements : `payment_transactions`,
         pas `sales.payment_method`.
       security:
@@ -7366,6 +7374,91 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/admin/settings/cash-close-variance-max:
+    get:
+      operationId: adminSettingsCashCloseVarianceMaxGet
+      tags:
+        - admin
+        - settings
+      summary: Seuil D33 — écart espèces max à la clôture (ADMIN ou SUPER_ADMIN)
+      description: |
+        **Story 9.10** — Décision PO D33. Seuil paramétrable par site (`site_id` query optionnel) ; défaut **2,00 €** si absent.
+        Blocage clôture côté API si |écart espèces| **strictement supérieur** au seuil (**HTTP 422** sur `POST` clôture).
+        Distinct de la tolérance commentaire obligatoire (0,05 €) côté métier caisse.
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: site_id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Seuil courant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSettingsCashCloseVarianceMaxEnvelope"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Rôle insuffisant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+    put:
+      operationId: adminSettingsCashCloseVarianceMaxPut
+      tags:
+        - admin
+        - settings
+      summary: Mettre à jour le seuil D33 (écart espèces clôture)
+      description: |
+        **Story 9.10** — Même autorité et contexte site que le GET. `maxEur` borné ]0 ; 500] (validation serveur).
+      security:
+        - bearerOrCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminSettingsCashCloseVarianceMaxUpdateBody"
+      responses:
+        "200":
+          description: Seuil mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSettingsCashCloseVarianceMaxEnvelope"
+        "400":
+          description: Validation métier (seuil hors bornes)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "422":
+          description: Corps JSON invalide (ex. `maxEur` ≤ 0 ou > 500 — validation schéma Pydantic)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Rôle insuffisant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
   /v1/admin/settings/session:
     get:
       operationId: adminSettingsSessionGet
@@ -8822,6 +8915,40 @@ components:
           type: string
           nullable: true
       additionalProperties: false
+    AdminSettingsCashCloseVarianceMaxSetting:
+      type: object
+      required:
+        - maxEur
+      properties:
+        maxEur:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+          maximum: 500
+          description: Seuil maximal |écart espèces| autorisé à la clôture (€) — Story 9.10 D33.
+      additionalProperties: false
+    AdminSettingsCashCloseVarianceMaxEnvelope:
+      type: object
+      required:
+        - setting
+      properties:
+        setting:
+          $ref: "#/components/schemas/AdminSettingsCashCloseVarianceMaxSetting"
+        siteId:
+          type: string
+          nullable: true
+      additionalProperties: true
+    AdminSettingsCashCloseVarianceMaxUpdateBody:
+      type: object
+      required:
+        - setting
+      properties:
+        setting:
+          $ref: "#/components/schemas/AdminSettingsCashCloseVarianceMaxSetting"
+        siteId:
+          type: string
+          nullable: true
+      additionalProperties: false
     AdminSettingsSessionEnvelope:
       type: object
       description: Aligné `SessionSettingsResponse`.
@@ -10064,6 +10191,8 @@ components:
         - prior_year_refund_account
         - cash_journal_code
         - default_entry_label_prefix
+        - cash_shortage_account
+        - cash_surplus_account
         - updated_at
       properties:
         default_sales_account:
@@ -10078,6 +10207,16 @@ components:
         default_entry_label_prefix:
           type: string
           description: Préfixe des libellés d'écriture Paheko si le mapping ne fournit pas `label_prefix`.
+        cash_shortage_account:
+          type: string
+          description: "Story 9.10 — compte manque caisse (défaut 658) ; écriture T3 Paheko si écart négatif."
+          default: "658"
+          maxLength: 32
+        cash_surplus_account:
+          type: string
+          description: "Story 9.10 — compte surplus caisse (défaut 758) ; écriture T3 Paheko si écart positif."
+          default: "758"
+          maxLength: 32
         updated_at:
           type: string
           format: date-time
@@ -10103,6 +10242,14 @@ components:
           type: string
           default: "Z caisse"
           maxLength: 120
+        cash_shortage_account:
+          type: string
+          default: "658"
+          maxLength: 32
+        cash_surplus_account:
+          type: string
+          default: "758"
+          maxLength: 32
       additionalProperties: false
     AccountingExpertPaymentMethodOpenSessionUsage:
       type: object

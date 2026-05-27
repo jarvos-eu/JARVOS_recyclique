@@ -14,7 +14,7 @@ import {
 } from '@mantine/core';
 import { ArrowLeft, Calculator } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
-import { needsVarianceComment, postCloseCashSession, theoreticalCloseAmount } from '../../api/cash-session-client';
+import { cashSessionCloseFailureMessage, needsVarianceComment, postCloseCashSession, theoreticalCloseAmount } from '../../api/cash-session-client';
 import { spaNavigateTo } from '../../app/demo/spa-navigate';
 import { useAuthPort, useContextEnvelope } from '../../app/auth/AuthRuntimeProvider';
 import { useCaisseServerCurrentSession } from './use-caisse-server-current-session';
@@ -104,7 +104,7 @@ export function CaisseSessionCloseSurface({ salePath }: CaisseSessionCloseSurfac
           { stepUpPin: pin, contextBinding },
         );
         if (!res.ok) {
-          setCloseError(res.detail);
+          setCloseError(cashSessionCloseFailureMessage(res));
           return;
         }
         spaNavigateTo('/caisse');
@@ -129,7 +129,7 @@ export function CaisseSessionCloseSurface({ salePath }: CaisseSessionCloseSurfac
         { stepUpPin: pin, contextBinding },
       );
       if (!res.ok) {
-        setCloseError(res.detail);
+        setCloseError(cashSessionCloseFailureMessage(res));
         return;
       }
       spaNavigateTo('/caisse');

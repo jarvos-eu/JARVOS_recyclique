@@ -121,6 +121,8 @@ async def get_global_accounts(
         cash_journal_code=(row.cash_journal_code or "").strip() if getattr(row, "cash_journal_code", None) else "",
         default_entry_label_prefix=str(getattr(row, "default_entry_label_prefix", None) or "Z caisse").strip()
         or "Z caisse",
+        cash_shortage_account=str(getattr(row, "cash_shortage_account", None) or "658").strip(),
+        cash_surplus_account=str(getattr(row, "cash_surplus_account", None) or "758").strip(),
         updated_at=row.updated_at,
     )
 
@@ -146,6 +148,8 @@ async def patch_global_accounts(
             prior_year_refund_account=payload.prior_year_refund_account,
             cash_journal_code=payload.cash_journal_code,
             default_entry_label_prefix=payload.default_entry_label_prefix,
+            cash_shortage_account=payload.cash_shortage_account,
+            cash_surplus_account=payload.cash_surplus_account,
         )
     except ValidationError as e:
         raise_domain_exception_as_http(e, **_DOMAIN)
@@ -165,6 +169,8 @@ async def patch_global_accounts(
         cash_journal_code=(row.cash_journal_code or "").strip() if getattr(row, "cash_journal_code", None) else "",
         default_entry_label_prefix=str(getattr(row, "default_entry_label_prefix", None) or "Z caisse").strip()
         or "Z caisse",
+        cash_shortage_account=str(getattr(row, "cash_shortage_account", None) or "658").strip(),
+        cash_surplus_account=str(getattr(row, "cash_surplus_account", None) or "758").strip(),
         updated_at=row.updated_at,
     )
 

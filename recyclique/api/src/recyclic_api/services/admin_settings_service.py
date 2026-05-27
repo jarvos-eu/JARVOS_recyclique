@@ -8,11 +8,18 @@ from recyclic_api.models.admin_setting import AdminSetting
 from recyclic_api.schemas.admin_settings import AlertThresholds
 from recyclic_api.utils.financial_security import encrypt_string, decrypt_string, FinancialDataError
 
+def get_close_variance_max_eur(db: Session, site_id: Optional[str | UUID]) -> float:
+    """Seuil max |écart espèces| autorisé à la clôture pour un site (défaut 2,00 €)."""
+    sid = str(site_id) if site_id is not None else None
+    return AdminSettingsService(db).get_cash_close_variance_max_eur(sid)
+
 
 class AdminSettingsService:
     """Service helper to persist encrypted administrative settings."""
 
     ALERT_KEY = "alert_thresholds"
+    CASH_CLOSE_VARIANCE_MAX_KEY = "cash_close_variance_max_eur"
+    DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR = 2.0
 
     def __init__(self, db: Session):
         self.db = db
@@ -69,4 +76,37 @@ class AdminSettingsService:
         self.db.commit()
         self.db.refresh(record)
         return thresholds
+
+    def get_cash_close_variance_max_eur(self, site_id: Optional[str]) -> float:
+        query, _ = self._build_query(self.CASH_CLOSE_VARIANCE_MAX_KEY, site_id)
+        record = query.first()
+        if not record:
+            return self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR
+        try:
+            payload = decrypt_string(record.value_encrypted)
+            data = json.loads(payload)
+            val = float(data.get("max_eur", self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR))
+            return val if val > 0 else self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR
+        except (FinancialDataError, (TypeError, ValueError, json.JSONDecodeError)):
+            return self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR
+
+    def upsert_cash_close_variance_max_eur(self, site_id: Optional[str], max_eur: float) -> float:
+        if max_eur <= 0 or max_eur > 500:
+            raise ValueError("max_eur doit être compris entre 0 (exclus) et 500")
+        payload = json.dumps({"max_eur": float(max_eur)})
+        encrypted = encrypt_string(payload)
+        query, normalised_site = self._build_query(self.CASH_CLOSE_VARIANCE_MAX_KEY, site_id)
+        record = query.first()
+        if record:
+            record.value_encrypted = encrypted
+        else:
+            record = AdminSetting(
+                key=self.CASH_CLOSE_VARIANCE_MAX_KEY,
+                site_id=normalised_site,
+                value_encrypted=encrypted,
+            )
+            self.db.add(record)
+        self.db.commit()
+        self.db.refresh(record)
+        return float(max_eur)
 

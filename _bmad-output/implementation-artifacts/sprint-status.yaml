@@ -1,3 +1,6 @@
+# last_updated: 2026-05-27 — Agent B fin : **`9-10-liaison-paheko-cloture-caisse-v1`** **review** → **`done`** ; QA2 96 % P0=0 ; CR APPROVE ; pytest peloton vert
+# last_updated: 2026-05-27 — Agent B DS : **`9-10-liaison-paheko-cloture-caisse-v1`** **in-progress** → **`review`** ; T3 batch + D33 seuil site + comptes 658/758 ; pytest peloton vert ; Peintre vitest close OK ; QA2 + CR en cours
+# last_updated: 2026-05-27 — Agent B (create-story) : **`9-10-liaison-paheko-cloture-caisse-v1`** **backlog** → **`ready-for-dev`** ; fichier `_bmad-output/implementation-artifacts/9-10-liaison-paheko-cloture-caisse-v1.md` ; `epic-9` inchangé **in-progress** ; trace CS Agent B plan post-9.6 ; prochaine étape **VS** puis **GO DS** (`bmad-dev-story`)
 # last_updated: 2026-05-26 — Story Runner BMAD story **9.6** : **`9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples`** **`review`** → **`done`** ; **CR1** CHANGES_REQUESTED → **DS** (guards `/admin/modules` + PATCH sans ETag) ; **GATE** pytest **22 passed** (~303 s : relever `timeout_sec` > 300 si gate shell) + Vitest **47 passed** ; **QA** `bmad-qa-generate-e2e-tests` PASS ; **CR2** APPROVE ; `vs_loop=0` `qa_loop=0` `cr_loop=1` ; prochaine story Epic 9 : **9-7** backlog (ordre `epics.md`).
 # last_updated: 2026-05-26 — story **9.6** DS bmad-dev-story : **`9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples`** **`in-progress`** → **`review`** ; gates pytest module-config + snapshot **22 passed** ; Vitest admin-modules **5 passed** ; prochaine étape **CR** BMAD.
 # last_updated: 2026-05-26 — PM Strophe (Option C, brief 02) : **`epic-9`** **`backlog`** → **`in-progress`** ; lancement **`bmad-dev-story`** 9.6 ; plancher **v2.0** (parité gestes 1.4.4 autre dépôt) puis modules **2.0.1**, **2.0.2**… ; **HelloAsso** parking module ultérieur.
@@ -353,7 +356,7 @@ generated: "2026-04-01"
 # last_updated: 2026-04-20 (suite doc §25) — slugs **25-10** / **25-13** alignes titres epics (`versus` / `poste-ou-kiosque`) ; DAG en commentaire sous bloc phase 2 ; note readiness §3 + rapport readiness encadre ; matrice convention 25.2 vs ADR 25-2.
 # Fraicheur canonique pour outils / grep : utiliser la cle YAML `last_updated` (racine) ci-dessous ; les lignes `# last_updated:` en tete de fichier sont historique operationnel (ne pas les confondre avec la racine).
 # last_updated: 2026-04-23 — epic-15 **done** ; 15-1…15-4 **review→done** (clôture fondation admin obsolète vs chantier 16–19+ ; détail `epics.md` §15 + fiches story).
-last_updated: "2026-05-26"
+last_updated: "2026-05-27"
 # last_updated: 2026-04-20 — story 25-7 DS bmad-dev-story Task : 25-7-traduire-la-spec-25-4-sections-2-3-en-checklist-developpement-executable ready-for-dev → review ; checklist `_bmad-output/implementation-artifacts/checklists/25-7-checklist-spec-25-4-sections-2-3.md` ; epic-25 inchangé in-progress
 # last_updated: 2026-04-20 — story 25-7 Story Runner fin : 25-7 review→done (CR×2, cr_loop=1 ; gates git ; QA doc `_bmad-output/implementation-artifacts/25-7-qa-checklist-verification.md`) ; correctifs YAML/story post-CR1 ; epic-25 inchangé in-progress
 # last_updated: "2026-04-16" # story 22.5 Story Runner fin : VS→DS→GATE→QA→CR APPROVE ; 22-5 review→done ; vs=0 qa=0 cr=0 ; gates pytest+npm (e2e 22-5 inclus post-QA)
@@ -479,6 +482,7 @@ development_status:
   9-4-arbitrer-le-niveau-dintegration-helloasso-avant-implementation-large: backlog
   9-5-integrer-le-minimum-utile-de-helloasso-au-parcours-adherents: backlog
   9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples: done
+  9-10-liaison-paheko-cloture-caisse-v1: done
   9-7-livrer-les-acl-minimales-de-fonctionnalites-sensibles: backlog
   9-8-valider-la-coherence-des-modules-complementaires-v2: backlog
   epic-9-retrospective: optional

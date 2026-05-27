@@ -7,7 +7,15 @@ from recyclic_api.core.audit import log_admin_access
 from recyclic_api.core.auth import require_role_strict
 from recyclic_api.core.database import get_db
 from recyclic_api.models.user import User, UserRole
-from recyclic_api.schemas.admin_settings import AlertThresholds, AlertThresholdsResponse, AlertThresholdsUpdate
+from recyclic_api.schemas.admin_settings import (
+    AlertThresholds,
+    AlertThresholdsResponse,
+    AlertThresholdsUpdate,
+    CashCloseVarianceMax,
+    CashCloseVarianceMaxResponse,
+    CashCloseVarianceMaxUpdate,
+    DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR,
+)
 from recyclic_api.schemas.setting import (
     SessionSettingsResponse,
     SessionSettingsUpdate,
@@ -24,6 +32,7 @@ from recyclic_api.utils.rate_limit import conditional_rate_limit
 router = APIRouter(tags=["admin", "settings"])
 
 DEFAULT_THRESHOLDS = AlertThresholds(cash_discrepancy=10.0, low_inventory=5)
+DEFAULT_CASH_CLOSE_VARIANCE = CashCloseVarianceMax(max_eur=DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR)
 
 
 def _service(db: Session) -> AdminSettingsService:
@@ -82,6 +91,60 @@ def put_alert_thresholds(
     )
     payload_response = AlertThresholdsResponse(thresholds=new_thresholds, site_id=payload.site_id)
     return payload_response.model_dump(by_alias=True)
+
+
+@conditional_rate_limit("20/minute")
+@router.get("/cash-close-variance-max", response_model=CashCloseVarianceMaxResponse)
+def get_cash_close_variance_max(
+    request: Request,
+    site_id: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role_strict([UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+) -> CashCloseVarianceMaxResponse:
+    service = _service(db)
+    max_eur = service.get_cash_close_variance_max_eur(site_id)
+    log_admin_access(
+        str(current_user.id),
+        current_user.username or "Unknown",
+        "/admin/settings/cash-close-variance-max",
+        success=True,
+    )
+    return CashCloseVarianceMaxResponse(
+        setting=CashCloseVarianceMax(max_eur=max_eur),
+        site_id=site_id,
+    ).model_dump(by_alias=True)
+
+
+@conditional_rate_limit("10/minute")
+@router.put("/cash-close-variance-max", response_model=CashCloseVarianceMaxResponse)
+def put_cash_close_variance_max(
+    request: Request,
+    payload: CashCloseVarianceMaxUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role_strict([UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+) -> CashCloseVarianceMaxResponse:
+    service = _service(db)
+    try:
+        max_eur = service.upsert_cash_close_variance_max_eur(payload.site_id, payload.setting.max_eur)
+    except ValueError as exc:
+        log_admin_access(
+            str(current_user.id),
+            current_user.username or "Unknown",
+            "/admin/settings/cash-close-variance-max",
+            success=False,
+            error_message=str(exc),
+        )
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    log_admin_access(
+        str(current_user.id),
+        current_user.username or "Unknown",
+        "/admin/settings/cash-close-variance-max",
+        success=True,
+    )
+    return CashCloseVarianceMaxResponse(
+        setting=CashCloseVarianceMax(max_eur=max_eur),
+        site_id=payload.site_id,
+    ).model_dump(by_alias=True)
 
 
 @conditional_rate_limit("20/minute")

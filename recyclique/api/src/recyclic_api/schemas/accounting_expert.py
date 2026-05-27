@@ -40,8 +40,16 @@ class GlobalAccountsPayload(BaseModel):
     prior_year_refund_account: str
     cash_journal_code: str = Field(default="", max_length=64)
     default_entry_label_prefix: str = Field(default="Z caisse", max_length=120)
+    cash_shortage_account: str = Field(default="658", max_length=32)
+    cash_surplus_account: str = Field(default="758", max_length=32)
 
-    @field_validator("default_sales_account", "default_donation_account", "prior_year_refund_account")
+    @field_validator(
+        "default_sales_account",
+        "default_donation_account",
+        "prior_year_refund_account",
+        "cash_shortage_account",
+        "cash_surplus_account",
+    )
     @classmethod
     def _acc(cls, v: str) -> str:
         return _validate_paheko_account(v)

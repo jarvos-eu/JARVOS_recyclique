@@ -61,13 +61,17 @@ export type AccountingExpertRevisionDetail = {
   readonly snapshot: Record<string, unknown>;
 };
 
-/** OpenAPI `AccountingExpertGlobalAccounts`. */
+/** OpenAPI `AccountingExpertGlobalAccounts` (+ Story 9.10 — comptes écart T3). */
 export type GlobalAccountsResponse = {
   readonly default_sales_account: string;
   readonly default_donation_account: string;
   readonly prior_year_refund_account: string;
   readonly cash_journal_code: string;
   readonly default_entry_label_prefix: string;
+  /** Compte manque caisse (658) — écriture T3 clôture Paheko. */
+  readonly cash_shortage_account?: string;
+  /** Compte surplus caisse (758) — écriture T3 clôture Paheko. */
+  readonly cash_surplus_account?: string;
   readonly updated_at: string;
 };
 
@@ -78,6 +82,8 @@ export type GlobalAccountsPatchPayload = {
   readonly prior_year_refund_account: string;
   readonly cash_journal_code?: string;
   readonly default_entry_label_prefix?: string;
+  readonly cash_shortage_account?: string;
+  readonly cash_surplus_account?: string;
 };
 
 function isGlobalAccountsResponse(x: unknown): x is GlobalAccountsResponse {

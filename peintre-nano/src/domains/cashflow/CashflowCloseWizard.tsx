@@ -4,6 +4,7 @@ import { recycliqueClientFailureFromSalesHttp } from '../../api/recyclique-api-e
 import { spaNavigateTo } from '../../app/demo/spa-navigate';
 import {
   CLOSE_VARIANCE_TOLERANCE_EUR,
+  cashSessionCloseFailureMessage,
   getCurrentOpenCashSession,
   needsVarianceComment,
   postCloseCashSession,
@@ -161,10 +162,11 @@ export function CashflowCloseWizard(_props: RegisteredWidgetProps): ReactNode {
       );
       if (!res.ok) {
         const base = recycliqueClientFailureFromSalesHttp(res);
+        const closeDetail = cashSessionCloseFailureMessage(res);
         const message =
           res.code === 'CASH_SESSION_CLOSE_HELD_PENDING'
-            ? `${base.message} (finalisez ou abandonnez les tickets en attente.)`
-            : base.message;
+            ? `${closeDetail} (finalisez ou abandonnez les tickets en attente.)`
+            : closeDetail;
         setSubmitErr({
           kind: 'api',
           failure: { ...base, message, code: res.code ?? base.code },

@@ -2,35 +2,43 @@
 name: Post-9.6 plancher et compta
 overview: Orchestration parallèle Agent A (parité plancher 2.0) et Agent B (liaison Paheko 2.0.1), avec délégation Task + QA2 sur les livrables, sync Coordinateur.
 todos:
-  - id: coord-commit-96
-    content: "Coordinateur — commit jalon 9.6 (optionnel, avant A+B)"
-    status: pending
-  - id: agent-a-launch
-    content: "Agent A — nouveau chat, section Agent A de ce plan"
-    status: pending
-  - id: agent-b-launch
-    content: "Agent B — nouveau chat, section Agent B de ce plan"
+  - id: agent-a-done
+    content: "Agent A — rapport 03 + QA2 OK (fait 2026-05-27)"
+    status: completed
+  - id: po-decisions-b
+    content: "Décisions PO § ci-dessous — lues par Agent B via ce plan (pas de message Strophe)"
+    status: completed
+  - id: agent-b-ds
+    content: "Agent B — create-story + dev liaison Paheko (GO DS dans plan)"
+    status: completed
+  - id: hitl-c2b
+    content: "Strophe — C2b REPORTÉ (stack locale + bénévole) — checklist § C2b du plan"
     status: pending
   - id: coord-sync-doc
-    content: "Coordinateur — sync ou-on-en-est / sprint après livrables A et B"
-    status: pending
-  - id: hitl-parity-signoff
-    content: "Strophe — validation humaine matrice gestes (30–60 min)"
+    content: "Coordinateur — C3 sync journal après C2b (sync partielle post-B faite 2026-05-27)"
     status: pending
 isProject: false
 ---
 
 # Plan post-9.6 — Agent A / Agent B
 
+## Où on en est (2026-05-27)
+
+| Rôle | Statut |
+|------|--------|
+| **Agent A** | **Terminé** — rapport [`2026-05-26_03_…`](references/artefacts/2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md) + QA2 OK |
+| **Agent B** | **Terminé (2026-05-27)** — story `9-10` **done** ; QA2 96 % P0=0 ; CR APPROVE |
+| **Strophe** | **C2b reporté** — quand stack locale + bénévole (checklist § C2b) ; voir aussi `ou-on-en-est.md` § A rappeler |
+
 ## Démarrage rapide
 
 | Rôle | Instruction |
 |------|-------------|
-| **Coordinateur** | Lire § Coordinateur ; **C0bis** puis **C0** ; lancer A et B (**C1**) ; ne pas exécuter leurs missions. |
-| **Agent A** | Nouveau chat : *« Tu es **Agent A**. Lis et exécute la section **Agent A** du plan `.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md`. »* |
-| **Agent B** | Nouveau chat : *« Tu es **Agent B**. Lis et exécute la section **Agent B** du plan `.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md`. »* |
+| **Agent B** | *« Tu es **Agent B**. Lis ce plan : § **Décisions PO Strophe** puis § **Agent B**. »* |
+| **Strophe** | **Plus tard** — § C2b (ne bloque pas le lancement de B). |
+| **Coordinateur** | **C3** sync doc après C2b et/ou fin story B. |
 
-**Un chat = un rôle.** Ne pas mélanger A et B.
+**Un chat = un rôle.** Agent A : **clos** (ne pas relancer sauf correctif rapport).
 
 **Gate C0bis (cible à obtenir, avant C1) :** publier le rapport [references/artefacts/2026-05-26_04_qa2-plan-post-9-6-plancher-compta.md](references/artefacts/2026-05-26_04_qa2-plan-post-9-6-plancher-compta.md) sur disque avec **P0 plan = 0** et score ≥ 95 %. Ce gate n’est **pas** acquis par défaut — **C1 interdit** tant que ce rapport n’existe pas avec ces critères.
 
@@ -88,8 +96,44 @@ flowchart TB
 | `references/ou-on-en-est.md`, `sprint-status.yaml` | Coordinateur |
 | `references/protocole-modules-recyclique/` | Agent B si cookbook ; A lecture seule |
 
-4. **Sync A ↔ B (fermeture caisse)** — protocole **C-sync** (tableau § Coordinateur). Résumé : écart bloquant A → pause DS B → GO Coordinateur documenté → reprise B.
-5. **Parallélisme A / B (tranché)** — exploration et rédaction story B **en parallèle** de A. **`bmad-dev-story` (DS code)** pour B **uniquement après** : (a) livrable A contenant une section **fermeture caisse** (brouillon rapport `…03_…` acceptable), **ou** (b) **GO Coordinateur** explicite dans le chat Coordinateur (copier la phrase dans la story). Aligné **stratégie 2.0.1** du brief 02 : plancher **v2.0** d’abord, module liaison Paheko **après** parité gestes ; le fil **E** (liaison v1) avance sous **dérogation EC** (§ Agent B), pas en contournant C-sync.
+4. **Sync A ↔ B** — **D33 tranché** (§ Décisions PO) : plus de pause DS pour D33. **T3** = dans le scope story B (voir § Décisions PO).
+
+---
+
+## Décisions PO Strophe (2026-05-27) — **Agent B : lire avant create-story / DS**
+
+*Strophe n’a pas à recopier ce bloc dans le chat B — il est dans le plan.*
+
+| Sujet | Décision |
+|-------|----------|
+| **D33 (seuil écart espèces)** | **Paramètre réglable** par site (settings admin), défaut suggéré **2 €** — unifie terrain + Paheko en v2. Ne pas figer 0,05 € seul ni 2 € en dur sans setting. |
+| **T3 (lot compta écart 658/758)** | **Obligatoire** dans la story liaison (batch builder). |
+| **Écran paiement** | Garder le **même flux de gestes** qu’en 1.4.4 (saisie, Enter, enchaînement) ; les ajouts v2 OK si le geste de départ reste identique. Backlog **13.8** si écart après C2b — **pas** dérogation large. |
+| **GO DS Agent B** | **Oui** — `bmad-dev-story` autorisé ; copier les 3 lignes ci-dessus dans la story (AC ou § contexte). |
+| **C-sync D33** | **Levé** — décision PO ci-dessus remplace l’attente Coordinateur sur D33. |
+
+---
+
+## C2b — Validation terrain Strophe (simple)
+
+**Statut : REPORTÉ** (2026-05-27) — à faire **quand la stack locale tourne** et qu’un bénévole est disponible. **Ne bloque pas** le lancement d’Agent B. **Bloque** le tag **`v2.0.0`** (plancher prod).
+
+**Rappel :** section aussi dans [`references/ou-on-en-est.md`](../references/ou-on-en-est.md) § **A rappeler**.
+
+**Ce n’est pas dans le gros rapport sous forme de cases à cocher** — le rapport a une section vide « Validation humaine » (fin du fichier `…03_…`, ~l.292). **Tu coches ici**, dans le plan.
+
+**Comment faire :** 30 min, Peintre (`localhost:4444`) vs legacy (`localhost:4445`) si possible. Pour chaque ligne : **OK** ou **KO** (+ une phrase si KO).
+
+| # | Scénario (30 min max) | OK / KO | Note |
+|---|------------------------|---------|------|
+| 1 | **Vente rapide** : 3 catégories clavier → poids/prix → Enter → paiement espèces Enter | | |
+| 2 | **Paiement** : même enchaînement saisie / Enter qu’avant (flux legacy) | | |
+| 3 | **Fermeture caisse** : compter, valider (geste global compréhensible) | | |
+| 4 | **Réception** : une saisie ticket + grille catégories clavier | | |
+
+**Quand c’est fait :** remplir aussi le tableau « Validation humaine » en **bas** du rapport `2026-05-26_03_…` (date + signataire Strophe), ou écrire « C2b OK » dans le chat Coordinateur.
+
+**Tag v2.0.0** : seulement après cette checklist **OK** (ou KO documentés). **Après C2b :** relire le rapport `03` — si KO sur paiement/clavier → story **13.8** ; sinon rien d’urgent pour B.
 
 ---
 
@@ -101,7 +145,7 @@ flowchart TB
 | **C0** | Commit jalon **9.6** — `@git-specialist` ou manuel : `feat(modules): close story 9.6 …` | **Recommandé fort** ; **obligatoire** si le dépôt a des changements 9.6 non commités |
 | **C1** | Ouvrir 2 chats Agent A / B (§ Démarrage rapide) | C0bis OK |
 | **C2a** | Rapport A livré + QA2 rapport ≥ 95 %, P0 rapport = 0 | Chemins : `references/artefacts/2026-05-26_03_*` |
-| **C2b** | **HITL Strophe** — validation humaine matrice gestes (30–60 min, 3–5 parcours critiques) | Sign-off explicite (chat ou note datée dans le rapport) |
+| **C2b** | **Strophe** — checklist **§ C2b** de ce plan (4 lignes OK/KO) | Sign-off dans plan ou bas du rapport `…03_…` |
 | **C3** | Sync `ou-on-en-est.md`, `brief 02`, `sprint-status.yaml` | **Prérequis : C2b complété** (sign-off HITL Strophe). Story B `done` + QA2 B ≥ 95 % si DS engagé ; **interdit tag `v2.0.0`** tant que **C2b** non fait |
 
 **Checklist livrables Coordinateur (avant C3)**
@@ -131,7 +175,9 @@ flowchart TB
 
 ## Agent A — Parité plancher 2.0
 
-**Tu es Agent A.** Exécute uniquement cette section.
+**Statut : TERMINÉ (2026-05-27).** Ne pas relancer sauf correctif demandé par Coordinateur.
+
+**Tu es Agent A.** (Référence historique — mission close.)
 
 **Objectif :** rapport d’écarts caisse + réception (workflows, raccourcis clavier) vs **1.4.4**.
 
@@ -190,27 +236,28 @@ Colonnes : parcours | legacy | Peintre | écart | sévérité | owner | dérogat
 
 **MVP sans module comptage D5 (tranché)** : **v1 dégradée** — pas de module D5 ; à la clôture, **écart espèces / fonds** saisi **manuellement** par l’admin (champ checklist ou écran minimal documenté dans la story) ; les écritures Paheko partent des agrégats T1/T2/T3 + cet écart. **Report DS** du module comptage pièces = phase 2 explicite dans la story (hors AC v1).
 
-> **Pont D33 / D29 (MVP liaison — aligné rapport A)**  
-> - **D33** : saisie admin de l’écart espèces/fonds ; règle produit **±2 €** (alerte ou validation si dépassement — documenter dans AC).  
-> - **D29** : écritures Paheko depuis **T1 / T2 / T3** + écart D33.  
-> - **Legacy 0,05 € vs D33** : si le rapport A note une tension arrondi legacy **0,05 €**, la story **reprend** la décision PO (ne pas coder 0,05 € en dur comme seuil D33 sans trace).
+> **Pont D33 / D29 — décision PO 2026-05-27 (§ Décisions PO ci-dessus, obligatoire en story)**  
+> - **D33** : seuil écart espèces = **setting paramétrable** (défaut 2 €), utilisé terrain + règle Paheko.  
+> - **D29** : **T1 + T2 + T3** obligatoires (T3 = kind batch 658/758 — était absent, à implémenter).  
+> - **Paiement** : ne pas casser le flux clavier legacy (saisie / Enter) — voir § Décisions PO.
 
 **Enchaînement**
 
-1. `Task` **explore** — synthèse MVP v1 (T1/T2/T3, settings, écart manuel admin, hors D5).
-2. `bmad-create-story` — slug type `…-liaison-paheko-cloture-caisse-v1`.
-3. VS validate — **max 2 retries** ; si 2 échecs → **escalade Coordinateur** (NEEDS_HITL : trancher AC ou périmètre avant DS).
-4. **`bmad-dev-story`** — **après** condition § Règles point 5 (section fermeture caisse dans rapport A **ou** GO Coordinateur) ; déléguer DS en `Task` si contexte lourd.
-5. **Gate pytest** : suite **verte** obligatoire ; `timeout_sec` **≥ 330** (ne pas descendre sous 330 s).
-6. `@qa2-orchestrator` — **`scope_paths` = uniquement** le fichier story `_bmad-output/implementation-artifacts/*liaison-paheko*` (symétrique Agent A : le worker s’appuie sur le texte du livrable ; refs citées **hors** scope). Gate **95 %**, **P0 = 0**. Brief + `qabrief-template.md`, chemins absolus skill qa2-agent.
-7. `bmad-code-review` via `Task` si besoin.
-8. Retour Coordinateur : chemin story, statut, risques EC.
+1. **Lire § Décisions PO Strophe** (ce plan) — avant tout create-story.
+2. `Task` **explore** — synthèse MVP v1 (T1/T2/T3, settings comptes + seuil D33, écart manuel admin, hors D5).
+3. `bmad-create-story` — slug type `…-liaison-paheko-cloture-caisse-v1` ; **inclure** décisions PO dans la story.
+4. VS validate — **max 2 retries** ; si 2 échecs → escalade Coordinateur.
+5. **`bmad-dev-story`** — **GO DS** (décision PO dans le plan) ; déléguer DS en `Task` si contexte lourd.
+6. **Gate pytest** : suite **verte** obligatoire ; `timeout_sec` **≥ 330** (ne pas descendre sous 330 s).
+7. `@qa2-orchestrator` — **`scope_paths` = uniquement** le fichier story `_bmad-output/implementation-artifacts/*liaison-paheko*`. Gate **95 %**, **P0 = 0**.
+8. `bmad-code-review` via `Task` si besoin.
+9. Retour Coordinateur : chemin story, statut, risques EC.
 
 **Hors scope v1 :** éco-org 9.1, HelloAsso, **module comptage D5** (phase 2), UX bénévole clôture élaborée (phase 2).
 
 **Fin B :** story `done` + CR APPROVE + QA2 ≥ 95 %, P0 = 0.
 
-**Pause DS** : voir **C-sync** (§ Coordinateur) — ne pas reprendre sans GO documenté.
+**Pause DS** : uniquement si Coordinateur annule le GO PO — sinon enchaîner.
 
 ---
 
@@ -220,11 +267,10 @@ Colonnes : parcours | legacy | Peintre | écart | sévérité | owner | dérogat
 
 ---
 
-## Ordre global
+## Ordre global (mis à jour 2026-05-27)
 
-1. Coordinateur : **C0bis** (publier rapport plan, **P0 plan = 0**) → **C0** commit 9.6 (recommandé / obligatoire si dirty) → **C1** lancer A + B (**interdit** si C0bis non atteint).  
-2. A et B : explore + story en parallèle ; **DS B** conditionné (§ Règles 5) ; QA2 sur livrables respectifs.  
-3. Coordinateur : **C2a** (rapport A + QA2 rapport ≥ 95 %, P0 rapport = 0).  
-4. Strophe + Coordinateur : **C2b** HITL parité (sign-off explicite).  
-5. Coordinateur : **C3** sync doc — **uniquement après C2b complété** (+ livrable B si DS engagé).  
-6. Décision tag **`v2.0.0`** (plancher) vs **`v2.0.1`** (module Paheko) — **pas avant C2b** ; **`v2.0.1`** en plus **pas avant** QA2 rapport A ≥ 95 %, P0 rapport = 0.
+1. ~~Agent A~~ **fait**.  
+2. ~~**Agent B**~~ **fait** (story `9-10-liaison-paheko-cloture-caisse-v1` **done**).  
+3. **Strophe** : **C2b plus tard** (§ C2b + `ou-on-en-est` § A rappeler).  
+4. **Coordinateur** : **C3** sync journal (apres B et/ou apres C2b).  
+5. Tag **v2.0.0** : apres **C2b** seulement. Tag **v2.0.1** : apres story B **done**.

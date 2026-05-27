@@ -15,14 +15,24 @@ from recyclic_api.models.ligne_depot import LigneDepot
 from recyclic_api.models.ticket_depot import TicketDepot
 from recyclic_api.schemas.cash_session import CashSessionFilters, CashSessionStep as ApiCashSessionStep
 from recyclic_api.core.logging import log_transaction_event
-from recyclic_api.core.exceptions import ConflictError, NotFoundError, ValidationError
+from recyclic_api.core.exceptions import (
+    CashCloseVarianceExceededError,
+    ConflictError,
+    NotFoundError,
+    ValidationError,
+)
 from recyclic_api.services.cash_session_journal_snapshot import (
     build_accounting_close_snapshot_v1,
     compute_payment_journal_aggregates,
 )
 from recyclic_api.services.stats_service import _created_at_end_filter
+from recyclic_api.services.admin_settings_service import get_close_variance_max_eur
 
+# Story 9.10 — commentaire obligatoire pour micro-écarts (> 0,05 €) sous le seuil site D33.
 CLOSE_VARIANCE_TOLERANCE = 0.05
+"""Tolérance micro-écart (€) : commentaire obligatoire au-delà — distinct du seuil blocage D33 par site."""
+
+DEFAULT_CLOSE_VARIANCE_BLOCK_MAX_EUR = 2.0
 
 
 def _closed_session_duration_hours_expr(db: Session):
@@ -824,6 +834,10 @@ class CashSessionService:
             "variance": variance,
         }
 
+    def _close_variance_block_max_eur(self, session: CashSession) -> float:
+        site_id = getattr(session, "site_id", None)
+        return get_close_variance_max_eur(self.db, site_id)
+
     def validate_session_close(self, session: CashSession, actual_amount: float, variance_comment: str = None) -> Dict[str, float]:
         """Valide la fermeture métier d'une session et retourne le preview calculé."""
         if session.status == CashSessionStatus.CLOSED:
@@ -831,6 +845,12 @@ class CashSessionService:
 
         preview = self.get_closing_preview(session, actual_amount)
         variance = preview["variance"]
+        block_max = self._close_variance_block_max_eur(session)
+        if abs(variance) > block_max + 1e-9:
+            raise CashCloseVarianceExceededError(
+                f"Écart de caisse ({variance:+.2f}€) supérieur au seuil autorisé ({block_max:.2f}€). "
+                "Corrigez le comptage ou contactez un responsable."
+            )
         normalized_comment = variance_comment.strip() if variance_comment else ""
         if abs(variance) > CLOSE_VARIANCE_TOLERANCE and not normalized_comment:
             theoretical_amount = preview["theoretical_amount"]

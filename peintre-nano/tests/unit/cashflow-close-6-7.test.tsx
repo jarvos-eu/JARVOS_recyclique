@@ -3,6 +3,8 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import {
   CLOSE_VARIANCE_TOLERANCE_EUR,
+  DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR,
+  cashSessionCloseFailureMessage,
   needsVarianceComment,
   theoreticalCloseAmount,
 } from '../../src/api/cash-session-client';
@@ -61,10 +63,24 @@ describe('Story 6.7 — helpers clôture', () => {
     ).toBe(23);
   });
 
-  it('needsVarianceComment au-delà de la tolérance', () => {
+  it('needsVarianceComment — tolérance micro-écart commentaire (≠ seuil blocage D33)', () => {
     expect(needsVarianceComment(10.1, 10)).toBe(true);
     expect(needsVarianceComment(10.04, 10)).toBe(false);
     expect(CLOSE_VARIANCE_TOLERANCE_EUR).toBe(0.05);
+    expect(DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR).toBe(2);
+  });
+
+  it('cashSessionCloseFailureMessage expose le detail backend (422 seuil D33)', () => {
+    const backendDetail =
+      'Écart espèces 3,00 € supérieur au seuil autorisé (2,00 €) — clôture refusée.';
+    expect(
+      cashSessionCloseFailureMessage({
+        ok: false,
+        status: 422,
+        detail: backendDetail,
+        code: 'CASH_CLOSE_VARIANCE_EXCEEDED',
+      }),
+    ).toBe(backendDetail);
   });
 });
 
@@ -187,5 +203,77 @@ describe('Story 6.7 — CashflowCloseWizard (gate + chargement)', () => {
         ) && (c[1]?.method ?? 'GET').toUpperCase() === 'POST',
     );
     expect(closePosts.length).toBe(0);
+  });
+
+  it('affiche le detail backend sur 422 seuil D33 (POST close)', async () => {
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+      },
+    );
+    const backendDetail =
+      'Écart espèces 3,00 € supérieur au seuil autorisé (2,00 €) — clôture refusée.';
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      const method = (init?.method ?? 'GET').toUpperCase();
+      if (url.includes('/v1/cash-sessions/current')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          text: async () =>
+            JSON.stringify({
+              id: '00000000-0000-4000-8000-000000000099',
+              operator_id: 'op1',
+              site_id: 'site1',
+              initial_amount: 50,
+              current_amount: 75,
+              status: 'open',
+              opened_at: '2026-01-01T00:00:00Z',
+              total_sales: 25,
+              total_donations: 0,
+              closing_preview_theoretical_amount: 75,
+            }),
+        });
+      }
+      if (url.includes('/close') && method === 'POST') {
+        return Promise.resolve({
+          ok: false,
+          status: 422,
+          text: async () =>
+            JSON.stringify({
+              detail: backendDetail,
+              code: 'CASH_CLOSE_VARIANCE_EXCEEDED',
+            }),
+        });
+      }
+      return Promise.resolve({ ok: true, status: 200, text: async () => '{}' });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(
+      <RootProviders disableUserPrefsPersistence>
+        <CashflowCloseWizard widgetProps={{}} />
+      </RootProviders>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('cashflow-close-recap')).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Continuer vers le comptage/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Continuer vers le PIN/i }));
+
+    const pinInput = screen.getByLabelText(/PIN step-up/i);
+    fireEvent.change(pinInput, { target: { value: '1234' } });
+    fireEvent.click(screen.getByTestId('cashflow-close-submit'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('cashflow-close-submit-error')).toBeTruthy();
+    });
+    expect(screen.getByTestId('cashflow-error-primary').textContent).toMatch(/2,00 €/);
+    expect(screen.getByTestId('cashflow-error-primary').textContent).toMatch(/seuil/i);
   });
 });

@@ -15,6 +15,11 @@ class ValidationError(RecyclicException):
     """Raised when validation fails"""
     pass
 
+
+class CashCloseVarianceExceededError(ValidationError):
+    """Story 9.10 — |écart espèces| > seuil D33 paramétrable par site (HTTP 422)."""
+    pass
+
 class AuthenticationError(RecyclicException):
     """Raised when authentication fails"""
     pass

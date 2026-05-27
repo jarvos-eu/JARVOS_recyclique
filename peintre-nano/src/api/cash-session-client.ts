@@ -198,8 +198,14 @@ function normalizeDetailForOperatorResolve(detail: unknown): string {
   return detail != null ? JSON.stringify(detail) : '';
 }
 
-/** Tolérance alignée backend `CLOSE_VARIANCE_TOLERANCE` (Story 6.7). */
+/**
+ * Tolérance micro-écart (Story 6.7) : commentaire obligatoire si |physique − théorique| dépasse cette
+ * valeur. Alignée backend `CLOSE_VARIANCE_TOLERANCE` — **distinct** du seuil de blocage D33 (Story 9.10).
+ */
 export const CLOSE_VARIANCE_TOLERANCE_EUR = 0.05;
+
+/** Seuil blocage clôture D33 côté serveur (défaut si setting site absent) — pas d’endpoint dédié v1. */
+export const DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR = 2.0;
 
 export type CashSessionTotalsV1 = {
   sales_completed: number;
@@ -926,4 +932,12 @@ export function theoreticalCloseAmount(session: CashSessionCurrentV1): number {
 
 export function needsVarianceComment(actual: number, theoretical: number): boolean {
   return Math.abs(actual - theoretical) > CLOSE_VARIANCE_TOLERANCE_EUR;
+}
+
+/** Message utilisateur pour échec POST clôture — privilégie le `detail` backend (422 seuil D33). */
+export function cashSessionCloseFailureMessage(err: CashSessionHttpError): string {
+  const detail = err.detail?.trim();
+  if (detail) return detail;
+  if (err.status > 0) return `Erreur HTTP ${err.status}`;
+  return 'Clôture refusée par le serveur.';
 }

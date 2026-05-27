@@ -1,6 +1,6 @@
 # Ou on en est — JARVOS Recyclique
 
-Mis a jour : 2026-05-26
+Mis a jour : 2026-05-27
 
 **Perimetre par version** : voir [references/versioning.md](versioning.md). **Ce depot Git** = developpement **JARVOS Recyclique v2.0** ; la prod actuelle **1.4.4** vit dans **un autre depot** (reference brownfield : `recyclique-1.4.4/` dans ce mono-repo).
 
@@ -26,7 +26,9 @@ Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponibl
 
 **Repere BMAD Epics 6 a 10** : pour toute reprise ou create-story / dev-story sur la suite `6.x` a `10.x`, utiliser comme point d'entree documentaire [references/artefacts/2026-04-08_02_pack-lecture-epics-6-10-et-corpus-captures.md](artefacts/2026-04-08_02_pack-lecture-epics-6-10-et-corpus-captures.md) puis [references/artefacts/2026-04-08_03_tableau-ultra-operationnel-epics-6-10.md](artefacts/2026-04-08_03_tableau-ultra-operationnel-epics-6-10.md). Le pack `02` donne la vue de lecture par epic et le corpus de captures ; le tableau `03` donne la navigation **story par story**. Pour l'etat **story par story** (y compris cloture des Epics 6, 7, 8), se fier a `sprint-status.yaml` ; le pack et le tableau restent la lecture operationnelle des captures et de la matrice.
 
-**Pack protocole modules v2 (2026-05-20) :** [`protocole-modules-recyclique/index.md`](protocole-modules-recyclique/index.md) — **P0 clos** (ADR-007 Accepted, OpenAPI fusionne, handler `module-config` pilote `kpi-live-banner`). **PRD §4.2.1** aligne 2026-05-21. **Story 9.6** **`done`** (2026-05-26) : Peintre `/admin/modules`, merge DEC-03, **L-08** clos, route `bandeau-live-slice` **deprecated**. **Prochaine** : cookbook module N+1 (T-MOD-5 / `module_key` metier) ou story **9.7**. Brief PM [`2026-05-26_02`](artefacts/2026-05-26_02_brief-bmad-remise-a-flot-modules-9-6.md). **Peintre — gardien du seuil** : **T-PEINT-1** / **L-16** — idee kanban dediee.
+**Plan post-9.6 (parallele A/B) :** [`.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md`](../.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md). **Agent A** **clos**. **Agent B** **clos (2026-05-27)** — story [`9-10-liaison-paheko-cloture-caisse-v1`](../_bmad-output/implementation-artifacts/9-10-liaison-paheko-cloture-caisse-v1.md) **done** ; QA2 boucle [`2026-05-27_04`](artefacts/2026-05-27_04_qa2-loop-story-9-10-liaison-paheko-cloture-caisse-v1.md) **96 % P0=0 GO**. **C2b** terrain et tag **v2.0.1** : voir plan § C2b.
+
+**Pack protocole modules v2 (2026-05-20) :** [`protocole-modules-recyclique/index.md`](protocole-modules-recyclique/index.md) — **P0 clos**. **Story 9.6** **`done`**. **Story 9.10** liaison Paheko clôture **`done`** (2026-05-27). **Prochaine Epic 9** : eco-org / 9.7 selon priorité. Brief PM [`2026-05-26_02`](artefacts/2026-05-26_02_brief-bmad-remise-a-flot-modules-9-6.md).
 
 **Addendum terrain 23/05 :** [`2026-05-23_01_addendum`](artefacts/2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md) — **+24 idees** (VIS, ORG/WFL) ; **reserve produit** (pas dans 9.6). Finaux : [1423](../.transcription/meetings/2026-05-23-terrain-1423/final/2026-05-23-terrain-1423.md), [visions](../.transcription/meetings/2026-05-23-recyclique-bilans-audit-visions/final/2026-05-23-recyclique-bilans-audit-visions.md).
 
@@ -35,8 +37,8 @@ Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponibl
 | Jalon | Contenu |
 |-------|---------|
 | **v2.0 (plancher)** | Equivalence **robuste** avec **1.4.4** en prod (autre depot) : caisse, reception, compta, parcours deja livres ; **socle modules** : `/admin/modules` livre (story **9.6** **done**) |
-| **Parite gestes (critere plancher)** | Workflows caisse et reception, **raccourcis clavier**, enchainements = **strictement** comme 1.4.4 (audit terrain : benevoles ont acquis les gestes) ; verification dediee avant « 2.0 pret pour prod » — voir [checklist-import-1.4.4](ancien-repo/checklist-import-1.4.4.md) |
-| **v2.0.1, v2.0.2…** | **Un module metier a la fois** apres plancher ; priorites porteur : **cockpit compta**, **eco-organismes**, etc. |
+| **Parite gestes (critere plancher)** | Rapport audit **fait** (Agent A) : [`2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md`](artefacts/2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md) + QA2 [`2026-05-27_01`](artefacts/2026-05-27_01_qa2-rapport-parite-plancher-v2-gestes-terrain.md). **C2b HITL terrain** = **a faire plus tard** (stack locale + benevole) — checklist dans [`.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md`](../.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md) § C2b. **Pas** tag `v2.0.0` avant C2b. |
+| **v2.0.1, v2.0.2…** | **Un module metier a la fois** ; story **9.10** liaison Paheko clôture **`done`** (2026-05-27) — tag **v2.0.1** apres C2b + gate Coordinateur |
 | **HelloAsso** | **Parking** — module prevu, **pas** priorite maintenant ; ne pas perdre (stories 9.4/9.5 = doc / arbitrage sans dev large) |
 | **Ordre Epic 9** | **9.6** **done** ; modules metier **un par un** (9.1–9.5, 9.7+) ; note dans [`epics.md`](../_bmad-output/planning-artifacts/epics.md) § Epic 9 |
 
@@ -58,7 +60,28 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
 **Architecture complétée** (2026-02-26) : `_bmad-output/planning-artifacts/architecture.md` — décisions techniques, patterns, structure projet, validation ; statut READY FOR IMPLEMENTATION. Points à trancher en v0.1 : [checklist 2026-02-26_03](artefacts/2026-02-26_03_checklist-v0.1-architecture.md).
 
+## A rappeler (Strophe)
+
+| Quand | Quoi | Ou |
+|-------|------|-----|
+| **Quand stack locale + benevole dispo** | **C2b** — 30 min, 4 scenarios OK/KO (caisse, paiement, cloture, reception) | Plan [post-9.6](../.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md) § **C2b** |
+| **Apres C2b** | Lire synthese rapport 03 : ecarts **P1 clavier** → backlog **13.8** si KO ; **pas** bloquer B si liaison OK | [`2026-05-26_03_…`](artefacts/2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md) |
+| **Avant tag v2.0.0** | C2b complete + decision PO sur ecarts restants | Plan § Ordre global |
+
+---
+
 ## Derniere session
+
+2026-05-27 — **Agent A clos + lancement Agent B (plan post-9.6)** :
+
+Realise :
+- Agent **A** : rapport [`2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md`](artefacts/2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md) + QA2 [`2026-05-27_01`](artefacts/2026-05-27_01_qa2-rapport-parite-plancher-v2-gestes-terrain.md) (gate 95 %).
+- Decisions PO dans le plan : D33 = **parametre reglable** ; T3 obligatoire ; flux paiement legacy ; **GO DS** pour B.
+- Plan orchestration QA2 : [`2026-05-26_04`](artefacts/2026-05-26_04_qa2-plan-post-9-6-plancher-compta.md).
+
+A faire :
+- **C2b** reporte (validation terrain quand possible) — voir § **A rappeler**.
+- **Agent B** : create-story + dev liaison Paheko (`bmad-dev-story`) — lire plan § Agent B.
 
 2026-05-26 — **Cloture Story 9.6 (Story Runner BMAD)** :
 

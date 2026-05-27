@@ -67,6 +67,8 @@ class AccountingExpertService:
                 prior_year_refund_account="672",
                 cash_journal_code=None,
                 default_entry_label_prefix="Z caisse",
+                cash_shortage_account="658",
+                cash_surplus_account="758",
             )
             self.db.add(row)
             self.db.commit()
@@ -84,10 +86,14 @@ class AccountingExpertService:
         prior_year_refund_account: str,
         cash_journal_code: str = "",
         default_entry_label_prefix: str = "Z caisse",
+        cash_shortage_account: str = "658",
+        cash_surplus_account: str = "758",
     ) -> GlobalAccountingSettings:
         validate_paheko_account_code(default_sales_account)
         validate_paheko_account_code(default_donation_account)
         validate_paheko_account_code(prior_year_refund_account)
+        validate_paheko_account_code(cash_shortage_account)
+        validate_paheko_account_code(cash_surplus_account)
         validate_cash_journal_code(cash_journal_code)
         if _paheko_outbound_base_url_configured() and not (cash_journal_code or "").strip():
             raise ValidationError(
@@ -101,6 +107,8 @@ class AccountingExpertService:
         row.cash_journal_code = cj if cj else None
         pfx = (default_entry_label_prefix or "").strip()
         row.default_entry_label_prefix = pfx if pfx else "Z caisse"
+        row.cash_shortage_account = (cash_shortage_account or "658").strip()
+        row.cash_surplus_account = (cash_surplus_account or "758").strip()
         self.db.commit()
         self.db.refresh(row)
         return row
@@ -259,6 +267,8 @@ class AccountingExpertService:
                 "prior_year_refund_account": g.prior_year_refund_account,
                 "cash_journal_code": (cj or "").strip(),
                 "default_entry_label_prefix": str(pfx).strip() or "Z caisse",
+                "cash_shortage_account": str(getattr(g, "cash_shortage_account", None) or "658").strip(),
+                "cash_surplus_account": str(getattr(g, "cash_surplus_account", None) or "758").strip(),
             },
             "payment_methods": pm_snapshot,
         }

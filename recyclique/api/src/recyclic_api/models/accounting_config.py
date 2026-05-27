@@ -25,6 +25,9 @@ class GlobalAccountingSettings(Base):
     default_sales_account = Column(String(32), nullable=False)
     default_donation_account = Column(String(32), nullable=False)
     prior_year_refund_account = Column(String(32), nullable=False)
+    # Story 9.10 — écarts caisse clôture (T3 Paheko 658 manque / 758 surplus).
+    cash_shortage_account = Column(String(32), nullable=False, server_default="658")
+    cash_surplus_account = Column(String(32), nullable=False, server_default="758")
     # QA compta (2026-04) — journal Paheko cible + préfixe libellé si mapping ne fournit pas label_prefix.
     cash_journal_code = Column(String(64), nullable=True)
     default_entry_label_prefix = Column(String(120), nullable=False, server_default="Z caisse")

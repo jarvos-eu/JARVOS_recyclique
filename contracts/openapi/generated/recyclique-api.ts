@@ -543,6 +543,11 @@ export interface paths {
          *     (`PAHEKO_SYNC_A1_BLOCKED_SESSION_OUTBOX_QUARANTINE` ou `PAHEKO_SYNC_A1_BLOCKED_CLOSE_MAPPING`),
          *     `mapping_resolution_code`, `blocking_outbox_item_id`, etc. **Distinct** d'une clôture **200**
          *     avec outbox en file (`paheko_outbox_item_id` présent) — le client ne doit pas les confondre.
+         *
+         *     **Story 9.10** — seuil D33 : si |écart espèces| **strictement supérieur** au seuil site
+         *     (`GET /v1/admin/settings/cash-close-variance-max`, défaut 2,00 €), réponse **422** avec `detail`
+         *     explicite (ex. « Écart de caisse (+X.XX€) supérieur au seuil autorisé (Y.YY€)… »). Distinct de la
+         *     tolérance commentaire obligatoire 0,05 € côté métier caisse.
          */
         post: operations["recyclique_cashSessions_closeSession"];
         delete?: never;
@@ -779,7 +784,7 @@ export interface paths {
         };
         /**
          * Comptes globaux Paheko (paramétrage expert)
-         * @description Stories **22.3** (fondation API) et **23.3** (cockpit Peintre) — **SUPER_ADMIN** uniquement. Comptes globaux (`default_sales_account`, etc.), distincts
+         * @description Stories **22.3** (fondation API), **23.3** (cockpit Peintre) et **9.10** (écarts clôture 658/758) — **SUPER_ADMIN** uniquement. Comptes globaux (`default_sales_account`, `cash_shortage_account`, `cash_surplus_account`, etc.), distincts
          *     de la config admin « simple » (Epic 9.6). Source vérité encaissements : `payment_transactions`,
          *     pas `sales.payment_method`.
          */
@@ -1055,12 +1060,12 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Activer ou desactiver le slice bandeau live (admin site, Story 4.5)
-         * @description **Story 4.5** — ecriture bornee : met a jour `sites.configuration.bandeau_live_slice_enabled`
-         *     pour le site de l'utilisateur authentifie. **Roles** : `admin` ou `super-admin` uniquement.
-         *     La lecture publique du drapeau se fait via `GET /v2/exploitation/live-snapshot` (champ
-         *     `bandeau_live_slice_enabled`) — l'`operationId` du GET reste `recyclique_exploitation_getLiveSnapshot` (regle B4).
-         *     Remplacement prevu : Epic 9.6 (config admin simple).
+         * [DEPRECATED] Activer ou desactiver le slice bandeau live (Story 4.5)
+         * @deprecated
+         * @description **DEPRECATED (Story 9.6)** — preferer `PATCH /v1/sites/{site_id}/module-config/kpi-live-banner`
+         *     (`recyclique_moduleConfig_patchSiteModuleConfig`). Cette route redirige vers `site_module_configs`
+         *     via ModuleConfigService. Lecture : `GET /v2/exploitation/live-snapshot` (`bandeau_live_slice_enabled`,
+         *     `operationId` **`recyclique_exploitation_getLiveSnapshot`** inchangé).
          */
         patch: operations["recyclique_exploitation_patchBandeauLiveSlice"];
         trace?: never;
@@ -2661,6 +2666,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/settings/cash-close-variance-max": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Seuil D33 — écart espèces max à la clôture (ADMIN ou SUPER_ADMIN)
+         * @description **Story 9.10** — Décision PO D33. Seuil paramétrable par site (`site_id` query optionnel) ; défaut **2,00 €** si absent.
+         *     Blocage clôture côté API si |écart espèces| **strictement supérieur** au seuil (**HTTP 422** sur `POST` clôture).
+         *     Distinct de la tolérance commentaire obligatoire (0,05 €) côté métier caisse.
+         */
+        get: operations["adminSettingsCashCloseVarianceMaxGet"];
+        /**
+         * Mettre à jour le seuil D33 (écart espèces clôture)
+         * @description **Story 9.10** — Même autorité et contexte site que le GET. `maxEur` borné ]0 ; 500] (validation serveur).
+         */
+        put: operations["adminSettingsCashCloseVarianceMaxPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/settings/session": {
         parameters: {
             query?: never;
@@ -3165,6 +3196,23 @@ export interface components {
         };
         AdminSettingsAlertThresholdsUpdateBody: {
             thresholds: components["schemas"]["AdminSettingsAlertThresholdsNumbers"];
+            siteId?: string | null;
+        };
+        AdminSettingsCashCloseVarianceMaxSetting: {
+            /**
+             * Format: double
+             * @description Seuil maximal |écart espèces| autorisé à la clôture (€) — Story 9.10 D33.
+             */
+            maxEur: number;
+        };
+        AdminSettingsCashCloseVarianceMaxEnvelope: {
+            setting: components["schemas"]["AdminSettingsCashCloseVarianceMaxSetting"];
+            siteId?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        AdminSettingsCashCloseVarianceMaxUpdateBody: {
+            setting: components["schemas"]["AdminSettingsCashCloseVarianceMaxSetting"];
             siteId?: string | null;
         };
         /** @description Aligné `SessionSettingsResponse`. */
@@ -3743,6 +3791,16 @@ export interface components {
             cash_journal_code: string;
             /** @description Préfixe des libellés d'écriture Paheko si le mapping ne fournit pas `label_prefix`. */
             default_entry_label_prefix: string;
+            /**
+             * @description Story 9.10 — compte manque caisse (défaut 658) ; écriture T3 Paheko si écart négatif.
+             * @default 658
+             */
+            cash_shortage_account: string;
+            /**
+             * @description Story 9.10 — compte surplus caisse (défaut 758) ; écriture T3 Paheko si écart positif.
+             * @default 758
+             */
+            cash_surplus_account: string;
             /** Format: date-time */
             updated_at: string;
         };
@@ -3754,6 +3812,10 @@ export interface components {
             cash_journal_code: string;
             /** @default Z caisse */
             default_entry_label_prefix: string;
+            /** @default 658 */
+            cash_shortage_account: string;
+            /** @default 758 */
+            cash_surplus_account: string;
         };
         AccountingExpertPaymentMethodOpenSessionUsage: {
             /** @description True si le moyen est référencé par un encaissement d'une session de caisse ouverte. */
@@ -6616,7 +6678,11 @@ export interface operations {
                     "application/json": components["schemas"]["RecycliqueApiError"];
                 };
             };
-            /** @description Corps JSON invalide */
+            /**
+             * @description Corps JSON invalide **ou** **Story 9.10** dépassement seuil D33 : |écart espèces| > seuil site
+             *     configuré (`CashCloseVarianceExceededError`). Le champ `detail` indique l'écart constaté et le
+             *     seuil autorisé (ex. « Écart de caisse (+3.00€) supérieur au seuil autorisé (2.00€)… »).
+             */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -12817,6 +12883,106 @@ export interface operations {
             };
             /** @description Rôle insuffisant */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    adminSettingsCashCloseVarianceMaxGet: {
+        parameters: {
+            query?: {
+                site_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Seuil courant */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSettingsCashCloseVarianceMaxEnvelope"];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Rôle insuffisant */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    adminSettingsCashCloseVarianceMaxPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminSettingsCashCloseVarianceMaxUpdateBody"];
+            };
+        };
+        responses: {
+            /** @description Seuil mis à jour */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSettingsCashCloseVarianceMaxEnvelope"];
+                };
+            };
+            /** @description Validation métier (seuil hors bornes) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Rôle insuffisant */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Corps JSON invalide (ex. `maxEur` ≤ 0 ou > 500 — validation schéma Pydantic) */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -163,9 +163,10 @@ def test_close_cash_session_serializes_accounting_revision_id_arch02(
 
 
 def test_close_cash_session_requires_comment_when_variance_exceeds_tolerance_arch02(client, close_test_session: CashSession, close_test_user: User):
+    # Écart modéré (+1 €) : sous le seuil blocage D33 (2 €) mais au-dessus de CLOSE_VARIANCE_TOLERANCE (0,05 €).
     response = client.post(
         f"{_V1}/cash-sessions/{close_test_session.id}/close",
-        json={"actual_amount": 80.0, "variance_comment": None},
+        json={"actual_amount": 76.0, "variance_comment": None},
         headers={
             "Authorization": f"Bearer {create_access_token(data={'sub': str(close_test_user.id)})}",
             "X-Step-Up-Pin": "1234",

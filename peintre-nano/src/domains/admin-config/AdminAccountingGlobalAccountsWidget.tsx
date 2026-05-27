@@ -16,6 +16,8 @@ const FIELD_LABELS: Readonly<Record<keyof GlobalAccountsPatchPayload, string>> =
   prior_year_refund_account: 'Compte remboursements exercice antérieur',
   cash_journal_code: 'Code du journal Paheko',
   default_entry_label_prefix: 'Préfixe des libellés d’écriture',
+  cash_shortage_account: 'Compte manque caisse (658)',
+  cash_surplus_account: 'Compte surplus caisse (758)',
 };
 
 function formatUpdatedAt(iso: string): string {
@@ -42,6 +44,8 @@ export function AdminAccountingGlobalAccountsWidget(_props: RegisteredWidgetProp
   const [priorRefund, setPriorRefund] = useState('');
   const [cashJournalCode, setCashJournalCode] = useState('');
   const [entryLabelPrefix, setEntryLabelPrefix] = useState('Z caisse');
+  const [cashShortageAccount, setCashShortageAccount] = useState('');
+  const [cashSurplusAccount, setCashSurplusAccount] = useState('');
   const [stepUpPin, setStepUpPin] = useState('');
 
   const load = useCallback(async () => {
@@ -60,6 +64,8 @@ export function AdminAccountingGlobalAccountsWidget(_props: RegisteredWidgetProp
     setPriorRefund(res.data.prior_year_refund_account);
     setCashJournalCode(res.data.cash_journal_code ?? '');
     setEntryLabelPrefix(res.data.default_entry_label_prefix ?? 'Z caisse');
+    setCashShortageAccount(res.data.cash_shortage_account ?? '');
+    setCashSurplusAccount(res.data.cash_surplus_account ?? '');
     setUpdatedAt(res.data.updated_at);
   }, [auth, isSuperAdminUi]);
 
@@ -76,6 +82,8 @@ export function AdminAccountingGlobalAccountsWidget(_props: RegisteredWidgetProp
       prior_year_refund_account: priorRefund.trim(),
       cash_journal_code: cashJournalCode.trim(),
       default_entry_label_prefix: entryLabelPrefix.trim() || 'Z caisse',
+      cash_shortage_account: cashShortageAccount.trim(),
+      cash_surplus_account: cashSurplusAccount.trim(),
     };
     setBusy(true);
     const res = await patchGlobalAccounts(auth, payload, { stepUpPin });
@@ -91,8 +99,20 @@ export function AdminAccountingGlobalAccountsWidget(_props: RegisteredWidgetProp
     setPriorRefund(res.data.prior_year_refund_account);
     setCashJournalCode(res.data.cash_journal_code ?? '');
     setEntryLabelPrefix(res.data.default_entry_label_prefix ?? 'Z caisse');
+    setCashShortageAccount(res.data.cash_shortage_account ?? '');
+    setCashSurplusAccount(res.data.cash_surplus_account ?? '');
     setUpdatedAt(res.data.updated_at);
-  }, [auth, cashJournalCode, defaultDonation, defaultSales, entryLabelPrefix, priorRefund, stepUpPin]);
+  }, [
+    auth,
+    cashJournalCode,
+    cashShortageAccount,
+    cashSurplusAccount,
+    defaultDonation,
+    defaultSales,
+    entryLabelPrefix,
+    priorRefund,
+    stepUpPin,
+  ]);
 
   return (
     <Stack gap="md" data-testid="admin-accounting-global-accounts">
@@ -176,6 +196,22 @@ export function AdminAccountingGlobalAccountsWidget(_props: RegisteredWidgetProp
               value={entryLabelPrefix}
               onChange={(e) => setEntryLabelPrefix(e.currentTarget.value)}
               data-testid="admin-global-accounts-label-prefix"
+            />
+            <TextInput
+              label={FIELD_LABELS.cash_shortage_account}
+              description="Écart négatif à la clôture (manque espèces) — écriture T3 Paheko. Compte recommandé : 658. Clé API : cash_shortage_account"
+              placeholder="658"
+              value={cashShortageAccount}
+              onChange={(e) => setCashShortageAccount(e.currentTarget.value)}
+              data-testid="admin-global-accounts-cash-shortage"
+            />
+            <TextInput
+              label={FIELD_LABELS.cash_surplus_account}
+              description="Écart positif à la clôture (surplus espèces) — écriture T3 Paheko. Compte recommandé : 758. Clé API : cash_surplus_account"
+              placeholder="758"
+              value={cashSurplusAccount}
+              onChange={(e) => setCashSurplusAccount(e.currentTarget.value)}
+              data-testid="admin-global-accounts-cash-surplus"
             />
             <Text size="sm" c="dimmed" data-testid="admin-global-accounts-updated-at">
               Dernière mise à jour (lecture seule) :{' '}

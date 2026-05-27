@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from recyclic_api.models.accounting_config import AccountingConfigRevision
 from recyclic_api.services.paheko_close_batch_builder import (
     RETRY_POLICY_RESUME_FAILED_SUB_WRITES,
+    SUB_KIND_CASH_VARIANCE_V1,
     SUB_KIND_REFUNDS_CURRENT,
     SUB_KIND_REFUNDS_PRIOR_CLOSED,
     SUB_KIND_SALES_DONATIONS_PER_PM,
@@ -64,6 +65,8 @@ def _revision_snapshot() -> dict[str, Any]:
             "default_sales_account": "7070",
             "default_donation_account": "7541",
             "prior_year_refund_account": "672",
+            "cash_shortage_account": "658",
+            "cash_surplus_account": "758",
         },
         "payment_methods": [
             {
@@ -116,7 +119,8 @@ def test_planned_sub_writes_stable_order(db_session: Session) -> None:
     assert e1 is None
     p2, e2, _ = build_planned_sub_writes(copy.deepcopy(snap), db=db_session, enriched_payload=copy.deepcopy(enr))
     assert e2 is None
-    assert [x["index"] for x in p1] == [0, 1, 2]
+    assert [x["index"] for x in p1] == [0, 1, 2, 3]
+    assert p1[3]["kind"] == SUB_KIND_CASH_VARIANCE_V1
     assert p1 == p2
 
 
@@ -193,6 +197,7 @@ def test_merge_state_preserves_delivered(db_session: Session) -> None:
 
 
 @pytest.mark.parametrize("rc,rp,expect_bodies", [(0.0, 0.0, 1), (3.0, 0.0, 2), (1.0, 2.0, 3)])
+# T3 (index 3) skipped_zero quand cash_variance nul — pas de 4e body HTTP.
 def test_bodies_emitted_only_for_positive_amounts(
     db_session: Session,
     rc: float,

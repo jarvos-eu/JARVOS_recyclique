@@ -20,6 +20,8 @@ describe('admin-accounting-expert-client global-accounts', () => {
       prior_year_refund_account: '512',
       cash_journal_code: 'CAISSE',
       default_entry_label_prefix: 'RCY',
+      cash_shortage_account: '658',
+      cash_surplus_account: '758',
       updated_at: '2026-04-16T10:00:00.000Z',
     };
     const fetchMock = vi.fn().mockResolvedValue({
@@ -34,6 +36,8 @@ describe('admin-accounting-expert-client global-accounts', () => {
     expect(res.ok).toBe(true);
     if (!res.ok) return;
     expect(res.data.default_sales_account).toBe('707');
+    expect(res.data.cash_shortage_account).toBe('658');
+    expect(res.data.cash_surplus_account).toBe('758');
     expect(fetchMock.mock.calls[0]?.[0]).toContain('/v1/admin/accounting-expert/global-accounts');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBeUndefined();
   });
@@ -45,6 +49,8 @@ describe('admin-accounting-expert-client global-accounts', () => {
       prior_year_refund_account: '512',
       cash_journal_code: 'CAISSE',
       default_entry_label_prefix: 'RCY',
+      cash_shortage_account: '658',
+      cash_surplus_account: '758',
       updated_at: '2026-04-16T10:00:00.000Z',
     };
     const fetchMock = vi.fn().mockResolvedValue({

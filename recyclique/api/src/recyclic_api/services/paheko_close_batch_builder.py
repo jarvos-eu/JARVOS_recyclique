@@ -31,6 +31,7 @@ SUB_KIND_REFUNDS_PRIOR_CLOSED = "refunds_prior_closed_fiscal"
 # P2 — ventilation ADVANCED par moyen (index 1 / 2 inchangés, **kind** distinct → idempotence sous-écriture).
 SUB_KIND_REFUNDS_CURRENT_PER_PM_V1 = "refunds_current_fiscal_per_pm_v1"
 SUB_KIND_REFUNDS_PRIOR_CLOSED_PER_PM_V1 = "refunds_prior_closed_fiscal_per_pm_v1"
+SUB_KIND_CASH_VARIANCE_V1 = "cash_variance_v1"
 
 # Story 23.4 — seul mode supporté : ventilation détaillée (valeur d'observabilité `builder_policy`).
 POLICY_DETAILED = "detailed"
@@ -126,8 +127,8 @@ def _sum_by_payment_methods(snapshot: dict[str, Any]) -> float:
 def _load_revision_payment_accounts(
     db: Session,
     revision_id: str,
-) -> tuple[dict[str, str], dict[str, str], str, str, str | None] | None:
-    """Retourne (débit encaissement par code, crédit remboursement par code, ventes, dons, compte N-1 remb.)."""
+) -> tuple[dict[str, str], dict[str, str], str, str, str | None, str, str] | None:
+    """Retourne (débit encaissement par code, crédit remboursement par code, ventes, dons, N-1 remb., 658, 758)."""
     from uuid import UUID
 
     from recyclic_api.models.accounting_config import AccountingConfigRevision
@@ -149,6 +150,8 @@ def _load_revision_payment_accounts(
     sales = str(ga.get("default_sales_account") or "").strip()
     dont = str(ga.get("default_donation_account") or "").strip()
     prior_refund = str(ga.get("prior_year_refund_account") or "").strip() or None
+    shortage = str(ga.get("cash_shortage_account") or "").strip()
+    surplus = str(ga.get("cash_surplus_account") or "").strip()
     if not sales or not dont:
         return None
     debit_by_code: dict[str, str] = {}
@@ -163,7 +166,7 @@ def _load_revision_payment_accounts(
             debit_by_code[code] = acc
         if code and ref_acc:
             refund_credit_by_code[code] = ref_acc
-    return debit_by_code, refund_credit_by_code, sales, dont, prior_refund
+    return debit_by_code, refund_credit_by_code, sales, dont, prior_refund, shortage, surplus
 
 
 def _snapshot_uses_refund_per_pm_paheko(snapshot: dict[str, Any]) -> bool:
@@ -256,7 +259,7 @@ def _build_refund_bucket_per_pm_planned_write(
     resolved = _load_revision_payment_accounts(db, str(rev_id))
     if resolved is None:
         return None, "revision_not_found", "Révision comptable introuvable ou snapshot JSON invalide."
-    _deb, refund_by_code, sales_acc, _dont, prior_refund_acc = resolved
+    _deb, refund_by_code, sales_acc, _dont, prior_refund_acc, _, _ = resolved
 
     contra = prior_refund_acc if prior_closed else sales_acc
     if prior_closed and not (prior_refund_acc or "").strip():
@@ -381,7 +384,7 @@ def _build_sales_donations_planned_row_per_pm(
     resolved = _load_revision_payment_accounts(db, str(rev_id))
     if resolved is None:
         return None, "revision_not_found", "Révision comptable introuvable ou snapshot JSON invalide."
-    accounts_by_code, _refund_credit_by_pm, sales_acc, dont_acc, _prior_ref = resolved
+    accounts_by_code, _refund_credit_by_pm, sales_acc, dont_acc, _prior_ref, _, _ = resolved
 
     entries: list[tuple[str, float]] = []
     for code in sorted(by_pm_raw.keys()):
@@ -659,6 +662,127 @@ def _build_sales_donations_planned_row_per_pm(
     return row_pm, None, None
 
 
+def _build_cash_variance_planned_write(
+    snapshot: dict[str, Any],
+    enriched_payload: dict[str, Any],
+    *,
+    db: Session,
+    index: int = 3,
+) -> tuple[PlannedSubWrite | None, str | None, str | None]:
+    """Story 9.10 — T3 écart caisse 658/758 ↔ compte espèces (53x) de la révision."""
+    closing = snapshot.get("closing") or {}
+    if not isinstance(closing, dict):
+        return None, "invalid_snapshot", "closing absent du snapshot figé."
+    variance = _r2(float(closing.get("cash_variance") or 0.0))
+    if abs(variance) < 0.005:
+        row_zero: PlannedSubWrite = {
+            "index": index,
+            "kind": SUB_KIND_CASH_VARIANCE_V1,
+            "amount": 0.0,
+            "swap_debit_credit": False,
+            "tx_type": "ADVANCED",
+            "label_token": "EcartCaisse",
+            "reference_token": "var",
+            "observability": {
+                "builder_policy": POLICY_DETAILED,
+                "body_format": "skipped_zero",
+                "cash_variance": variance,
+            },
+        }
+        return row_zero, None, None
+
+    rev_id = snapshot.get("accounting_config_revision_id")
+    if not rev_id or not str(rev_id).strip():
+        return None, "snapshot_missing_revision", "accounting_config_revision_id absent — T3 écart impossible."
+    resolved = _load_revision_payment_accounts(db, str(rev_id))
+    if resolved is None:
+        return None, "revision_not_found", "Révision comptable introuvable ou snapshot JSON invalide."
+    accounts_by_code, _, _, _, _, shortage_acc, surplus_acc = resolved
+    if not (shortage_acc or "").strip() or not (surplus_acc or "").strip():
+        return (
+            None,
+            "variance_accounts_missing",
+            "Comptes écart caisse (658/758) absents de la révision publiée.",
+        )
+    cash_acc = accounts_by_code.get("cash")
+    if not cash_acc:
+        return None, "unknown_payment_method_code", "Moyen « cash » sans paheko_debit_account en révision."
+
+    amount = _r2(abs(variance))
+    if variance < 0:
+        lines = [
+            {
+                "account": shortage_acc,
+                "debit": amount,
+                "label": "Écart caisse — manque",
+                "reference": f"{paheko_close_document_reference_base(enriched_payload)}:var:debit",
+            },
+            {
+                "account": cash_acc,
+                "credit": amount,
+                "label": "Écart caisse — manque (caisse)",
+                "reference": f"{paheko_close_document_reference_base(enriched_payload)}:var:credit",
+            },
+        ]
+    else:
+        lines = [
+            {
+                "account": cash_acc,
+                "debit": amount,
+                "label": "Écart caisse — surplus (caisse)",
+                "reference": f"{paheko_close_document_reference_base(enriched_payload)}:var:debit",
+            },
+            {
+                "account": surplus_acc,
+                "credit": amount,
+                "label": "Écart caisse — surplus",
+                "reference": f"{paheko_close_document_reference_base(enriched_payload)}:var:credit",
+            },
+        ]
+
+    ref_doc = paheko_close_document_reference_base(enriched_payload)
+    if not ref_doc:
+        return None, "invalid_outbox_payload", "cash_session_id absent pour références Paheko T3."
+
+    td = sum(float(x.get("debit") or 0) for x in lines)
+    tc = sum(float(x.get("credit") or 0) for x in lines)
+    if abs(_r2(td - tc)) > 0.01:
+        return None, "unbalanced_advanced", f"T3 écart non équilibré ({td} / {tc})."
+
+    prefix = str(enriched_payload.get("label_prefix") or "").strip() or "Clôture caisse"
+    session_date = session_date_iso_for_paheko(enriched_payload)
+    label = f"{prefix} — écart caisse — {session_date}" if session_date else f"{prefix} — écart caisse"
+    adv_body, code, msg = build_close_transaction_advanced_payload(
+        enriched_payload,
+        lines=lines,
+        label=label,
+        reference=f"{ref_doc}:var",
+        extra_note_lines=None,
+    )
+    if code is not None or adv_body is None:
+        return None, code or "invalid_sub_write", msg or "Construction ADVANCED T3 impossible."
+
+    row: PlannedSubWrite = {
+        "index": index,
+        "kind": SUB_KIND_CASH_VARIANCE_V1,
+        "amount": amount,
+        "swap_debit_credit": False,
+        "tx_type": "ADVANCED",
+        "label_token": "EcartCaisse",
+        "reference_token": "var",
+        "http_body": adv_body,
+        "observability": {
+            "builder_policy": POLICY_DETAILED,
+            "body_format": "ADVANCED",
+            "cash_variance": variance,
+            "shortage_account": shortage_acc,
+            "surplus_account": surplus_acc,
+            "cash_account": cash_acc,
+        },
+    }
+    return row, None, None
+
+
 def build_planned_sub_writes(
     snapshot: dict[str, Any],
     *,
@@ -666,11 +790,12 @@ def build_planned_sub_writes(
     enriched_payload: dict[str, Any] | None = None,
 ) -> tuple[list[PlannedSubWrite], str | None, str | None]:
     """
-    Ordre stable : index 0, 1, 2 — même snapshot → même liste (sauf erreur métier explicite).
+    Ordre stable : index 0, 1, 2, 3 — même snapshot → même liste (sauf erreur métier explicite).
 
     Story 23.4 : sous-écriture 0 = ventilation encaissements/dons par moyen (ADVANCED).
     P2 : remboursements 1/2 = ADVANCED par moyen si ``schema_version`` 2 ou dicts non vides ;
     sinon mono-ligne REVENUE (compat snapshots v1 historiques).
+    Story 9.10 : index 3 = écart caisse 658/758 (T3) depuis ``closing.cash_variance``.
     """
     if db is None:
         return [], "revision_resolution_requires_db", "Ventilation par moyen : session SQLAlchemy requise (révision publiée)."
@@ -744,7 +869,13 @@ def build_planned_sub_writes(
     if err is not None:
         return [], err, msg or err
     assert pm_row is not None
-    return [pm_row, *refunds_rows], None, None
+    var_row, verr, vmsg = _build_cash_variance_planned_write(
+        snapshot, enriched_payload, db=db, index=3
+    )
+    if verr is not None:
+        return [], verr, vmsg or verr
+    assert var_row is not None
+    return [pm_row, *refunds_rows, var_row], None, None
 
 
 def build_paheko_bodies_for_planned_sub_writes(
@@ -908,6 +1039,7 @@ __all__ = [
     "SUB_KIND_REFUNDS_CURRENT_PER_PM_V1",
     "SUB_KIND_REFUNDS_PRIOR_CLOSED",
     "SUB_KIND_REFUNDS_PRIOR_CLOSED_PER_PM_V1",
+    "SUB_KIND_CASH_VARIANCE_V1",
     "SUB_KIND_SALES_DONATIONS",
     "SUB_KIND_SALES_DONATIONS_PER_PM",
     "PlannedSubWrite",

@@ -56,6 +56,10 @@ describe('AdminAccountingGlobalAccountsWidget', () => {
         default_sales_account: '707',
         default_donation_account: '756',
         prior_year_refund_account: '512',
+        cash_journal_code: 'CA',
+        default_entry_label_prefix: 'Z caisse',
+        cash_shortage_account: '658',
+        cash_surplus_account: '758',
         updated_at: '2026-04-16T10:00:00.000Z',
       },
     });
@@ -66,6 +70,8 @@ describe('AdminAccountingGlobalAccountsWidget', () => {
     );
     await waitFor(() => expect(getGlobalAccountsMock).toHaveBeenCalled());
     expect((screen.getByTestId('admin-global-accounts-sales') as HTMLInputElement).value).toBe('707');
+    expect((screen.getByTestId('admin-global-accounts-cash-shortage') as HTMLInputElement).value).toBe('658');
+    expect((screen.getByTestId('admin-global-accounts-cash-surplus') as HTMLInputElement).value).toBe('758');
     expect(screen.getByTestId('admin-accounting-global-accounts')).toBeTruthy();
   });
 
@@ -76,6 +82,10 @@ describe('AdminAccountingGlobalAccountsWidget', () => {
         default_sales_account: '707',
         default_donation_account: '756',
         prior_year_refund_account: '512',
+        cash_journal_code: 'CA',
+        default_entry_label_prefix: 'Z caisse',
+        cash_shortage_account: '658',
+        cash_surplus_account: '758',
         updated_at: '2026-04-16T10:00:00.000Z',
       },
     });
@@ -85,6 +95,10 @@ describe('AdminAccountingGlobalAccountsWidget', () => {
         default_sales_account: '707',
         default_donation_account: '756',
         prior_year_refund_account: '512',
+        cash_journal_code: 'CA',
+        default_entry_label_prefix: 'Z caisse',
+        cash_shortage_account: '658',
+        cash_surplus_account: '758',
         updated_at: '2026-04-16T10:00:01.000Z',
       },
     });
@@ -102,6 +116,8 @@ describe('AdminAccountingGlobalAccountsWidget', () => {
       default_sales_account: '707',
       default_donation_account: '756',
       prior_year_refund_account: '512',
+      cash_shortage_account: '658',
+      cash_surplus_account: '758',
     });
     expect(call?.[2]).toMatchObject({ stepUpPin: '9999' });
   });
