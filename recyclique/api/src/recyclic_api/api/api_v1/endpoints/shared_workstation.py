@@ -1,7 +1,5 @@
 """Endpoints poste partagé — contexte, enrôlement, statut device, PIN opérateur (Epic 27)."""
 
-from __future__ import annotations
-
 from typing import Optional
 from uuid import UUID
 
@@ -409,6 +407,7 @@ async def end_operator_session(
 )
 @conditional_rate_limit("30/minute")
 async def touch_operator_session_activity(
+    request: Request,
     response: Response,
     device_id: str = Depends(require_valid_device_credential),
     db: Session = Depends(get_db),

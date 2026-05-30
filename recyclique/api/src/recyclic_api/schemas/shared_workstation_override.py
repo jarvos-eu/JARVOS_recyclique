@@ -1,7 +1,5 @@
 """Schémas override SuperAdmin poste partagé — Epic 27.10."""
 
-from __future__ import annotations
-
 from datetime import datetime
 from enum import Enum
 from typing import Optional
