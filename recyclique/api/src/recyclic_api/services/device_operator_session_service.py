@@ -14,6 +14,7 @@ from recyclic_api.core.audit import (
     log_device_operator_session_started,
     log_shared_workstation_operator_locked_manual,
     log_shared_workstation_operator_locked_timeout,
+    log_shared_workstation_override_deactivated,
 )
 from recyclic_api.core.exceptions import NotFoundError, ValidationError
 from recyclic_api.models.device_operator_session import (
@@ -90,6 +91,10 @@ class OperatorSessionStatusEnriched:
     last_activity_at: Optional[datetime]
     inactivity_timeout_seconds: Optional[int]
     seconds_until_lock: Optional[int]
+    override_active: bool = False
+    override_started_at: Optional[datetime] = None
+    override_seconds_remaining: Optional[int] = None
+    can_activate_super_admin_override: bool = False
 
 
 class DeviceOperatorSessionService:
@@ -212,13 +217,31 @@ class DeviceOperatorSessionService:
     ) -> DeviceOperatorSession:
         if session.status != DeviceOperatorSessionStatus.ACTIVE.value:
             return session
+        had_override = session.override_active
         now = _utc_now()
         session.status = DeviceOperatorSessionStatus.ENDED.value
         session.ended_at = now
         session.last_activity_at = now
+        if had_override:
+            session.override_active = False
+            session.override_started_at = None
         self._db.add(session)
         self._db.commit()
         self._db.refresh(session)
+
+        if had_override:
+            log_shared_workstation_override_deactivated(
+                db=self._db,
+                session_id=str(session.id),
+                device_id=str(session.device_id),
+                site_id=str(session.site_id),
+                operator_user_id=str(session.operator_user_id),
+                module_key=session.active_module_key,
+                override_active=False,
+                user_id=actor_user_id,
+                request_id=request_id,
+                reason="session_ended",
+            )
 
         self._log_session_end(
             session=session,
@@ -317,9 +340,23 @@ class DeviceOperatorSessionService:
                 last_activity_at=None,
                 inactivity_timeout_seconds=None,
                 seconds_until_lock=None,
+                override_active=False,
+                override_started_at=None,
+                override_seconds_remaining=None,
+                can_activate_super_admin_override=False,
             )
+        from recyclic_api.services.shared_workstation_override_service import (
+            SharedWorkstationOverrideService,
+            can_activate_super_admin_override,
+            override_seconds_remaining,
+        )
+
+        override_service = SharedWorkstationOverrideService(self._db)
+        override_service.expire_override_if_needed(session=active, now=now)
+        self._db.refresh(active)
         device = RegisteredDeviceService(self._db).get_required(device_id=device_id)
         timeout = effective_inactivity_timeout_seconds(device)
+        operator = self._db.get(User, active.operator_user_id)
         return OperatorSessionStatusEnriched(
             active=True,
             operator_user_id=str(active.operator_user_id),
@@ -330,6 +367,13 @@ class DeviceOperatorSessionService:
                 session=active,
                 timeout_seconds=timeout,
                 now=now,
+            ),
+            override_active=active.override_active,
+            override_started_at=active.override_started_at,
+            override_seconds_remaining=override_seconds_remaining(session=active, now=now),
+            can_activate_super_admin_override=can_activate_super_admin_override(
+                session=active,
+                operator=operator,
             ),
         )
 

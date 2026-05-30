@@ -10,16 +10,19 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy.orm import Session
 
-from recyclic_api.core.auth import resolve_access_token
+from recyclic_api.core.auth import get_current_user, resolve_access_token
 from recyclic_api.core.database import get_db
 from recyclic_api.core.redis import get_redis
 from recyclic_api.core.security import verify_token
 from recyclic_api.core.shared_workstation_guard import (
+    _assert_effective_module_in_context,
     require_active_operator_context,
     require_effective_module_from_path,
+    require_override_active_from_context,
     require_shared_workstation_reception_access,
     require_valid_device_credential,
 )
+from recyclic_api.models.user import User
 from recyclic_api.schemas.device_enrollment import (
     SharedWorkstationDeviceStatusResponse,
     SharedWorkstationEnrollCompleteRequest,
@@ -38,6 +41,12 @@ from recyclic_api.schemas.shared_workstation_operator_session import (
     SharedWorkstationOperatorSessionEndRequest,
     SharedWorkstationOperatorSessionEndResponse,
     SharedWorkstationOperatorSessionStatusResponse,
+)
+from recyclic_api.schemas.shared_workstation_override import (
+    SharedWorkstationOverrideActivateRequest,
+    SharedWorkstationOverrideActivateResponse,
+    SharedWorkstationOverrideDeactivateRequest,
+    SharedWorkstationOverrideDeactivateResponse,
 )
 from recyclic_api.schemas.shared_workstation_reception_draft import (
     SharedWorkstationReceptionDraftAbandonOut,
@@ -58,6 +67,10 @@ from recyclic_api.services.shared_workstation_effective_modules_service import (
     SharedWorkstationEffectiveModulesService,
 )
 from recyclic_api.services.device_operator_session_service import DeviceOperatorSessionService
+from recyclic_api.services.shared_workstation_override_service import (
+    OverrideError,
+    SharedWorkstationOverrideService,
+)
 from recyclic_api.core.exceptions import ValidationError as DomainValidationError
 from recyclic_api.utils.rate_limit import conditional_rate_limit
 
@@ -177,6 +190,32 @@ async def probe_effective_module(
     return SharedWorkstationProbeModuleOut(module_key=module_key, effective=True)
 
 
+@router.get(
+    "/probe-override/{module_key}",
+    response_model=SharedWorkstationProbeModuleOut,
+    summary="Probe action nécessitant override SuperAdmin actif",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_probeOverrideModule"},
+)
+async def probe_override_required_module(
+    module_key: str,
+    response: Response,
+    request: Request,
+    db: Session = Depends(get_db),
+    ctx: SharedWorkstationContextOut = Depends(require_override_active_from_context),
+    current_user: User = Depends(get_current_user),
+):
+    """Story 27.10 — preuve refus SHARED_WORKSTATION_OVERRIDE_REQUIRED sans override."""
+    _no_store(response)
+    _assert_effective_module_in_context(
+        request=request,
+        db=db,
+        ctx=ctx,
+        module_key=module_key,
+        current_user=current_user,
+    )
+    return SharedWorkstationProbeModuleOut(module_key=module_key, effective=True)
+
+
 @router.post(
     "/enroll/complete",
     response_model=SharedWorkstationEnrollCompleteResponse,
@@ -260,12 +299,76 @@ async def get_operator_session_status(
     sess_id = enriched.session_id
     return SharedWorkstationOperatorSessionStatusResponse(
         active=enriched.active,
-        operator_user_id=op_id if op_id else None,
-        session_id=sess_id if sess_id else None,
+        operator_user_id=UUID(op_id) if op_id else None,
+        session_id=UUID(sess_id) if sess_id else None,
         last_activity_at=enriched.last_activity_at,
         inactivity_timeout_seconds=enriched.inactivity_timeout_seconds,
         seconds_until_lock=enriched.seconds_until_lock,
+        override_active=enriched.override_active,
+        override_started_at=enriched.override_started_at,
+        override_seconds_remaining=enriched.override_seconds_remaining,
+        can_activate_super_admin_override=enriched.can_activate_super_admin_override,
     )
+
+
+@router.post(
+    "/override/activate",
+    response_model=SharedWorkstationOverrideActivateResponse,
+    summary="Activer override SuperAdmin (confirmation PIN)",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_activateOverride"},
+)
+@conditional_rate_limit("5/minute")
+async def activate_super_admin_override(
+    payload: SharedWorkstationOverrideActivateRequest,
+    request: Request,
+    response: Response,
+    device_id: str = Depends(require_valid_device_credential),
+    db: Session = Depends(get_db),
+    actor_user_id: Optional[str] = Depends(_optional_actor_user_id),
+):
+    _no_store(response)
+    service = SharedWorkstationOverrideService(db)
+    result = service.activate_override(
+        device_id=device_id,
+        confirmation_pin=payload.confirmation_pin,
+        actor_user_id=actor_user_id,
+        request_id=_request_id(request),
+    )
+    if isinstance(result, OverrideError):
+        raise HTTPException(
+            status_code=result.http_status,
+            detail={"code": result.code, "message": result.message},
+        )
+    return SharedWorkstationOverrideActivateResponse(
+        override_active=result.override_active,
+        override_started_at=result.override_started_at,
+        override_expires_at=result.override_expires_at,
+    )
+
+
+@router.post(
+    "/override/deactivate",
+    response_model=SharedWorkstationOverrideDeactivateResponse,
+    summary="Désactiver override SuperAdmin",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_deactivateOverride"},
+)
+@conditional_rate_limit("5/minute")
+async def deactivate_super_admin_override(
+    payload: SharedWorkstationOverrideDeactivateRequest,
+    request: Request,
+    response: Response,
+    device_id: str = Depends(require_valid_device_credential),
+    db: Session = Depends(get_db),
+    actor_user_id: Optional[str] = Depends(_optional_actor_user_id),
+):
+    _no_store(response)
+    SharedWorkstationOverrideService(db).deactivate_override(
+        device_id=device_id,
+        reason=payload.reason.value,
+        actor_user_id=actor_user_id,
+        request_id=_request_id(request),
+    )
+    return SharedWorkstationOverrideDeactivateResponse(override_active=False)
 
 
 @router.post(

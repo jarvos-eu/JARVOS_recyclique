@@ -368,6 +368,8 @@ last_updated: "2026-05-30"
 # last_updated: 2026-05-30 — Story Runner BMAD 27.7 fin : CS→VS→DS→GATE→QA→CR PASS ; `27-7-server-module-intersection` backlog→done ; vs=0 qa=0 cr=0 ; prochaine story 27-8-reception-pilot-drafts.
 # last_updated: 2026-05-30 — Story 27.8 : QA PASS ; CR loop0 FAIL (gardes PIN reception) ; `27-8-reception-pilot-drafts` backlog→in-progress ; reprise DS cr_loop=1.
 # last_updated: 2026-05-30 — Story Runner BMAD 27.8 fin : GATE→CR2 APPROVE (cr_loop=1) ; `27-8-reception-pilot-drafts` in-progress→done ; prochaine story 27-9-timeout-lock-handoff.
+# last_updated: 2026-05-30 — Story Runner BMAD 27.9 fin : DS→GATE→QA→CR PASS ; `27-9-timeout-lock-handoff` backlog→done ; vs=0 qa=0 cr=0 ; prochaine story 27-10-superadmin-override.
+# last_updated: 2026-05-30 — Story Runner BMAD 27.10 fin : CS→VS→DS→GATE→QA→CR PASS ; `27-10-superadmin-override` backlog→done ; `epic-27` in-progress→done (stories 27.1–27.10 done) ; rétro `epic-27-retrospective` optionnelle.
 # last_updated: 2026-04-20 — story 25-7 DS bmad-dev-story Task : 25-7-traduire-la-spec-25-4-sections-2-3-en-checklist-developpement-executable ready-for-dev → review ; checklist `_bmad-output/implementation-artifacts/checklists/25-7-checklist-spec-25-4-sections-2-3.md` ; epic-25 inchangé in-progress
 # last_updated: 2026-04-20 — story 25-7 Story Runner fin : 25-7 review→done (CR×2, cr_loop=1 ; gates git ; QA doc `_bmad-output/implementation-artifacts/25-7-qa-checklist-verification.md`) ; correctifs YAML/story post-CR1 ; epic-25 inchangé in-progress
 # last_updated: "2026-04-16" # story 22.5 Story Runner fin : VS→DS→GATE→QA→CR APPROVE ; 22-5 review→done ; vs=0 qa=0 cr=0 ; gates pytest+npm (e2e 22-5 inclus post-QA)
@@ -675,7 +677,7 @@ development_status:
   # Sequence : 27-1 -> 27-2 -> 27-3 -> 27-4 -> 27-5 -> 27-6 -> 27-7 -> 27-8 -> 27-9 -> 27-10.
   # Une seule story active a la fois ; pas de Story Runner parallele ; prerequis 27-1 : registre `module_key` et configuration modules par `site_id`.
   # `gates_skipped_with_hitl: true` seulement pour blocage environnement documente.
-  epic-27: in-progress
+  epic-27: done
   27-1-registered-device: done
   27-2-server-context-audit: done
   27-3-superadmin-device-management: done
@@ -684,6 +686,6 @@ development_status:
   27-6-pin-lock-operator-session: done
   27-7-server-module-intersection: done
   27-8-reception-pilot-drafts: done
-  27-9-timeout-lock-handoff: backlog
-  27-10-superadmin-override: backlog
+  27-9-timeout-lock-handoff: done
+  27-10-superadmin-override: done
   epic-27-retrospective: optional

@@ -37,3 +37,7 @@ class SharedWorkstationOperatorSessionStatusResponse(BaseModel):
     last_activity_at: Optional[datetime] = None
     inactivity_timeout_seconds: Optional[int] = None
     seconds_until_lock: Optional[int] = None
+    override_active: bool = False
+    override_started_at: Optional[datetime] = None
+    override_seconds_remaining: Optional[int] = None
+    can_activate_super_admin_override: bool = False

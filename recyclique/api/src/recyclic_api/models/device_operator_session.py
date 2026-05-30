@@ -51,6 +51,7 @@ class DeviceOperatorSession(Base):
     )
     active_module_key = Column(String(64), nullable=True)
     override_active = Column(Boolean, nullable=False, server_default=text("false"))
+    override_started_at = Column(DateTime(timezone=True), nullable=True)
     status = Column(String(32), nullable=False, index=True)
     started_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     ended_at = Column(DateTime(timezone=True), nullable=True)

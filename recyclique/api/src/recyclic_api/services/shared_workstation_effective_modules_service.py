@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from recyclic_api.core.audit import log_shared_workstation_access_refused
 from recyclic_api.core.auth import get_user_permissions
 from recyclic_api.models.registered_device import RegisteredDeviceStatus, RegisteredDeviceType
-from recyclic_api.models.user import User
+from recyclic_api.models.user import User, UserRole
 from recyclic_api.modules.module_config.access_registry import (
     get_module_access_entry,
     iter_intersectable_module_keys,
@@ -83,6 +83,16 @@ class SharedWorkstationEffectiveModulesService:
                 },
             )
 
+        if session.override_active:
+            from recyclic_api.services.shared_workstation_override_service import (
+                SharedWorkstationOverrideService,
+            )
+
+            SharedWorkstationOverrideService(self._db).expire_override_if_needed(
+                session=session
+            )
+            self._db.refresh(session)
+
         try:
             operator_uuid = uuid.UUID(str(operator_user_id))
         except ValueError as exc:
@@ -108,6 +118,10 @@ class SharedWorkstationEffectiveModulesService:
         allowlist = set(device.allowed_module_keys or [])
         site_id = device.site_id
 
+        skip_operator_permissions = (
+            session.override_active and operator.role == UserRole.SUPER_ADMIN
+        )
+
         effective: list[str] = []
         for module_key in iter_intersectable_module_keys():
             entry = get_module_access_entry(module_key)
@@ -117,9 +131,9 @@ class SharedWorkstationEffectiveModulesService:
                 continue
             if not is_site_module_enabled(self._db, site_id=site_id, module_key=module_key):
                 continue
-            if not all(p in permission_keys for p in entry.required_permission_keys):
-                continue
-            # override_active : pas d'élargissement implicite en 27.7 (story 27.10).
+            if not skip_operator_permissions:
+                if not all(p in permission_keys for p in entry.required_permission_keys):
+                    continue
             effective.append(module_key)
 
         return EffectiveModulesResult(

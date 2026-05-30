@@ -14,6 +14,9 @@ export type SharedWorkstationOperatorSessionState = {
   readonly loading: boolean;
   readonly hasDevice: boolean;
   readonly operatorSessionActive: boolean;
+  readonly overrideActive: boolean;
+  readonly canActivateSuperAdminOverride: boolean;
+  readonly overrideSecondsRemaining: number | null;
   readonly refreshSessionStatus: () => Promise<boolean>;
 };
 
@@ -32,11 +35,17 @@ export function SharedWorkstationOperatorSessionProvider({
   const [loading, setLoading] = useState(true);
   const [hasDevice, setHasDevice] = useState(false);
   const [operatorSessionActive, setOperatorSessionActive] = useState(false);
+  const [overrideActive, setOverrideActive] = useState(false);
+  const [canActivateSuperAdminOverride, setCanActivateSuperAdminOverride] = useState(false);
+  const [overrideSecondsRemaining, setOverrideSecondsRemaining] = useState<number | null>(null);
 
   const refreshSessionStatus = useCallback(async (): Promise<boolean> => {
     if (!enabled) {
       setHasDevice(false);
       setOperatorSessionActive(false);
+      setOverrideActive(false);
+      setCanActivateSuperAdminOverride(false);
+      setOverrideSecondsRemaining(null);
       setLoading(false);
       return false;
     }
@@ -44,16 +53,25 @@ export function SharedWorkstationOperatorSessionProvider({
     setHasDevice(enrolled);
     if (!enrolled) {
       setOperatorSessionActive(false);
+      setOverrideActive(false);
+      setCanActivateSuperAdminOverride(false);
+      setOverrideSecondsRemaining(null);
       setLoading(false);
       return false;
     }
     const status: OperatorSessionStatus = await fetchOperatorSessionStatus();
     if (!status.ok) {
       setOperatorSessionActive(false);
+      setOverrideActive(false);
+      setCanActivateSuperAdminOverride(false);
+      setOverrideSecondsRemaining(null);
       setLoading(false);
       return false;
     }
     setOperatorSessionActive(status.active);
+    setOverrideActive(status.override_active);
+    setCanActivateSuperAdminOverride(status.can_activate_super_admin_override);
+    setOverrideSecondsRemaining(status.override_seconds_remaining);
     setLoading(false);
     return status.active;
   }, [enabled]);
@@ -75,9 +93,20 @@ export function SharedWorkstationOperatorSessionProvider({
       loading,
       hasDevice,
       operatorSessionActive,
+      overrideActive,
+      canActivateSuperAdminOverride,
+      overrideSecondsRemaining,
       refreshSessionStatus,
     }),
-    [loading, hasDevice, operatorSessionActive, refreshSessionStatus],
+    [
+      loading,
+      hasDevice,
+      operatorSessionActive,
+      overrideActive,
+      canActivateSuperAdminOverride,
+      overrideSecondsRemaining,
+      refreshSessionStatus,
+    ],
   );
 
   return (

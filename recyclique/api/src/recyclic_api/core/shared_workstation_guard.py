@@ -37,6 +37,11 @@ from recyclic_api.services.shared_workstation_effective_modules_service import (
 )
 from recyclic_api.modules.module_config.registry import MODULE_KEY_RECEPTION
 from recyclic_api.services.device_operator_session_service import DeviceOperatorSessionService
+from recyclic_api.services.shared_workstation_override_service import (
+    SHARED_WORKSTATION_OVERRIDE_EXPIRED,
+    SHARED_WORKSTATION_OVERRIDE_REQUIRED,
+    SharedWorkstationOverrideService,
+)
 from recyclic_api.services.reception_service import SharedWorkstationReceptionScope
 
 HEADER_DEVICE_ID = "X-Recyclique-Device-Id"
@@ -254,6 +259,33 @@ def _assert_operator_session_not_expired(
         )
 
 
+def _assert_override_not_expired(
+    *,
+    request: Request,
+    db: Session,
+    device_id: str,
+    actor_user_id: Optional[str] = None,
+) -> None:
+    """Story 27.10 — auto-désactive override TTL expiré avant mutation sensible."""
+    sessions = DeviceOperatorSessionService(db)
+    active = sessions.get_active_for_device(device_id=device_id)
+    if active is None:
+        return
+    override_service = SharedWorkstationOverrideService(db)
+    if override_service.expire_override_if_needed(
+        session=active,
+        actor_user_id=actor_user_id,
+        request_id=_request_id(request),
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": SHARED_WORKSTATION_OVERRIDE_EXPIRED,
+                "message": "Override SuperAdmin expiré",
+            },
+        )
+
+
 def require_active_operator_context(
     request: Request,
     db: Session = Depends(get_db),
@@ -334,6 +366,12 @@ def require_active_operator_context(
         )
 
     _assert_operator_session_not_expired(
+        request=request,
+        db=db,
+        device_id=resolved_device_id,
+        actor_user_id=str(current_user.id),
+    )
+    _assert_override_not_expired(
         request=request,
         db=db,
         device_id=resolved_device_id,
@@ -496,4 +534,43 @@ def require_shared_workstation_reception_access(
     ctx: SharedWorkstationContextOut = Depends(require_effective_module(MODULE_KEY_RECEPTION)),
 ) -> SharedWorkstationContextOut:
     """Dependency — credential + session + module reception effectif (routes shared-workstation)."""
+    return ctx
+
+
+def require_override_active_from_context(
+    request: Request,
+    db: Session = Depends(get_db),
+    ctx: SharedWorkstationContextOut = Depends(require_active_operator_context),
+    current_user: User = Depends(get_current_user),
+) -> SharedWorkstationContextOut:
+    """Story 27.10 — probe/mutation nécessitant override SuperAdmin actif."""
+    if ctx.device_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": SHARED_WORKSTATION_OPERATOR_REQUIRED,
+                "message": "Opérateur actif requis sur ce poste",
+            },
+        )
+    session = DeviceOperatorSessionService(db).get_active_for_device(device_id=ctx.device_id)
+    if session is None or not session.override_active:
+        from recyclic_api.core.audit import log_shared_workstation_override_required_refused
+
+        log_shared_workstation_override_required_refused(
+            db=db,
+            device_id=ctx.device_id,
+            site_id=ctx.site_id,
+            operator_user_id=ctx.operator_user_id,
+            module_key=ctx.module_key,
+            override_active=False,
+            user_id=str(current_user.id),
+            request_id=_request_id(request),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": SHARED_WORKSTATION_OVERRIDE_REQUIRED,
+                "message": "Override SuperAdmin requis pour cette action",
+            },
+        )
     return ctx

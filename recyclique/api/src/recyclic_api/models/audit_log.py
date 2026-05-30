@@ -100,6 +100,15 @@ class AuditActionType(str, enum.Enum):
     SHARED_WORKSTATION_PIN_LOCKOUT = "shared_workstation_pin_lockout"
     SHARED_WORKSTATION_PIN_LOCKOUT_CLEARED = "shared_workstation_pin_lockout_cleared"
 
+    # Epic 27.10 — override SuperAdmin explicite poste partagé
+    SHARED_WORKSTATION_OVERRIDE_ACTIVATED = "shared_workstation_override_activated"
+    SHARED_WORKSTATION_OVERRIDE_DEACTIVATED = "shared_workstation_override_deactivated"
+    SHARED_WORKSTATION_OVERRIDE_ACTIVATION_REFUSED = (
+        "shared_workstation_override_activation_refused"
+    )
+    SHARED_WORKSTATION_OVERRIDE_EXPIRED = "shared_workstation_override_expired"
+    SHARED_WORKSTATION_OVERRIDE_REQUIRED = "shared_workstation_override_required"
+
     # Epic 27.8 — brouillon réception poste partagé (pilote)
     SHARED_WORKSTATION_RECEPTION_DRAFT_RESUMED = "shared_workstation_reception_draft_resumed"
     SHARED_WORKSTATION_RECEPTION_DRAFT_ABANDONED = "shared_workstation_reception_draft_abandoned"

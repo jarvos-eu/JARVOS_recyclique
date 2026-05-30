@@ -13,6 +13,10 @@ export type OperatorSessionStatus =
       last_activity_at: string | null;
       inactivity_timeout_seconds: number | null;
       seconds_until_lock: number | null;
+      override_active: boolean;
+      override_started_at: string | null;
+      override_seconds_remaining: number | null;
+      can_activate_super_admin_override: boolean;
     }
   | { ok: false; status: number; message: string; code?: string };
 
@@ -126,6 +130,14 @@ export async function fetchOperatorSessionStatus(
         : null,
     seconds_until_lock:
       typeof row.seconds_until_lock === 'number' ? row.seconds_until_lock : null,
+    override_active: Boolean(row.override_active),
+    override_started_at:
+      typeof row.override_started_at === 'string' ? row.override_started_at : null,
+    override_seconds_remaining:
+      typeof row.override_seconds_remaining === 'number'
+        ? row.override_seconds_remaining
+        : null,
+    can_activate_super_admin_override: Boolean(row.can_activate_super_admin_override),
   };
 }
 

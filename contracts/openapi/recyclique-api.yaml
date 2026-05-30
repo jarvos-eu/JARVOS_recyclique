@@ -1657,6 +1657,94 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/override/activate:
+    post:
+      operationId: recyclique_sharedWorkstation_activateOverride
+      tags:
+        - shared-workstation
+      summary: Activer override SuperAdmin (confirmation PIN)
+      description: |
+        Story 27.10 — credential device + session opérateur SuperAdmin active ;
+        confirmation PIN opérateur (step-up). `Cache-Control: no-store`.
+      parameters:
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SharedWorkstationOverrideActivateV1Request"
+      responses:
+        "200":
+          description: Override activé
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationOverrideActivateV1Response"
+        "403":
+          description: Refus activation (non SuperAdmin, PIN incorrect, pas de session)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/override/deactivate:
+    post:
+      operationId: recyclique_sharedWorkstation_deactivateOverride
+      tags:
+        - shared-workstation
+      summary: Désactiver override SuperAdmin
+      description: |
+        Story 27.10 — sortie explicite override. Idempotent si déjà inactif.
+        `Cache-Control: no-store`.
+      parameters:
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SharedWorkstationOverrideDeactivateV1Request"
+      responses:
+        "200":
+          description: Override désactivé
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationOverrideDeactivateV1Response"
+        "403":
+          description: Credential device invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
   /v1/shared-workstation/operator-pin/verify:
     post:
       operationId: recyclique_sharedWorkstation_verifyOperatorPin
@@ -11190,6 +11278,62 @@ components:
         seconds_until_lock:
           type: integer
           nullable: true
+        override_active:
+          type: boolean
+          default: false
+        override_started_at:
+          type: string
+          format: date-time
+          nullable: true
+        override_seconds_remaining:
+          type: integer
+          nullable: true
+        can_activate_super_admin_override:
+          type: boolean
+          default: false
+      additionalProperties: false
+    SharedWorkstationOverrideActivateV1Request:
+      type: object
+      required:
+        - confirmation_pin
+      properties:
+        confirmation_pin:
+          type: string
+          pattern: "^\\d{4}$"
+      additionalProperties: false
+    SharedWorkstationOverrideActivateV1Response:
+      type: object
+      required:
+        - override_active
+        - override_started_at
+        - override_expires_at
+      properties:
+        override_active:
+          type: boolean
+        override_started_at:
+          type: string
+          format: date-time
+        override_expires_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    SharedWorkstationOverrideDeactivateV1Request:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - user_exit
+            - admin_action
+          default: user_exit
+      additionalProperties: false
+    SharedWorkstationOverrideDeactivateV1Response:
+      type: object
+      required:
+        - override_active
+      properties:
+        override_active:
+          type: boolean
       additionalProperties: false
     SharedWorkstationOperatorSessionEndV1Request:
       type: object

@@ -21,6 +21,7 @@ import { LiveActivityPresenceBridge } from './LiveActivityPresenceBridge';
 import { LiveEnvelopeRefreshProvider } from './LiveAuthEnvelopeRefreshContext';
 import { SharedWorkstationInactivityProvider } from '../../domains/shared-workstation/SharedWorkstationInactivityProvider';
 import { SharedWorkstationLockScreen } from '../../domains/shared-workstation/SharedWorkstationLockScreen';
+import { SharedWorkstationOverrideShell } from '../../domains/shared-workstation/SharedWorkstationOverrideShell';
 import {
   SharedWorkstationOperatorSessionProvider,
   useSharedWorkstationLockRequired,
@@ -391,7 +392,12 @@ function LiveAuthShellAuthenticated({
       <LiveActivityPresenceBridge />
       <SharedWorkstationInactivityProvider>
         {lockRequired ? <SharedWorkstationLockScreen onUnlocked={onUnlocked} /> : null}
-        {!lockRequired ? children : null}
+        {!lockRequired ? (
+          <>
+            <SharedWorkstationOverrideShell />
+            {children}
+          </>
+        ) : null}
       </SharedWorkstationInactivityProvider>
     </AuthRuntimeProvider>
   );

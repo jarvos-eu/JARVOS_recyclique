@@ -1011,6 +1011,186 @@ def log_shared_workstation_reception_draft_access_refused(
     )
 
 
+def log_shared_workstation_override_activated(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = True,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="shared_workstation.override_activate",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_OVERRIDE_ACTIVATED,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Override SuperAdmin activé sur poste partagé",
+        db=db,
+    )
+
+
+def log_shared_workstation_override_deactivated(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = False,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    reason: str = "user_exit",
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"reason": reason},
+        request_id=request_id,
+        operation="shared_workstation.override_deactivate",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_OVERRIDE_DEACTIVATED,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Override SuperAdmin désactivé sur poste partagé",
+        db=db,
+    )
+
+
+def log_shared_workstation_override_activation_refused(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    reason: str = "forbidden",
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"reason": reason},
+        request_id=request_id,
+        operation="shared_workstation.override_activate",
+        outcome="refused",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_OVERRIDE_ACTIVATION_REFUSED,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Activation override SuperAdmin refusée",
+        db=db,
+    )
+
+
+def log_shared_workstation_override_expired(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = False,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"reason": "ttl_expired"},
+        request_id=request_id,
+        operation="shared_workstation.override_expire",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_OVERRIDE_EXPIRED,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Override SuperAdmin expiré (TTL)",
+        db=db,
+    )
+
+
+def log_shared_workstation_override_required_refused(
+    *,
+    db: Optional[Session] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = False,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="shared_workstation.override_required",
+        outcome="refused",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_OVERRIDE_REQUIRED,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Action nécessitant override SuperAdmin refusée",
+        db=db,
+    )
+
+
 def log_registered_device_created(
     *,
     db: Optional[Session] = None,
