@@ -24,6 +24,7 @@ import {
   Euro,
   LayoutGrid,
   LayoutList,
+  Monitor,
   Package,
   Scale,
   ScrollText,
@@ -656,6 +657,17 @@ export function AdminLegacyDashboardHomeWidget(_props: RegisteredWidgetProps) {
                   data-testid="admin-legacy-nav-sites-and-registers"
                 >
                   Sites et caisses
+                </Button>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                <Button
+                  variant="default"
+                  className={classes.superAdminButton}
+                  leftSection={<Monitor size={20} />}
+                  onClick={() => handleNavigation('/admin/registered-devices')}
+                  data-testid="admin-legacy-nav-registered-devices"
+                >
+                  Gestion des postes
                 </Button>
               </Grid.Col>
               <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>

@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "page_key": "shared-workstation-enroll",
+  "slots": [
+    {
+      "slot_id": "main",
+      "widget_type": "shared-workstation.enrollment",
+      "widget_props": {}
+    }
+  ]
+}

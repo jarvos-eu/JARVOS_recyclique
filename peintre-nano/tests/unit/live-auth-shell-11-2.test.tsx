@@ -22,6 +22,33 @@ vi.mock('../../src/api/recyclique-auth-client', () => ({
   readStoredUserDisplay: vi.fn(() => undefined),
 }));
 
+const { hasDeviceIdentity } = vi.hoisted(() => ({
+  hasDeviceIdentity: vi.fn(async () => false),
+}));
+
+const { fetchOperatorSessionStatus } = vi.hoisted(() => ({
+  fetchOperatorSessionStatus: vi.fn(async () => ({
+    ok: true as const,
+    active: true,
+    operator_user_id: 'u-op',
+    session_id: 'sess-1',
+  })),
+}));
+
+vi.mock('../../src/domains/shared-workstation/device-identity-store', () => ({
+  hasDeviceIdentity,
+  loadDeviceIdentity: vi.fn(async () => null),
+  sharedWorkstationAuthHeaders: vi.fn(async () => ({})),
+  hadPriorDeviceEnrollment: vi.fn(async () => false),
+  saveDeviceIdentity: vi.fn(async () => undefined),
+  clearDeviceIdentity: vi.fn(async () => undefined),
+}));
+
+vi.mock('../../src/api/shared-workstation-operator-pin-client', () => ({
+  fetchOperatorSessionStatus,
+  verifySharedWorkstationOperatorPin: vi.fn(),
+}));
+
 import '../../src/registry';
 
 beforeAll(() => {
@@ -50,7 +77,15 @@ afterEach(() => {
 
 describe('LiveAuthShell (Story 11.2)', () => {
   beforeEach(() => {
+    sessionStorage.clear();
     window.history.pushState({}, '', '/login');
+    hasDeviceIdentity.mockResolvedValue(false);
+    fetchOperatorSessionStatus.mockResolvedValue({
+      ok: true,
+      active: true,
+      operator_user_id: 'u-op',
+      session_id: 'sess-1',
+    });
     postRecycliqueLogin.mockResolvedValue({
       ok: true,
       accessToken: 'test-token',
@@ -72,6 +107,10 @@ describe('LiveAuthShell (Story 11.2)', () => {
         </LiveAuthShell>
       </MantineProvider>,
     );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('live-auth-public-shell')).toBeTruthy();
+    });
 
     fireEvent.change(screen.getByRole('textbox', { name: /Nom d'utilisateur/ }), {
       target: { value: 'admin' },
@@ -132,5 +171,122 @@ describe('LiveAuthShell (Story 11.2)', () => {
     expect(screen.queryByTestId('post-login-child')).toBeNull();
     expect(screen.getByRole('button', { name: 'Réessayer la connexion' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Oublier la session sur cet appareil' })).toBeTruthy();
+  });
+
+  it('route /shared-workstation/enroll sans session : enfant rendu, pas de shell login (Story 27.4)', async () => {
+    window.history.pushState({}, '', '/shared-workstation/enroll');
+
+    render(
+      <MantineProvider>
+        <LiveAuthShell>
+          <span data-testid="enroll-child">enroll</span>
+        </LiveAuthShell>
+      </MantineProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('enroll-child')).toBeTruthy();
+    });
+    expect(screen.queryByTestId('live-auth-public-shell')).toBeNull();
+    expect(screen.queryByRole('textbox', { name: /Nom d'utilisateur/ })).toBeNull();
+    expect(window.location.pathname).toBe('/shared-workstation/enroll');
+  });
+
+  it('Story 27.6 CR-1 : poste enrôlé — enfant masqué pendant loading puis visible si session active', async () => {
+    hasDeviceIdentity.mockResolvedValue(true);
+    let resolveStatus!: (value: Awaited<ReturnType<typeof fetchOperatorSessionStatus>>) => void;
+    fetchOperatorSessionStatus.mockReturnValue(
+      new Promise((resolve) => {
+        resolveStatus = resolve;
+      }),
+    );
+
+    render(
+      <MantineProvider>
+        <LiveAuthShell>
+          <span data-testid="post-login-child">in</span>
+        </LiveAuthShell>
+      </MantineProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('live-auth-public-shell')).toBeTruthy();
+    });
+
+    fireEvent.change(screen.getByRole('textbox', { name: /Nom d'utilisateur/ }), {
+      target: { value: 'admin' },
+    });
+    fireEvent.change(screen.getByLabelText(/Mot de passe/), {
+      target: { value: 'secret' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Se connecter' }));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('live-auth-public-shell')).toBeNull();
+    });
+    expect(screen.queryByTestId('post-login-child')).toBeNull();
+
+    resolveStatus({
+      ok: true,
+      active: true,
+      operator_user_id: 'u-op',
+      session_id: 'sess-1',
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('post-login-child')).toBeTruthy();
+    });
+    expect(screen.queryByTestId('shared-workstation-lock-screen')).toBeNull();
+  });
+
+  it('Story 27.6 : admin sans identité poste — pas de lock screen après login', async () => {
+    render(
+      <MantineProvider>
+        <LiveAuthShell>
+          <span data-testid="post-login-child">in</span>
+        </LiveAuthShell>
+      </MantineProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('live-auth-public-shell')).toBeTruthy();
+    });
+
+    fireEvent.change(screen.getByRole('textbox', { name: /Nom d'utilisateur/ }), {
+      target: { value: 'admin' },
+    });
+    fireEvent.change(screen.getByLabelText(/Mot de passe/), {
+      target: { value: 'secret' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Se connecter' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('post-login-child')).toBeTruthy();
+    });
+    expect(screen.queryByTestId('shared-workstation-lock-screen')).toBeNull();
+  });
+
+  it('route enroll avec jeton invalide (500 contexte) : shell login retry, pas enfant seul (11.2 + 27.4)', async () => {
+    sessionStorage.setItem('peintre-nano.recyclique.access_token', 'bad-restored-token');
+    window.history.pushState({}, '', '/shared-workstation/enroll');
+    fetchRecycliqueContextEnvelope.mockResolvedValue({
+      ok: false,
+      status: 500,
+      message: 'GET /v1/users/me/context a échoué (500) : Internal Server Error',
+    });
+
+    render(
+      <MantineProvider>
+        <LiveAuthShell>
+          <span data-testid="enroll-child">enroll</span>
+        </LiveAuthShell>
+      </MantineProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('live-auth-public-shell')).toBeTruthy();
+    });
+    expect(screen.queryByTestId('enroll-child')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Réessayer la connexion' })).toBeTruthy();
   });
 });

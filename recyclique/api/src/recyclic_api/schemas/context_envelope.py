@@ -24,6 +24,23 @@ class ExploitationContextIdsOut(BaseModel):
     cash_register_id: str | None = None
     cash_session_id: str | None = None
     reception_post_id: str | None = None
+    # Epic 27.2 — poste partagé (null par défaut pour utilisateur web classique)
+    device_id: str | None = Field(
+        default=None,
+        description="UUID canonique RegisteredDevice — distinct cash_register_id / reception_post_id.",
+    )
+    operator_user_id: str | None = Field(
+        default=None,
+        description="Opérateur PIN actif sur le poste (session serveur).",
+    )
+    module_key: str | None = Field(
+        default=None,
+        description="Module courant session opérateur ; intersection effective en story 27.7.",
+    )
+    override_active: bool | None = Field(
+        default=None,
+        description="Override SuperAdmin actif côté serveur (activation complète story 27.10).",
+    )
 
 
 class ContextEnvelopeResponse(BaseModel):

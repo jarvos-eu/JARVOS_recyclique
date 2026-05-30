@@ -133,8 +133,25 @@ paths:
         site actif ; voir Story 2.3), alignée sur `GET /v1/users/me/permissions`.
         Le client ne reconstruit pas l'enveloppe depuis des manifests ; il consomme cette réponse.
         Lecture toujours recalculée depuis la base (pas d'inférence silencieuse).
+        **Story 27.2** : paramètre `device_id` ou en-tête `X-Recyclique-Device-Id` (prioritaire) fusionne
+        le contexte poste partagé (`device_id`, `operator_user_id`, `module_key`, `override_active`).
       security:
         - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: UUID poste partagé enrôlé (Story 27.2).
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: UUID poste partagé — prioritaire sur device_id query si présent.
       responses:
         "200":
           description: Enveloppe de contexte
@@ -159,8 +176,22 @@ paths:
         Recalcul serveur après changement de site, caisse, session ou poste (spec 1.3 §4.2).
         Même charge utile que `GET /v1/users/me/context` ; endpoint dédié pour que le client déclenche
         explicitement un nouveau calcul sans supposer de mise à jour silencieuse.
+        **Story 27.2** : fusion contexte poste partagé via `device_id` query ou en-tête `X-Recyclique-Device-Id`.
       security:
         - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Enveloppe recalculée
@@ -1078,6 +1109,638 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/registered-devices/:
+    get:
+      operationId: recyclique_registeredDevices_listRegisteredDevices
+      tags:
+        - registered-devices
+        - admin
+      summary: Lister les postes partagés enregistrés
+      description: |
+        Registre serveur des postes partagés enrôlés (Epic 27). Identifiant canonique **`device_id`**
+        — distinct de `CashRegisterV1Response.id` (caisse) et de `PosteReception` (session réception métier).
+        Réservé **SUPER_ADMIN**. Réponses `Cache-Control: no-store`.
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 100
+        - name: site_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: include_revoked
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Liste des postes
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegisteredDeviceV1Response"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+    post:
+      operationId: recyclique_registeredDevices_createRegisteredDevice
+      tags:
+        - registered-devices
+        - admin
+      summary: Créer un poste partagé (shared_workstation)
+      description: |
+        MVP : seul `device_type=shared_workstation`. Statut initial par défaut `pending_enrollment`.
+        Allowlist `allowed_module_keys` validée contre le registre serveur (`is_active_module_key`).
+      security:
+        - bearerOrCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisteredDeviceV1Create"
+      responses:
+        "201":
+          description: Poste créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredDeviceV1Response"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "404":
+          description: Site introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "422":
+          description: Corps invalide (device_type, module_key, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/registered-devices/{device_id}:
+    get:
+      operationId: recyclique_registeredDevices_getRegisteredDeviceById
+      tags:
+        - registered-devices
+        - admin
+      summary: Détail d'un poste partagé par device_id
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Poste
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredDeviceV1Response"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "404":
+          description: Poste introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+    patch:
+      operationId: recyclique_registeredDevices_updateRegisteredDevice
+      tags:
+        - registered-devices
+        - admin
+      summary: Mettre à jour un poste partagé
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisteredDeviceV1Update"
+      responses:
+        "200":
+          description: Poste mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredDeviceV1Response"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "404":
+          description: Poste introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "422":
+          description: Corps invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/registered-devices/{device_id}/revoke:
+    post:
+      operationId: recyclique_registeredDevices_revokeRegisteredDevice
+      tags:
+        - registered-devices
+        - admin
+      summary: Révoquer un poste partagé
+      description: |
+        Révocation explicite : `status=revoked` et `revoked_at` renseigné (idempotent si déjà révoqué).
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisteredDeviceRevokeV1Request"
+      responses:
+        "200":
+          description: Poste révoqué
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredDeviceV1Response"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Accès refusé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "404":
+          description: Poste introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/context:
+    get:
+      operationId: recyclique_sharedWorkstation_getContext
+      tags:
+        - shared-workstation
+        - context
+      summary: Contexte poste partagé résolu (vérité serveur)
+      description: |
+        Story 27.2 — tuple autoritaire `site_id + device_id + operator_user_id + module_key + override_active`.
+        Refus **403** `SHARED_WORKSTATION_OPERATOR_REQUIRED` sans session opérateur active.
+        En-tête `X-Recyclique-Device-Id` requis (ou paramètre `device_id`).
+        Intersection modules effective — story 27.7.
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Context-Module-Key
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Module annoncé — doit matcher active_module_key si session active (409 CONTEXT_STALE si désaligné).
+      responses:
+        "200":
+          description: Contexte poste partagé résolu
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationContext"
+        "400":
+          description: device_id manquant ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "403":
+          description: Poste invalide ou opérateur requis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "404":
+          description: Poste introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "409":
+          description: CONTEXT_STALE — en-têtes désalignés
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/enroll/complete:
+    post:
+      operationId: recyclique_sharedWorkstation_completeEnrollment
+      tags:
+        - shared-workstation
+      summary: Compléter l'enrôlement poste (semi-public)
+      description: |
+        Story 27.4 — route semi-publique sans JWT utilisateur. Body `{ "code": "XXXXXXXX" }`.
+        Retourne `device_secret` une seule fois ; stockage client IndexedDB (pas localStorage).
+        QR code scanner = amélioration future, hors MVP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SharedWorkstationEnrollCompleteV1Request"
+      responses:
+        "200":
+          description: Enrôlement complété
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationEnrollCompleteV1Response"
+        "400":
+          description: ENROLLMENT_CODE_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "409":
+          description: ENROLLMENT_CODE_CONSUMED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "410":
+          description: ENROLLMENT_CODE_EXPIRED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "422":
+          description: DEVICE_ENROLLMENT_STATE_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/device-status:
+    get:
+      operationId: recyclique_sharedWorkstation_getDeviceStatus
+      tags:
+        - shared-workstation
+      summary: Statut poste avec credential device valide
+      description: |
+        Story 27.4 — exige en-têtes `X-Recyclique-Device-Id` + `X-Recyclique-Device-Credential`.
+        Pas de session opérateur requise.
+      parameters:
+        - name: device_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Secret émis à l'enrôlement (preuve possession poste).
+      responses:
+        "200":
+          description: Statut poste
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationDeviceStatusV1Response"
+        "403":
+          description: DEVICE_CREDENTIAL_REVOKED ou DEVICE_IDENTITY_CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/operator-session/status:
+    get:
+      operationId: recyclique_sharedWorkstation_getOperatorSessionStatus
+      tags:
+        - shared-workstation
+      summary: Statut session opérateur sur le poste
+      description: |
+        Story 27.6 — credential device requis ; retourne si une session opérateur active existe (vérité serveur).
+        `Cache-Control: no-store`.
+      parameters:
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Statut session opérateur
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationOperatorSessionStatusV1Response"
+        "403":
+          description: Credential device invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/operator-pin/verify:
+    post:
+      operationId: recyclique_sharedWorkstation_verifyOperatorPin
+      tags:
+        - shared-workstation
+      summary: Vérifier PIN opérateur et démarrer session
+      description: |
+        Story 27.6 — distinct de `POST /v1/auth/pin` (caisse JWT). Credential device obligatoire ;
+        JWT utilisateur optionnel (acteur audit). Lockout 5 échecs / 5 min sur `device_id + operator_user_id`.
+      parameters:
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SharedWorkstationOperatorPinVerifyV1Request"
+      responses:
+        "200":
+          description: Session opérateur démarrée
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationOperatorPinVerifyV1Response"
+        "403":
+          description: PIN invalide ou opérateur non éligible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "429":
+          description: Lockout PIN actif
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/registered-devices/{device_id}/clear-operator-pin-lockout:
+    post:
+      operationId: recyclique_registeredDevices_clearOperatorPinLockout
+      tags:
+        - registered-devices
+        - admin
+      summary: Débloquer lockout PIN opérateur (SuperAdmin)
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClearOperatorPinLockoutV1Request"
+      responses:
+        "204":
+          description: Lockout effacé
+        "404":
+          description: Poste introuvable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/registered-devices/{device_id}/enrollment-codes:
+    post:
+      operationId: recyclique_registeredDevices_issueEnrollmentCode
+      tags:
+        - registered-devices
+        - admin
+      summary: Générer un code d'enrôlement
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceEnrollmentCodeV1IssueRequest"
+      responses:
+        "201":
+          description: Code émis (affiché une seule fois)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceEnrollmentCodeV1IssueResponse"
+  /v1/registered-devices/{device_id}/mark-identity-lost:
+    post:
+      operationId: recyclique_registeredDevices_markIdentityLost
+      tags:
+        - registered-devices
+        - admin
+      summary: Marquer identité locale perdue
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Poste marqué identity_lost
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredDeviceV1Response"
+  /v1/registered-devices/{device_id}/resolve-conflict:
+    post:
+      operationId: recyclique_registeredDevices_resolveConflict
+      tags:
+        - registered-devices
+        - admin
+      summary: Résoudre un conflit d'identité poste
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisteredDeviceConflictResolveV1Request"
+      responses:
+        "200":
+          description: Conflit résolu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredDeviceConflictResolveV1Response"
   /v1/cash-sessions/current:
     get:
       operationId: recyclique_cashSessions_getCurrentOpenSession
@@ -10019,6 +10682,331 @@ components:
         enable_deferred:
           type: boolean
       additionalProperties: false
+    RegisteredDeviceV1Response:
+      type: object
+      required:
+        - device_id
+        - device_type
+        - name
+        - site_id
+        - status
+        - allowed_module_keys
+      description: |
+        Poste partagé enrôlé (`RegisteredDevice`). **`device_id`** est l'identifiant stable —
+        ne pas confondre avec `CashRegisterV1Response.id` (caisse) ni l'id session `PosteReception`.
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        device_type:
+          type: string
+          enum:
+            - shared_workstation
+        name:
+          type: string
+        location:
+          type: string
+          nullable: true
+        site_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - active
+            - pending_enrollment
+            - identity_lost
+            - conflict
+            - revoked
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        allowed_module_keys:
+          type: array
+          items:
+            type: string
+        inactivity_timeout_seconds:
+          type: integer
+          nullable: true
+        last_contact_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: true
+    RegisteredDeviceV1Create:
+      type: object
+      required:
+        - name
+        - site_id
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        site_id:
+          type: string
+          format: uuid
+        location:
+          type: string
+          nullable: true
+          maxLength: 255
+        device_type:
+          type: string
+          default: shared_workstation
+          enum:
+            - shared_workstation
+        status:
+          type: string
+          default: pending_enrollment
+        allowed_module_keys:
+          type: array
+          items:
+            type: string
+          default: []
+        inactivity_timeout_seconds:
+          type: integer
+          nullable: true
+          minimum: 1
+      additionalProperties: false
+    RegisteredDeviceV1Update:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        location:
+          type: string
+          nullable: true
+          maxLength: 255
+        site_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - active
+            - pending_enrollment
+            - identity_lost
+            - conflict
+        allowed_module_keys:
+          type: array
+          items:
+            type: string
+        inactivity_timeout_seconds:
+          type: integer
+          minimum: 1
+        last_contact_at:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+    RegisteredDeviceRevokeV1Request:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 500
+      additionalProperties: false
+    DeviceEnrollmentCodeV1IssueRequest:
+      type: object
+      required:
+        - purpose
+      properties:
+        purpose:
+          type: string
+          enum:
+            - initial_enrollment
+            - reconnect
+            - replace
+      additionalProperties: false
+    DeviceEnrollmentCodeV1IssueResponse:
+      type: object
+      required:
+        - code
+        - expires_at
+        - purpose
+      properties:
+        code:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        purpose:
+          type: string
+      additionalProperties: false
+    SharedWorkstationEnrollCompleteV1Request:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          minLength: 6
+          maxLength: 12
+      additionalProperties: false
+    SharedWorkstationEnrollCompleteV1Response:
+      type: object
+      required:
+        - device_id
+        - device_secret
+        - device_name
+        - site_id
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        device_secret:
+          type: string
+          description: Secret one-time — jamais re-listable
+        device_name:
+          type: string
+        site_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+    SharedWorkstationDeviceStatusV1Response:
+      type: object
+      required:
+        - device_id
+        - device_name
+        - site_id
+        - status
+        - allowed_module_keys
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        device_name:
+          type: string
+        site_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        allowed_module_keys:
+          type: array
+          items:
+            type: string
+        inactivity_timeout_seconds:
+          type: integer
+          nullable: true
+      additionalProperties: false
+    SharedWorkstationOperatorSessionStatusV1Response:
+      type: object
+      required:
+        - active
+      properties:
+        active:
+          type: boolean
+        operator_user_id:
+          type: string
+          format: uuid
+          nullable: true
+        session_id:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+    SharedWorkstationOperatorPinVerifyV1Request:
+      type: object
+      required:
+        - operator_user_id
+        - pin
+      properties:
+        operator_user_id:
+          type: string
+          format: uuid
+        pin:
+          type: string
+          pattern: "^\\d{4}$"
+      additionalProperties: false
+    SharedWorkstationOperatorPinVerifyV1Response:
+      type: object
+      required:
+        - session_id
+        - device_id
+        - operator_user_id
+        - site_id
+        - started_at
+      properties:
+        session_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        operator_user_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        started_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    ClearOperatorPinLockoutV1Request:
+      type: object
+      required:
+        - operator_user_id
+      properties:
+        operator_user_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+    RegisteredDeviceConflictResolveV1Request:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum:
+            - refuse
+            - replace_definitively
+            - create_distinct
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      additionalProperties: false
+    RegisteredDeviceConflictResolveV1Response:
+      type: object
+      required:
+        - device_id
+        - status
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        distinct_device_id:
+          type: string
+          format: uuid
+          nullable: true
+        enrollment_code:
+          type: string
+          nullable: true
+          description: Code replace auto-émis pour action replace_definitively
+        enrollment_code_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        enrollment_code_purpose:
+          type: string
+          nullable: true
+      additionalProperties: false
     CashRegisterStatusRowV1:
       type: object
       required:
@@ -11200,6 +12188,55 @@ components:
           type: string
           nullable: true
         reception_post_id:
+          type: string
+          nullable: true
+        device_id:
+          type: string
+          nullable: true
+          description: |
+            UUID canonique RegisteredDevice (Story 27.2) — distinct de cash_register_id et reception_post_id.
+        operator_user_id:
+          type: string
+          nullable: true
+          description: Opérateur PIN actif sur le poste (session serveur device_operator_sessions).
+        module_key:
+          type: string
+          nullable: true
+          description: Module courant session opérateur ; intersection effective en story 27.7.
+        override_active:
+          type: boolean
+          nullable: true
+          description: Override SuperAdmin actif côté serveur (activation complète story 27.10).
+      additionalProperties: false
+    SharedWorkstationContext:
+      type: object
+      description: |
+        Contexte poste partagé résolu côté serveur (Story 27.2).
+        Invariant : site_id + device_id + operator_user_id + module_key + override_active.
+      properties:
+        site_id:
+          type: string
+          nullable: true
+        device_id:
+          type: string
+          nullable: true
+          description: UUID canonique RegisteredDevice — distinct cash_register_id / reception_post_id.
+        operator_user_id:
+          type: string
+          nullable: true
+        module_key:
+          type: string
+          nullable: true
+        override_active:
+          type: boolean
+          nullable: true
+        runtime_state:
+          type: string
+          enum:
+            - ok
+            - degraded
+            - forbidden
+        restriction_message:
           type: string
           nullable: true
       additionalProperties: false

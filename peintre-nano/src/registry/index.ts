@@ -6,8 +6,11 @@ import { registerCategoryWidgets } from './register-category-widgets';
 import { registerDemoWidgets } from './register-demo-widgets';
 import { registerReceptionWidgets } from './register-reception-widgets';
 
+import { registerSharedWorkstationWidgets } from './register-shared-workstation-widgets';
+
 registerDemoWidgets();
 registerAdminConfigWidgets();
+registerSharedWorkstationWidgets();
 registerAuthWidgets();
 registerBandeauLiveWidgets();
 registerCashflowWidgets();

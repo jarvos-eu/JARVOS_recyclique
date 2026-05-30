@@ -25,6 +25,9 @@ vi.mock('../../src/api/dashboard-legacy-stats-client', async (importOriginal) =>
 import { buildPageManifestRegions } from '../../src/app/PageRenderer';
 import { ManifestErrorBanner } from '../../src/app/ManifestErrorBanner';
 import { RootShell } from '../../src/app/layouts/RootShell';
+import type { AuthContextPort } from '../../src/app/auth/auth-context-port';
+import { createDefaultDemoEnvelope } from '../../src/app/auth/default-demo-auth-adapter';
+import { createMockAuthAdapter } from '../../src/app/auth/mock-auth-adapter';
 import { RootProviders } from '../../src/app/providers/RootProviders';
 import pageBandeauLiveSandbox from '../../../contracts/creos/manifests/page-bandeau-live-sandbox.json';
 import navigationBandeauLiveSlice from '../../../contracts/creos/manifests/navigation-bandeau-live-slice.json';
@@ -60,19 +63,29 @@ afterEach(() => {
   cleanup();
 });
 
+/** Sans `siteId` : pas de GET module-config KPI au montage (tests qui comptent les `fetch` live). */
+function sandboxAuthAdapterWithoutKpiModuleFetch(): AuthContextPort {
+  return createMockAuthAdapter({
+    session: { authenticated: true, userId: 'e2e-bandeau' },
+    envelope: createDefaultDemoEnvelope({ siteId: null }),
+  });
+}
+
 function BandeauLiveSandboxHarness(props: {
   readonly navigationJson: string;
   readonly pageManifestsJson: readonly string[];
   readonly allowedWidgetTypes?: ReadonlySet<string>;
+  readonly authAdapter?: AuthContextPort;
 }) {
   const result = loadManifestBundle({
     navigationJson: props.navigationJson,
     pageManifestsJson: props.pageManifestsJson,
     allowedWidgetTypes: props.allowedWidgetTypes,
   });
+  const authAdapter = props.authAdapter;
   if (!result.ok) {
     return (
-      <RootProviders>
+      <RootProviders authAdapter={authAdapter}>
         <RootShell>
           <ManifestErrorBanner issues={result.issues} />
         </RootShell>
@@ -83,7 +96,7 @@ function BandeauLiveSandboxHarness(props: {
     result.bundle.pages.find((p) => p.pageKey === 'bandeau-live-sandbox') ?? result.bundle.pages[0];
   const regions = buildPageManifestRegions(page);
   return (
-    <RootProviders>
+    <RootProviders authAdapter={authAdapter}>
       <RootShell
         regions={{
           header: regions.header,
@@ -153,6 +166,7 @@ describe('E2E — Convergence 2 / story 4.6 (chaîne manifest → runtime → li
       <BandeauLiveSandboxHarness
         navigationJson={navigationJson}
         pageManifestsJson={[JSON.stringify(pageLive)]}
+        authAdapter={sandboxAuthAdapterWithoutKpiModuleFetch()}
       />,
     );
 

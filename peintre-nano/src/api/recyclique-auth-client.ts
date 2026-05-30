@@ -1,4 +1,5 @@
 import { getLiveSnapshotBasePrefix } from './live-snapshot-client';
+import { sharedWorkstationAuthHeaders } from '../domains/shared-workstation/device-identity-store';
 import type { ContextEnvelopeStub } from '../types/context-envelope';
 import { contextEnvelopeStubFromApi } from './context-envelope-from-api';
 
@@ -149,14 +150,17 @@ export type FetchContextEnvelopeResult =
 export async function fetchRecycliqueContextEnvelope(accessToken: string): Promise<FetchContextEnvelopeResult> {
   const base = getLiveSnapshotBasePrefix();
   const url = `${base}/v1/users/me/context`;
+  const deviceHeaders = await sharedWorkstationAuthHeaders();
   let res: Response;
   try {
     res = await fetch(url, {
       method: 'GET',
+      cache: 'no-store',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
+        ...deviceHeaders,
       },
     });
   } catch (e) {
@@ -204,16 +208,19 @@ export async function postRecycliqueContextEnvelopeRefresh(
 ): Promise<FetchContextEnvelopeResult> {
   const base = getLiveSnapshotBasePrefix();
   const url = `${base}/v1/users/me/context/refresh`;
+  const deviceHeaders = await sharedWorkstationAuthHeaders();
   let res: Response;
   try {
     res = await fetch(url, {
       method: 'POST',
+      cache: 'no-store',
       credentials: 'include',
       signal,
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
+        ...deviceHeaders,
       },
       body: '{}',
     });

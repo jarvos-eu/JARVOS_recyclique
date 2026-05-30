@@ -80,7 +80,7 @@ export function KpiLiveBannerSettingsProvider({ children }: { readonly children:
 
     void (async () => {
       const res = await getSiteModuleConfig(auth, siteId, KPI_LIVE_BANNER_MODULE_KEY, ac.signal);
-      if (cancelled) return;
+      if (cancelled || res == null) return;
       if (res.ok) {
         etagRef.current = res.etag;
         const payload = parseKpiLiveBannerPayload(res.data.payload);

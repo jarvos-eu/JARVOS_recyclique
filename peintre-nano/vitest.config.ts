@@ -6,6 +6,8 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+    // E2e jsdom : `globalThis.fetch` stubé — en parallèle inter-fichiers, mocks parasites (session `…0001`).
+    fileParallelism: false,
     // Défaut node : les fichiers sous tests/e2e/ qui touchent le DOM doivent déclarer
     // `// @vitest-environment jsdom` en tête (voir tests/e2e/README.md).
     environment: 'node',

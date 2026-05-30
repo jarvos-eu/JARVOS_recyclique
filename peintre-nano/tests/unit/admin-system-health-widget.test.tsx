@@ -9,14 +9,18 @@ import { fetchAdminHealthSystem, postAdminHealthTestNotifications } from '../../
 import { fetchLiveSnapshot } from '../../src/api/live-snapshot-client';
 import '../../src/registry';
 
-vi.mock('../../src/api/live-snapshot-client', () => ({
-  fetchLiveSnapshot: vi.fn().mockResolvedValue({
-    ok: true,
-    snapshot: { observed_at: '2026-04-13T12:00:00Z', effective_open_state: 'open' },
-    correlationId: 'test-corr',
-    degradedEmpty: false,
-  }),
-}));
+vi.mock('../../src/api/live-snapshot-client', async (importOriginal) => {
+  const mod = await importOriginal<typeof import('../../src/api/live-snapshot-client')>();
+  return {
+    ...mod,
+    fetchLiveSnapshot: vi.fn().mockResolvedValue({
+      ok: true,
+      snapshot: { observed_at: '2026-04-13T12:00:00Z', effective_open_state: 'open' },
+      correlationId: 'test-corr',
+      degradedEmpty: false,
+    }),
+  };
+});
 
 const { defaultFetchAdminHealthSystemPayload } = vi.hoisted(() => ({
   defaultFetchAdminHealthSystemPayload: {

@@ -70,6 +70,32 @@ class AuditActionType(str, enum.Enum):
     ACCOUNTING_PAYMENT_METHOD_CHANGED = "accounting_payment_method_changed"
     ACCOUNTING_CONFIG_PUBLISHED = "accounting_config_published"
 
+    # Epic 27.2 — poste partagé / session opérateur / audit transversal
+    SHARED_WORKSTATION_ACCESS_REFUSED = "shared_workstation_access_refused"
+    SHARED_WORKSTATION_CONTEXT_INVALIDATED = "shared_workstation_context_invalidated"
+    DEVICE_OPERATOR_SESSION_STARTED = "device_operator_session_started"
+    DEVICE_OPERATOR_SESSION_ENDED = "device_operator_session_ended"
+
+    # Epic 27.3 — mutations admin RegisteredDevice
+    REGISTERED_DEVICE_CREATED = "registered_device_created"
+    REGISTERED_DEVICE_UPDATED = "registered_device_updated"
+    REGISTERED_DEVICE_REVOKED = "registered_device_revoked"
+
+    # Epic 27.4 — enrôlement / credential poste partagé
+    DEVICE_ENROLLMENT_CODE_ISSUED = "device_enrollment_code_issued"
+    DEVICE_ENROLLED = "device_enrolled"
+    DEVICE_RECONNECTED = "device_reconnected"
+    DEVICE_REPLACED = "device_replaced"
+    DEVICE_IDENTITY_CONFLICT = "device_identity_conflict"
+    DEVICE_IDENTITY_LOST_MARKED = "device_identity_lost_marked"
+    DEVICE_CONFLICT_RESOLVED = "device_conflict_resolved"
+
+    # Epic 27.6 — PIN poste partagé (lock screen opérateur)
+    SHARED_WORKSTATION_PIN_SUCCESS = "shared_workstation_pin_success"
+    SHARED_WORKSTATION_PIN_FAILURE = "shared_workstation_pin_failure"
+    SHARED_WORKSTATION_PIN_LOCKOUT = "shared_workstation_pin_lockout"
+    SHARED_WORKSTATION_PIN_LOCKOUT_CLEARED = "shared_workstation_pin_lockout_cleared"
+
 class AuditLog(Base):
     """Journal d'audit centralisé pour toutes les actions importantes"""
     __tablename__ = "audit_logs"

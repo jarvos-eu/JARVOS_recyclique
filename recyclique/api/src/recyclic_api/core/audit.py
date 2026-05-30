@@ -68,6 +68,9 @@ def merge_critical_audit_fields(
     session_id: Optional[str] = None,
     user_id: Optional[str] = None,
     operator_user_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """
     Schéma minimal Story 2.5 pour details_json (événements critiques caisse / terrain).
@@ -94,6 +97,12 @@ def merge_critical_audit_fields(
         base["operator_user_id"] = resolved_operator
     if user_id is not None:
         base["user_id"] = user_id
+    if device_id is not None:
+        base["device_id"] = device_id
+    if module_key is not None:
+        base["module_key"] = module_key
+    if override_active is not None:
+        base["override_active"] = override_active
     return base
 
 
@@ -566,4 +575,513 @@ def log_cash_session_access(
         details=details,
         description=description,
         db=db
+    )
+
+
+def log_shared_workstation_access_refused(
+    *,
+    db: Optional[Session] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    operation: str = "shared_workstation.access",
+    outcome: str = "refused",
+) -> Optional[AuditLog]:
+    """Refus API poste partagé — sans opérateur actif ou device invalide."""
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation=operation,
+        outcome=outcome,
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_ACCESS_REFUSED,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Accès poste partagé refusé",
+        db=db,
+    )
+
+
+def log_shared_workstation_context_invalidated(
+    *,
+    db: Optional[Session] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    reason: str = "context_change",
+) -> Optional[AuditLog]:
+    """Recalcul / invalidation session poste partagé."""
+    details = merge_critical_audit_fields(
+        {"reason": reason},
+        request_id=request_id,
+        operation="shared_workstation.context_invalidate",
+        outcome="invalidated",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_CONTEXT_INVALIDATED,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Contexte poste partagé invalidé",
+        db=db,
+    )
+
+
+def log_device_operator_session_started(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="device_operator_session.start",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.DEVICE_OPERATOR_SESSION_STARTED,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Session opérateur poste démarrée",
+        db=db,
+    )
+
+
+def log_device_operator_session_ended(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    reason: str = "ended",
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"reason": reason},
+        request_id=request_id,
+        operation="device_operator_session.end",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.DEVICE_OPERATOR_SESSION_ENDED,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Session opérateur poste terminée",
+        db=db,
+    )
+
+
+def log_shared_workstation_pin_success(
+    *,
+    db: Optional[Session] = None,
+    device_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    session_id: Optional[str] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="shared_workstation.pin_verify",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_PIN_SUCCESS,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="PIN poste partagé validé",
+        db=db,
+    )
+
+
+def log_shared_workstation_pin_failure(
+    *,
+    db: Optional[Session] = None,
+    device_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    outcome: str = "invalid",
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"failure_kind": outcome},
+        request_id=request_id,
+        operation="shared_workstation.pin_verify",
+        outcome="failure",
+        site_id=site_id,
+        device_id=device_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_PIN_FAILURE,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Échec vérification PIN poste partagé",
+        db=db,
+    )
+
+
+def log_shared_workstation_pin_lockout(
+    *,
+    db: Optional[Session] = None,
+    device_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="shared_workstation.pin_lockout",
+        outcome="lockout",
+        site_id=site_id,
+        device_id=device_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_PIN_LOCKOUT,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Verrouillage PIN poste partagé",
+        db=db,
+    )
+
+
+def log_shared_workstation_pin_lockout_cleared(
+    *,
+    db: Optional[Session] = None,
+    actor: Optional[User] = None,
+    device_id: str,
+    operator_user_id: str,
+    site_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="shared_workstation.pin_lockout_clear",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        operator_user_id=operator_user_id,
+        user_id=str(actor.id) if actor is not None else None,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_PIN_LOCKOUT_CLEARED,
+        actor=actor,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Déblocage lockout PIN poste partagé",
+        db=db,
+    )
+
+
+def log_registered_device_created(
+    *,
+    db: Optional[Session] = None,
+    actor: Optional[User] = None,
+    device_id: str,
+    site_id: Optional[str] = None,
+    module_keys: Optional[list[str]] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    """Création admin d'un poste partagé enregistré."""
+    extra: Dict[str, Any] = {}
+    if module_keys is not None:
+        extra["allowed_module_keys"] = list(module_keys)
+    details = merge_critical_audit_fields(
+        extra,
+        request_id=request_id,
+        operation="registered_device.create",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.REGISTERED_DEVICE_CREATED,
+        actor=actor,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Poste partagé créé",
+        db=db,
+    )
+
+
+def log_registered_device_updated(
+    *,
+    db: Optional[Session] = None,
+    actor: Optional[User] = None,
+    device_id: str,
+    site_id: Optional[str] = None,
+    module_keys: Optional[list[str]] = None,
+    changed_fields: Optional[Dict[str, Any]] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    """Mise à jour admin d'un poste partagé — champs modifiés dans details_json."""
+    extra: Dict[str, Any] = {}
+    if changed_fields:
+        extra["changed_fields"] = changed_fields
+    if module_keys is not None:
+        extra["allowed_module_keys"] = list(module_keys)
+    details = merge_critical_audit_fields(
+        extra,
+        request_id=request_id,
+        operation="registered_device.update",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.REGISTERED_DEVICE_UPDATED,
+        actor=actor,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Poste partagé mis à jour",
+        db=db,
+    )
+
+
+def log_registered_device_revoked(
+    *,
+    db: Optional[Session] = None,
+    actor: Optional[User] = None,
+    device_id: str,
+    site_id: Optional[str] = None,
+    reason: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    """Révocation admin d'un poste partagé."""
+    extra: Dict[str, Any] = {}
+    if reason:
+        extra["reason"] = reason
+    details = merge_critical_audit_fields(
+        extra,
+        request_id=request_id,
+        operation="registered_device.revoke",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.REGISTERED_DEVICE_REVOKED,
+        actor=actor,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Poste partagé révoqué",
+        db=db,
+    )
+
+
+def log_device_enrollment_code_issued(
+    *,
+    db: Optional[Session] = None,
+    actor: Optional[User] = None,
+    device_id: str,
+    purpose: str,
+    site_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"purpose": purpose},
+        request_id=request_id,
+        operation="device_enrollment.issue_code",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.DEVICE_ENROLLMENT_CODE_ISSUED,
+        actor=actor,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Code d'enrôlement émis",
+        db=db,
+    )
+
+
+def log_device_enrolled(
+    *,
+    db: Optional[Session] = None,
+    device_id: str,
+    site_id: Optional[str] = None,
+    purpose: str,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"purpose": purpose},
+        request_id=request_id,
+        operation="device_enrollment.complete",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    action = AuditActionType.DEVICE_ENROLLED
+    if purpose == "reconnect":
+        action = AuditActionType.DEVICE_RECONNECTED
+    elif purpose == "replace":
+        action = AuditActionType.DEVICE_REPLACED
+    return log_audit(
+        action_type=action,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Enrôlement poste complété",
+        db=db,
+    )
+
+
+def log_device_identity_conflict(
+    *,
+    db: Optional[Session] = None,
+    device_id: str,
+    site_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="device_credential.verify",
+        outcome="conflict",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.DEVICE_IDENTITY_CONFLICT,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Conflit identité poste détecté",
+        db=db,
+    )
+
+
+def log_device_identity_lost_marked(
+    *,
+    db: Optional[Session] = None,
+    actor: Optional[User] = None,
+    device_id: str,
+    site_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="device_enrollment.mark_identity_lost",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.DEVICE_IDENTITY_LOST_MARKED,
+        actor=actor,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Identité locale marquée perdue",
+        db=db,
+    )
+
+
+def log_device_conflict_resolved(
+    *,
+    db: Optional[Session] = None,
+    actor: Optional[User] = None,
+    device_id: str,
+    action: str,
+    site_id: Optional[str] = None,
+    distinct_device_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    extra: Dict[str, Any] = {"action": action}
+    if distinct_device_id:
+        extra["distinct_device_id"] = distinct_device_id
+    details = merge_critical_audit_fields(
+        extra,
+        request_id=request_id,
+        operation="device_enrollment.resolve_conflict",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.DEVICE_CONFLICT_RESOLVED,
+        actor=actor,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Conflit poste résolu",
+        db=db,
     )

@@ -18,6 +18,7 @@ export function toolbarSelectedEntryIdFromResolved(
     resolvedEntryId === 'transverse-admin-categories' ||
     resolvedEntryId === 'transverse-admin-audit-log' ||
     resolvedEntryId === 'transverse-admin-cash-registers' ||
+    resolvedEntryId === 'transverse-admin-registered-devices' ||
     resolvedEntryId === 'transverse-admin-sites' ||
     resolvedEntryId === 'transverse-admin-sites-and-registers' ||
     resolvedEntryId === 'transverse-admin-session-manager' ||

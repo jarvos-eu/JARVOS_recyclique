@@ -359,6 +359,11 @@ generated: "2026-04-01"
 # last_updated: 2026-05-30 — PM/BMAD documentaire : ajout **Epic 27** postes partages enroles + PIN operateur + PWA installable non-offline ; `epic-27` + stories `27-1`…`27-10` en backlog ; QA2 PM 96/100 GO ; runbook `references/artefacts/2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md` ; aucun dev lance.
 # last_updated: 2026-04-23 — epic-15 **done** ; 15-1…15-4 **review→done** (clôture fondation admin obsolète vs chantier 16–19+ ; détail `epics.md` §15 + fiches story).
 last_updated: "2026-05-30"
+# last_updated: 2026-05-30 — Story Runner BMAD 27.1 fin : DS→GATE(13 pytest registered_device)→QA→CR PASS ; `27-1-registered-device` backlog→done ; epic-27 in-progress.
+# last_updated: 2026-05-30 — Story Runner BMAD 27.2 fin : CS→VS→DS→GATE(20 pytest story_27_2)→QA→CR PASS ; `27-2-server-context-audit` backlog→done.
+# last_updated: 2026-05-30 — Story Runner BMAD 27.3 fin : CS→VS→DS→GATE→QA→CR APPROVE ; `27-3-superadmin-device-management` backlog→done ; vs=0 qa=0 cr=0 ; prochaine story 27-4-enrollment-reconnect-replace.
+# last_updated: 2026-05-30 — Story Runner BMAD 27.4 fin : CS→VS→DS→GATE→QA→CR2 APPROVE ; `27-4-enrollment-reconnect-replace` backlog→done ; vs=0 qa=0 cr=1 ; prochaine story 27-5-installable-pwa-non-offline.
+# last_updated: 2026-05-30 — Story Runner BMAD 27.5 fin : CS→VS→DS→GATE→QA→CR APPROVE ; `27-5-installable-pwa-non-offline` backlog→done ; vs=0 qa=0 cr=0 ; prochaine story 27-6-pin-lock-operator-session.
 # last_updated: 2026-04-20 — story 25-7 DS bmad-dev-story Task : 25-7-traduire-la-spec-25-4-sections-2-3-en-checklist-developpement-executable ready-for-dev → review ; checklist `_bmad-output/implementation-artifacts/checklists/25-7-checklist-spec-25-4-sections-2-3.md` ; epic-25 inchangé in-progress
 # last_updated: 2026-04-20 — story 25-7 Story Runner fin : 25-7 review→done (CR×2, cr_loop=1 ; gates git ; QA doc `_bmad-output/implementation-artifacts/25-7-qa-checklist-verification.md`) ; correctifs YAML/story post-CR1 ; epic-25 inchangé in-progress
 # last_updated: "2026-04-16" # story 22.5 Story Runner fin : VS→DS→GATE→QA→CR APPROVE ; 22-5 review→done ; vs=0 qa=0 cr=0 ; gates pytest+npm (e2e 22-5 inclus post-QA)
@@ -666,12 +671,12 @@ development_status:
   # Sequence : 27-1 -> 27-2 -> 27-3 -> 27-4 -> 27-5 -> 27-6 -> 27-7 -> 27-8 -> 27-9 -> 27-10.
   # Une seule story active a la fois ; pas de Story Runner parallele ; prerequis 27-1 : registre `module_key` et configuration modules par `site_id`.
   # `gates_skipped_with_hitl: true` seulement pour blocage environnement documente.
-  epic-27: backlog
-  27-1-registered-device: backlog
-  27-2-server-context-audit: backlog
-  27-3-superadmin-device-management: backlog
-  27-4-enrollment-reconnect-replace: backlog
-  27-5-installable-pwa-non-offline: backlog
+  epic-27: in-progress
+  27-1-registered-device: done
+  27-2-server-context-audit: done
+  27-3-superadmin-device-management: done
+  27-4-enrollment-reconnect-replace: done
+  27-5-installable-pwa-non-offline: done
   27-6-pin-lock-operator-session: backlog
   27-7-server-module-intersection: backlog
   27-8-reception-pilot-drafts: backlog

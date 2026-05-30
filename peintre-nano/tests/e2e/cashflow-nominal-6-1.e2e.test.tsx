@@ -2,6 +2,25 @@
 import '@mantine/core/styles.css';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('../../src/api/module-config-client', async (importOriginal) => {
+  const mod = await importOriginal<typeof import('../../src/api/module-config-client')>();
+  return {
+    ...mod,
+    getSiteModuleConfig: vi.fn().mockResolvedValue({
+      ok: true,
+      data: {
+        schema_version: mod.KPI_LIVE_BANNER_SCHEMA_VERSION,
+        payload: {
+          show_on_caisse: false,
+          show_on_reception: false,
+          refresh_interval_seconds: 60,
+        },
+      },
+      etag: '"e2e-cashflow-nominal"',
+    }),
+  };
+});
 import { App } from '../../src/app/App';
 import { DEMO_AUTH_STUB_SITE_ID, DEMO_AUTH_STUB_USER_ID } from '../../src/app/auth/default-demo-auth-adapter';
 import { RootProviders } from '../../src/app/providers/RootProviders';
@@ -69,6 +88,12 @@ function paymentMethodOptionsIfGet(url: string, method: string): Promise<Respons
 
 describe('E2E — parcours caisse nominal (Story 6.1)', () => {
   beforeEach(() => {
+    /** Parallèle e2e : un autre fichier peut laisser `fetch` / env stubés (session `…0001` parasite). */
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    resetCashflowDraft();
+    resetCoalescedGetCurrentOpenCashSessionForTests();
+    window.history.pushState({}, '', '/');
     vi.stubGlobal(
       'ResizeObserver',
       class {
@@ -82,6 +107,7 @@ describe('E2E — parcours caisse nominal (Story 6.1)', () => {
   afterEach(() => {
     window.history.pushState({}, '', '/');
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
     vi.restoreAllMocks();
     cleanup();
     resetCashflowDraft();

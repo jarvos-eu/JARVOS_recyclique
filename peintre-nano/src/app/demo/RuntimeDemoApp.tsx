@@ -467,6 +467,11 @@ export function RuntimeDemoApp() {
         setSearchSnapshot(window.location.search);
         return;
       }
+      if (pathForMatch === '/admin/registered-devices') {
+        setSelectedEntryId('transverse-admin-registered-devices');
+        setSearchSnapshot(window.location.search);
+        return;
+      }
       if (pathForMatch === '/admin/sites') {
         setSelectedEntryId('transverse-admin-sites');
         setSearchSnapshot(window.location.search);
@@ -594,6 +599,9 @@ export function RuntimeDemoApp() {
     }
     if (adminPath === '/admin/sites-and-registers') {
       return 'transverse-admin-sites-and-registers';
+    }
+    if (adminPath === '/shared-workstation/enroll') {
+      return 'shared-workstation-enroll';
     }
     if (ADMIN_RECEPTION_TICKET_PATH.test(pathRoute)) {
       return 'admin-reception-ticket-detail';

@@ -62,6 +62,7 @@ import pageTransverseAdminAuditLog from '../../../../contracts/creos/manifests/p
 import pageTransverseAdminAccounting from '../../../../contracts/creos/manifests/page-transverse-admin-accounting.json';
 import pageTransverseAdminAccountingExpert from '../../../../contracts/creos/manifests/page-transverse-admin-accounting-expert.json';
 import pageTransverseAdminCashRegisters from '../../../../contracts/creos/manifests/page-transverse-admin-cash-registers.json';
+import pageTransverseAdminRegisteredDevices from '../../../../contracts/creos/manifests/page-transverse-admin-registered-devices.json';
 import pageTransverseAdminSites from '../../../../contracts/creos/manifests/page-transverse-admin-sites.json';
 import pageTransverseAdminSitesAndRegisters from '../../../../contracts/creos/manifests/page-transverse-admin-sites-and-registers.json';
 import pageTransverseAdminReceptionSessions from '../../../../contracts/creos/manifests/page-transverse-admin-reception-sessions.json';
@@ -87,6 +88,7 @@ import pageAdminReceptionTicketDetail from '../../../../contracts/creos/manifest
 import pageCashflowClose from '../../../../contracts/creos/manifests/page-cashflow-close.json';
 import pageReceptionNominal from '../../../../contracts/creos/manifests/page-reception-nominal.json';
 import pageLoginPublic from '../../../../contracts/creos/manifests/page-login-public.json';
+import pageTransverseSharedWorkstationEnroll from '../../../../contracts/creos/manifests/page-transverse-shared-workstation-enroll.json';
 import widgetsCatalogBandeauLive from '../../../../contracts/creos/manifests/widgets-catalog-bandeau-live.json';
 import validNavigationFixture from '../../fixtures/manifests/valid/navigation.json';
 import validPageGuardedFixture from '../../fixtures/manifests/valid/page-guarded.json';
@@ -176,6 +178,7 @@ export const runtimeServedManifestLoadResult: LoadManifestBundleResult = loadMan
     JSON.stringify(pageTransverseAdminAccounting),
     JSON.stringify(pageTransverseAdminAccountingExpert),
     JSON.stringify(pageTransverseAdminCashRegisters),
+    JSON.stringify(pageTransverseAdminRegisteredDevices),
     JSON.stringify(pageTransverseAdminSites),
     JSON.stringify(pageTransverseAdminSitesAndRegisters),
     JSON.stringify(pageTransverseAdminSessionManager),
@@ -201,6 +204,7 @@ export const runtimeServedManifestLoadResult: LoadManifestBundleResult = loadMan
     JSON.stringify(pageAdminReceptionTicketDetail),
     JSON.stringify(pageReceptionNominal),
     JSON.stringify(pageLoginPublic),
+    JSON.stringify(pageTransverseSharedWorkstationEnroll),
   ],
   allowedWidgetTypes: demoAllowedWidgetTypes(),
   sourceLabels: {
@@ -224,6 +228,7 @@ export const runtimeServedManifestLoadResult: LoadManifestBundleResult = loadMan
           'contracts/creos/manifests/page-transverse-admin-accounting.json',
           'contracts/creos/manifests/page-transverse-admin-accounting-expert.json',
           'contracts/creos/manifests/page-transverse-admin-cash-registers.json',
+          'contracts/creos/manifests/page-transverse-admin-registered-devices.json',
           'contracts/creos/manifests/page-transverse-admin-sites.json',
           'contracts/creos/manifests/page-transverse-admin-sites-and-registers.json',
           'contracts/creos/manifests/page-transverse-admin-session-manager.json',
@@ -249,6 +254,7 @@ export const runtimeServedManifestLoadResult: LoadManifestBundleResult = loadMan
           'contracts/creos/manifests/page-admin-reception-ticket-detail.json',
           'contracts/creos/manifests/page-reception-nominal.json',
           'contracts/creos/manifests/page-login-public.json',
+          'contracts/creos/manifests/page-transverse-shared-workstation-enroll.json',
         ] as const
       )[i] ?? `page[${i}]`,
   },

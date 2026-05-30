@@ -14,6 +14,7 @@ import { AdminReceptionStatsSupervisionWidget } from '../domains/admin-config/Ad
 import { AdminReportsSupervisionHubWidget } from '../domains/admin-config/AdminReportsSupervisionHubWidget';
 import { AdminUsersWidget } from '../domains/admin-config/AdminUsersWidget';
 import { AdminCashRegistersWidget } from '../domains/admin-config/AdminCashRegistersWidget';
+import { AdminRegisteredDevicesWidget } from '../domains/admin-config/AdminRegisteredDevicesWidget';
 import { AdminSitesAndRegistersHubWidget } from '../domains/admin-config/AdminSitesAndRegistersHubWidget';
 import { AdminSitesWidget } from '../domains/admin-config/AdminSitesWidget';
 import { AdminSystemHealthWidget } from '../domains/admin-config/AdminSystemHealthWidget';
@@ -45,6 +46,8 @@ export function registerAdminConfigWidgets(): void {
   registerWidget('admin.audit-log.demo', AdminAuditLogWidget);
   /** Postes de caisse et sites — listes et mutations branchées sur l’API v1. */
   registerWidget('admin.cash-registers.demo', AdminCashRegistersWidget);
+  /** Epic 27.3 — postes partagés enrôlés (`/admin/registered-devices`). */
+  registerWidget('admin.registered-devices.demo', AdminRegisteredDevicesWidget);
   registerWidget('admin.sites.demo', AdminSitesWidget);
   /** Parité legacy — hub intermédiaire Sites & Caisses (`/admin/sites-and-registers`). */
   registerWidget('admin.sites.and.registers.hub', AdminSitesAndRegistersHubWidget);

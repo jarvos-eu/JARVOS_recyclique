@@ -76,6 +76,9 @@ markers = [
     "integration_db: tests nécessitant Postgres/Redis",
     "performance: tests de performance (longs, peuvent être exclus de la CI rapide)",
     "no_db: pas de session DB ni d'autouse liée à la base (voir tests/conftest.py).",
+    "story_27_4: tests story 27.4 enrôlement poste partagé.",
+    "story_27_5: tests story 27.5 PWA non-offline (headers no-store Epic 27).",
+    "story_27_6: tests story 27.6 lock screen PIN opérateur poste partagé.",
 ]
 filterwarnings = [
     "ignore:Type google\\._upb\\._message.*:DeprecationWarning",

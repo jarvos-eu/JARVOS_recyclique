@@ -435,6 +435,12 @@ describe('contract — navigation transverse servie (story 5.1)', () => {
         mainWidget: 'admin.cash-registers.demo',
       },
       {
+        pageKey: 'transverse-admin-registered-devices',
+        path: '/admin/registered-devices',
+        navId: 'transverse-admin-registered-devices',
+        mainWidget: 'admin.registered-devices.demo',
+      },
+      {
         pageKey: 'transverse-admin-sites',
         path: '/admin/sites',
         navId: 'transverse-admin-sites',
@@ -509,6 +515,7 @@ describe('contract — navigation transverse servie (story 5.1)', () => {
         'transverse-admin-health',
         'transverse-admin-sites-and-registers',
         'transverse-admin-accounting-expert',
+        'transverse-admin-registered-devices',
       ]);
       expect(page.requiredPermissionKeys).toEqual(
         superKeys.has(spec.pageKey)
@@ -535,6 +542,7 @@ describe('contract — navigation transverse servie (story 5.1)', () => {
         spec.pageKey === 'transverse-admin-accounting' ||
         spec.pageKey === 'transverse-admin-accounting-expert' ||
         spec.pageKey === 'transverse-admin-cash-registers' ||
+        spec.pageKey === 'transverse-admin-registered-devices' ||
         spec.pageKey === 'transverse-admin-sites' ||
         spec.pageKey === 'transverse-admin-sites-and-registers' ||
         spec.pageKey === 'transverse-admin-session-manager' ||

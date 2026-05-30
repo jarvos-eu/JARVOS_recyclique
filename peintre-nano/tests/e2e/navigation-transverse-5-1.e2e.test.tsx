@@ -123,6 +123,7 @@ describe('E2E — navigation transverse commanditaire (story 5.1)', () => {
     expect(within(nav).getByTestId('nav-entry-transverse-admin-site')).toBeTruthy();
     expect(within(nav).getByTestId('nav-entry-transverse-admin-users')).toBeTruthy();
     expect(within(nav).getByTestId('nav-entry-transverse-admin-cash-registers')).toBeTruthy();
+    expect(within(nav).getByTestId('nav-entry-transverse-admin-registered-devices')).toBeTruthy();
     expect(within(nav).getByTestId('nav-entry-transverse-admin-sites')).toBeTruthy();
     expect(within(nav).getByTestId('nav-entry-transverse-admin-session-manager')).toBeTruthy();
     expect(within(nav).getByTestId('nav-entry-transverse-admin-reception-stats')).toBeTruthy();
@@ -457,6 +458,11 @@ describe('E2E — navigation transverse commanditaire (story 5.1)', () => {
         }),
       ).toBeTruthy();
       expect(
+        within(within(nav).getByTestId('nav-entry-transverse-admin-registered-devices')).getByRole('button', {
+          name: 'Gestion des postes',
+        }),
+      ).toBeTruthy();
+      expect(
         within(within(nav).getByTestId('nav-entry-transverse-admin-sites')).getByRole('button', {
           name: 'Sites enregistrés',
         }),
@@ -653,6 +659,34 @@ describe('E2E — navigation transverse commanditaire (story 5.1)', () => {
       expect(btn.getAttribute('aria-current')).toBe('true');
       const main = screen.getByTestId('shell-zone-main');
       expect(within(main).getByTestId('widget-admin-cash-registers')).toBeTruthy();
+    });
+
+    it('parcours admin registered-devices : clic nav → /admin/registered-devices + shell hub + widget postes partagés (story 27.3)', () => {
+      renderServedApp();
+      const nav = screen.getByRole('navigation', { name: 'Zone navigation' });
+      const btn = within(within(nav).getByTestId('nav-entry-transverse-admin-registered-devices')).getByRole('button');
+      fireEvent.click(btn);
+      expect(window.location.pathname).toBe('/admin/registered-devices');
+      const main = screen.getByTestId('shell-zone-main');
+      expect(within(main).getByTestId('transverse-page-shell').getAttribute('data-transverse-family')).toBe('admin');
+      expect(
+        within(main).getByRole('heading', {
+          level: 1,
+          name: /Gestion des postes/i,
+        }),
+      ).toBeTruthy();
+      expect(within(main).getByTestId('widget-admin-registered-devices')).toBeTruthy();
+      expect(within(main).queryByTestId('admin-detail-simple-demo-strip')).toBeNull();
+    });
+
+    it('synchronise la sélection nav depuis l’URL profonde /admin/registered-devices (story 27.3)', () => {
+      window.history.pushState({}, '', '/admin/registered-devices');
+      renderServedApp();
+      const nav = screen.getByRole('navigation', { name: 'Zone navigation' });
+      const btn = within(within(nav).getByTestId('nav-entry-transverse-admin-registered-devices')).getByRole('button');
+      expect(btn.getAttribute('aria-current')).toBe('true');
+      const main = screen.getByTestId('shell-zone-main');
+      expect(within(main).getByTestId('widget-admin-registered-devices')).toBeTruthy();
     });
 
     it('parcours admin sites : clic nav → /admin/sites + shell hub + widget sites', () => {
@@ -995,6 +1029,68 @@ describe('E2E — navigation transverse commanditaire (story 5.1)', () => {
       fireEvent.click(within(within(nav).getByTestId('nav-entry-transverse-admin')).getByRole('button'));
       expect(window.location.pathname).toBe('/admin');
       expect(within(screen.getByTestId('shell-zone-main')).getByTestId('admin-legacy-dashboard-home')).toBeTruthy();
+    });
+
+    /**
+     * Story 27.3 — hub SuperAdmin → Gestion des postes (AC découvrabilité ; `GET /v1/users/me` mocké).
+     */
+    it('Story 27.3 — hub lien Gestion des postes → /admin/registered-devices (widget postes partagés)', async () => {
+      const origFetch = globalThis.fetch;
+      globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const u = typeof input === 'string' ? input : input.toString();
+        const method = (init?.method ?? 'GET').toUpperCase();
+        if (u.includes('/v1/users/me') && method === 'GET') {
+          return new Response(JSON.stringify({ role: 'super-admin' }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (u.includes('/v1/admin/users/statuses') && method === 'GET') {
+          return new Response(JSON.stringify({ user_statuses: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (u.includes('/v1/users/') && method === 'GET' && !u.includes('/v1/users/me')) {
+          return new Response(JSON.stringify([]), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (u.includes('/v1/cash-sessions/current') && method === 'GET') {
+          return new Response(JSON.stringify({ session: null }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (u.includes('/v1/reception/tickets') && method === 'GET') {
+          return new Response(
+            JSON.stringify({ tickets: [], total: 0, page: 1, per_page: 100, total_pages: 0 }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+        return origFetch(input, init);
+      }) as typeof fetch;
+
+      try {
+        renderServedApp();
+        const nav = screen.getByRole('navigation', { name: 'Zone navigation' });
+        fireEvent.click(within(within(nav).getByTestId('nav-entry-transverse-admin')).getByRole('button'));
+        expect(window.location.pathname).toBe('/admin');
+        const hubBtn = await screen.findByTestId('admin-legacy-nav-registered-devices');
+        fireEvent.click(hubBtn);
+        expect(window.location.pathname).toBe('/admin/registered-devices');
+        const main = screen.getByTestId('shell-zone-main');
+        expect(within(main).getByTestId('widget-admin-registered-devices')).toBeTruthy();
+        expect(
+          within(main).getByRole('heading', {
+            level: 1,
+            name: /Gestion des postes/i,
+          }),
+        ).toBeTruthy();
+      } finally {
+        globalThis.fetch = origFetch;
+      }
     });
 
     /**

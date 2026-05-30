@@ -1,8 +1,10 @@
 # Runbook orchestration — Epic 27 postes partages + PIN
 
-Date : 2026-05-29  
+Date : 2026-05-29 (rev. orchestrateur 2026-05-30)  
 Statut : prompt / instructions pour orchestrateur global Epic 27  
 But : lancer et piloter l'Epic 27 avec autonomie maximale, sans invention produit ni execution parallele risquee.
+
+**Rev. 2026-05-30 :** l'orchestrateur global **incarne** le role coordinateur epic (plus de Task `@bmad-epic-runner`). Enchainement **sequentiel et bloquant** de Story Runners uniquement.
 
 ## 1. Role de ce document
 
@@ -26,17 +28,16 @@ L'orchestrateur global doit lire, dans cet ordre :
 2. `references/artefacts/2026-05-29_03_brief-pm-epic-stories-postes-partages-pin.md`
 3. `references/automatisation-bmad/epic-story-runner-spec.md`
 4. `references/automatisation-bmad/2026-04-02_recueil-technique-orchestration-bmad.md` §15
-5. `.cursor/agents/bmad-epic-runner.md`
-6. `.cursor/agents/bmad-story-runner.md`
-7. `_bmad-output/planning-artifacts/epics.md`
-8. `_bmad-output/implementation-artifacts/sprint-status.yaml`
-9. `_bmad/bmm/config.yaml`
+5. `.cursor/agents/bmad-story-runner.md`
+6. `_bmad-output/planning-artifacts/epics.md`
+7. `_bmad-output/implementation-artifacts/sprint-status.yaml`
+8. `_bmad/bmm/config.yaml`
 
 Selon la story, il charge ensuite uniquement les documents metier / techniques necessaires.
 
 ### 2.1 Pre-vol avant delegation 27.1
 
-Avant de lancer la premiere story, l'Epic Runner verifie que les references `module_key` et configuration modules par `site_id` sont presentes et lisibles :
+Avant de lancer la premiere story, l'**orchestrateur global** verifie que les references `module_key` et configuration modules par `site_id` sont presentes et lisibles :
 
 - `references/config-modules-site-id/index.md` ;
 - `contracts/openapi/recyclique-api.yaml` si les contrats API sont touches ;
@@ -49,12 +50,30 @@ Si ces references sont absentes, incoherentes ou illisibles, stopper avant deleg
 Mode d'execution retenu :
 
 - execution supervisee dans Cursor / LLM, sans daemon, cron local, ou promesse headless ;
-- un **Epic Runner unique** ;
+- l'**orchestrateur global = coordinateur epic** (lit ce runbook, ordre stories, pre-vol, HITL, YAML writer) — **ne pas** spawner `@bmad-epic-runner` ;
 - une **seule story active a la fois** ;
-- un **Story Runner parent** par story ;
-- un sous-agent / Task par etape BMAD quand la plateforme le permet ;
+- un **Story Runner parent** (`@bmad-story-runner`) par story, lance par Task **synchrone** (`run_in_background: false`) ;
+- l'orchestrateur **attend** le rapport final §7.1 du Story Runner avant la story suivante ;
+- a l'interieur du Story Runner : un sous-agent / Task par etape BMAD (CS, VS, DS, GATE, QA, CR) ;
+- l'orchestrateur **ne code pas** : toute correction (code, doc, tests) passe par delegation Story Runner / worker — jamais inline dans son propre contexte sauf Plan B plateforme (`NEEDS_HITL`) ;
 - pas de dev avant stories validees et QA2 du livrable PM ;
-- pas de parallelisation de stories sur le meme depot.
+- pas de parallelisation de stories sur le meme depot ;
+- **interdit** : Task `run_in_background: true` pour Story Runner ou coordination epic.
+
+### 3.1 Reprise session interrompue (2026-05-30)
+
+Si une story a deja un fichier story valide (`ready-for-dev` ou plus) :
+
+- **ne pas refaire CS** sauf FAIL explicite apres VS rapide ;
+- reprendre au `resume_at` adequat (`DS` si CS+VS deja passes) ;
+- aligner `sprint-status.yaml` sur l'etat reel (ex. `backlog` → `ready-for-dev`) sans HITL Strophe pour transitions mecaniques ;
+- viser **`done`** sur la story courante avant de passer a la suivante.
+
+Etat connu au 2026-05-30 :
+
+- `_bmad-output/implementation-artifacts/27-1-registered-device.md` — **existe**, CS+VS passes, statut interne `ready-for-dev` ;
+- `sprint-status.yaml` — cle `27-1-registered-device` encore `backlog` (a aligner par l'orchestrateur au demarrage) ;
+- prochaine passe 27.1 : **`resume_at: DS`** jusqu'a `done`.
 
 Graphe story :
 
@@ -85,9 +104,9 @@ Ordre attendu pour l'Epic 27, a verifier avant lancement contre `epics.md` et `s
 9. `27.9` — Timeout, verrouillage et passage de main
 10. `27.10` — Override SuperAdmin explicite et audite
 
-Cet ordre devient la discipline d'execution lorsque `epics.md` et `sprint-status.yaml` sont alignes. Si `epics.md`, `sprint-status.yaml` ou les stories finales divergent, l'Epic Runner stoppe avant delegation, documente la divergence et demande l'arbitrage parent / Strophe selon l'impact.
+Cet ordre devient la discipline d'execution lorsque `epics.md` et `sprint-status.yaml` sont alignes. Si `epics.md`, `sprint-status.yaml` ou les stories finales divergent, l'orchestrateur stoppe avant delegation, documente la divergence et demande l'arbitrage Strophe selon l'impact.
 
-L'Epic Runner ne saute pas une story sauf decision documentee par l'Epic Runner et tracee dans son resume.
+L'orchestrateur ne saute pas une story sauf decision documentee et tracee dans son resume.
 
 ## 5. Regles de parallelisation
 
@@ -115,7 +134,7 @@ Objectif : maximiser l'autonomie sans demander a Strophe des arbitrages deja cou
 Utiliser ces statuts internes avant de remonter a l'humain :
 
 - `NEEDS_PARENT_DECISION` : le worker demande au Story Runner.
-- `NEEDS_EPIC_DECISION` : le Story Runner demande a l'Epic Runner.
+- `NEEDS_ORCHESTRATOR_DECISION` (alias historique `NEEDS_EPIC_DECISION`) : le Story Runner demande a l'orchestrateur global.
 - `BLOCKED_ENVIRONMENT` : probleme d'outil, test, service, credential, port, reseau, ou plateforme Cursor.
 - `NEEDS_STROPHE_HITL` : decision produit / securite / scope impossible a trancher avec les documents.
 
@@ -126,14 +145,14 @@ Un worker ne doit pas s'arreter directement vers Strophe sauf risque destructif 
 Cascade normale :
 
 ```text
-Worker -> Story Runner -> Epic Runner -> Strophe
+Worker -> Story Runner -> Orchestrateur global -> Strophe
 ```
 
 Exemples :
 
 - Nom d'un bouton, formulation UI, choix mineur de test : Story Runner tranche.
 - Test timer flaky : Story Runner tranche, de preference mocks / injection.
-- Ambiguite de scope entre deux stories : Epic Runner tranche si le runbook ou les stories couvrent le cas.
+- Ambiguite de scope entre deux stories : orchestrateur tranche si le runbook ou les stories couvrent le cas.
 - Extension de 27.8 a la caisse : refusee par les decisions gelees.
 - Changement de module pilote : `NEEDS_STROPHE_HITL`.
 - Stocker un secret en clair ou contourner l'ADR : `NEEDS_STROPHE_HITL`.
@@ -141,14 +160,14 @@ Exemples :
 
 ### 6.3 Pouvoir d'arbitrage du parent
 
-Le Story Runner ou Epic Runner peut arbitrer uniquement si :
+Le Story Runner ou l'orchestrateur global peut arbitrer uniquement si :
 
 - la reponse est deja impliquee par ADR / brief / story ;
 - la decision est locale, reversible et ne change pas le produit ;
 - la decision n'elargit pas le scope ;
 - la decision ne degrade pas les invariants de securite.
 
-Si l'agent rencontre une regle produit non deja impliquee par ADR / brief / story, il doit la consigner comme **decision proposee** et la remonter a Strophe via l'Epic Runner avant application. Le parent peut proposer une option locale et reversible, mais ne l'applique pas comme nouvelle regle produit pendant l'absence de Strophe.
+Si l'agent rencontre une regle produit non deja impliquee par ADR / brief / story, il doit la consigner comme **decision proposee** et la remonter a Strophe via l'orchestrateur avant application. Le parent peut proposer une option locale et reversible, mais ne l'applique pas comme nouvelle regle produit pendant l'absence de Strophe.
 
 ## 7. Regles produit non negociables
 
@@ -170,7 +189,7 @@ Les runners doivent proteger ces invariants :
 - pas de PIN ou derive de PIN dans logs / audit ;
 - pas de nouveau role local non stabilise.
 
-Toute violation potentielle remonte au minimum a l'Epic Runner.
+Toute violation potentielle remonte au minimum a l'orchestrateur global.
 
 ## 8. Gates et tests
 
@@ -199,27 +218,37 @@ Blocage environnement :
 
 ## 9. Ecritures BMAD et YAML
 
-Regle : un seul writer operationnel.
+Regle : **l'orchestrateur global est le writer unique** pour `sprint-status.yaml` pendant le run Epic 27.
+
+### 9.1 Transitions YAML (sans HITL Strophe)
+
+L'orchestrateur applique **directement** les transitions mecaniques de statut story dans `sprint-status.yaml` :
+
+- `backlog` → `ready-for-dev` (apres CS+VS PASS) ;
+- `ready-for-dev` → `in-progress` (debut DS) ;
+- `in-progress` → `review` (fin DS, avant CR) ;
+- `review` → `done` (CR APPROVE + gates OK).
+
+Strophe ne lit pas le YAML : pas de validation humaine requise pour ces transitions. En cas de doute sur la coherence, les boucles QA / CR / gates tranchent avant `done`.
+
+### 9.2 Fichiers proteges
 
 Avant toute modification de :
 
 - `_bmad-output/planning-artifacts/epics.md` ;
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` ;
-- fichiers story ;
+- le contenu des fichiers story (hors transitions de statut dans sprint-status) ;
 
-l'Epic Runner doit confirmer que :
+l'orchestrateur confirme que :
 
 - QA2 du livrable PM est GO ;
-- Strophe a valide l'ecriture BMAD ;
 - aucune autre session ne modifie le meme epic ;
 - l'ordre des stories est stable.
 
-Writer unique :
+Le Story Runner **prepare** les patches YAML / story si besoin ; l'orchestrateur **applique** apres rapport §7.1, sans session concurrente.
 
-- l'Epic Runner designe explicitement le writer `YAML_update` pour la story courante ;
-- le Story Runner peut preparer le patch, mais ne pousse pas une ecriture concurrente ;
-- l'Epic Runner confirme ensuite l'etat de `sprint-status.yaml` ;
-- si le writer designe, le brief ou les compteurs sont ambigus : produire un patch / instructions, pas une ecriture directe.
+### 9.3 epic-27
+
+Mettre `epic-27: in-progress` au premier demarrage effectif d'une story (ex. passage 27.1 en `in-progress` ou `ready-for-dev`).
 
 ## 10. Strategie modeles
 
@@ -227,10 +256,9 @@ Strophe configure le contexte parent avec un modele type GPT 5.5 Medium. Politiq
 
 Recommandation :
 
-- Epic Runner : inherit.
-- Story Runner parent : inherit.
-- Dev cible borne : Composer 2.5 possible si disponible et si la story est simple.
-- QA / code review authz, audit, PWA, securite : inherit / modele robuste.
+- Orchestrateur global : modele parent configure par Strophe (ex. GPT 5.5 Medium).
+- Story Runner parent : inherit depuis l'orchestrateur.
+- Workers (CS, DS, QA, CR) : inherit ; dev cible borne : Composer 2.5 si disponible.
 
 Ne pas forcer un modele indisponible. Ne pas bloquer un run parce que le modele exact n'existe pas dans la liste Cursor ; utiliser `inherit` si le parent est correctement configure.
 
@@ -238,7 +266,7 @@ Avant lancement, verifier le modele effectif declare par les agents Cursor. Si u
 
 ## 11. Gestion du contexte
 
-L'Epic Runner garde une fenetre courte :
+L'orchestrateur global garde une fenetre courte :
 
 - epic cible ;
 - story courante ;
@@ -275,9 +303,9 @@ Brief minimal `story_run` attendu :
 - politique CR si Task indisponible : stopper ou produire HITL, pas auto-valider ;
 - chemins story / epics / sprint-status absolus.
 
-## 12. Format de brief Epic Runner
+## 12. Format de brief orchestrateur (`epic_run`)
 
-Le run commence avec un brief de ce type, a adapter avec les chemins absolus reels :
+Le run commence avec un brief interne (l'orchestrateur le charge ; **ne le delegue pas** a un sous-agent) :
 
 ```yaml
 epic_run:
@@ -293,9 +321,8 @@ epic_run:
     runner_spec: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/references/automatisation-bmad/epic-story-runner-spec.md"
     orchestration_recueil: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/references/automatisation-bmad/2026-04-02_recueil-technique-orchestration-bmad.md"
     bmad_config: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/_bmad/bmm/config.yaml"
-    epic_runner_agent: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/.cursor/agents/bmad-epic-runner.md"
     story_runner_agent: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/.cursor/agents/bmad-story-runner.md"
-  story_order_is_hint: true
+  story_order_is_hint: false
   story_order_hint: "ordre epics.md / sprint-status.yaml pour epic-27"
   current_story_key: null
   story_order:
@@ -318,9 +345,49 @@ epic_run:
   story_runner_final_report_required: true
 ```
 
-### 12.1 Exemple minimal `story_run` pour 27.1
+### 12.1 Exemple `story_run` pour 27.1 (reprise DS — 2026-05-30)
 
-Exemple a adapter avant delegation au Story Runner ; le fichier story n'existe pas encore tant que la story reste `backlog`.
+Fichier story **deja present** (`ready-for-dev`). Ne pas refaire CS sauf FAIL VS.
+
+```yaml
+story_run:
+  story_key: "27-1-registered-device"
+  epic_id: epic-27
+  project_root: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique"
+  resume_at: DS
+  paths:
+    sprint_status: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/_bmad-output/implementation-artifacts/sprint-status.yaml"
+    epics_md: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/_bmad-output/planning-artifacts/epics.md"
+    story_file: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/_bmad-output/implementation-artifacts/27-1-registered-device.md"
+    adr: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/references/artefacts/2026-05-29_02_mini-adr-postes-partages-pin-non-offline.md"
+    config_modules_index: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/references/config-modules-site-id/index.md"
+    openapi_contract: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/contracts/openapi/recyclique-api.yaml"
+  skill_paths:
+    create_story: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/.cursor/skills/bmad-create-story/SKILL.md"
+    dev_story: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/.cursor/skills/bmad-dev-story/SKILL.md"
+    qa_e2e: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/.cursor/skills/bmad-qa-generate-e2e-tests/SKILL.md"
+    code_review: "d:/users/Strophe/Documents/1-IA/La Clique Qui Recycle/JARVOS_recyclique/.cursor/skills/bmad-code-review/SKILL.md"
+  gates:
+    - cmd: "cd recyclique/api && python -m pytest tests/ -k registered_device -q"
+      timeout_sec: 600
+  gates_skipped_with_hitl: false
+  max_vs_loop: 3
+  max_qa_loop: 3
+  max_cr_loop: 3
+  vs_loop: 0
+  qa_loop: 0
+  cr_loop: 0
+  policy:
+    retry_chain: "DS -> gates -> QA -> CR"
+    fresh_context_for_cr: true
+    if_cr_task_unavailable: NEEDS_HITL
+```
+
+Objectif de cette passe : **DS → GATE → QA → CR → done** (story complete).
+
+### 12.2 Exemple `story_run` pour 27.1 (demarrage CS — historique)
+
+Exemple si le fichier story n'existait pas encore :
 
 ```yaml
 story_run:
@@ -359,36 +426,44 @@ story_run:
 ```text
 Tu es l'orchestrateur global de l'Epic 27 pour JARVOS Recyclique.
 
-Colle et adapte le bloc `epic_run` de la section 12 avant de lancer l'Epic Runner.
+Tu **incarnes** le coordinateur epic : tu lis ce runbook et tu pilotes story par story.
+Tu **ne spawns pas** `@bmad-epic-runner` (couche intermediaire supprimee).
 
 Lis d'abord :
-1. references/artefacts/2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md
+1. references/artefacts/2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md (§3.1 reprise incluse)
 2. references/artefacts/2026-05-29_02_mini-adr-postes-partages-pin-non-offline.md
 3. references/artefacts/2026-05-29_03_brief-pm-epic-stories-postes-partages-pin.md
 4. references/automatisation-bmad/epic-story-runner-spec.md
 5. references/automatisation-bmad/2026-04-02_recueil-technique-orchestration-bmad.md §15
-6. .cursor/agents/bmad-epic-runner.md
-7. .cursor/agents/bmad-story-runner.md
-8. _bmad-output/planning-artifacts/epics.md
-9. _bmad-output/implementation-artifacts/sprint-status.yaml
-10. _bmad/bmm/config.yaml
+6. .cursor/agents/bmad-story-runner.md
+7. _bmad-output/planning-artifacts/epics.md (Epic 27)
+8. _bmad-output/implementation-artifacts/sprint-status.yaml
+9. _bmad/bmm/config.yaml
+
+Contexte reprise (2026-05-30) :
+- Une premiere session a echoue (Epic Runner en background) ; ne pas repeter ce modele.
+- `_bmad-output/implementation-artifacts/27-1-registered-device.md` existe deja (CS+VS PASS, ready-for-dev).
+- `sprint-status.yaml` : `27-1-registered-device` encore `backlog` — aligner au demarrage (§9.1 runbook).
+- Demarrer 27.1 en `resume_at: DS` (runbook §12.1) ; viser `done` avant 27.2.
 
 Mission :
-- piloter Epic 27 story par story ;
-- utiliser un Epic Runner unique ;
-- lancer un Story Runner par story ;
-- demander aux workers de remonter les questions au parent avant Strophe ;
-- respecter la politique HITL en cascade ;
-- ne pas paralleliser plusieurs stories ;
-- avant chaque delegation Story Runner, construire un `story_run` complet conforme a la spec §6.2 : `story_key`, `epic_id`, `project_root`, `skill_paths.*`, compteurs, gates, `policy.retry_chain`, `fresh_context_for_cr`, `if_cr_task_unavailable` ;
-- ne pas devier du perimetre non-offline ;
-- rester dans Cursor / LLM supervise, sans daemon ni execution headless autonome ;
-- ne pas modifier epics.md / sprint-status.yaml sans validation Strophe et sans verifier qu'il n'y a qu'un writer.
+- enchainer les stories 27.1 → 27.10 **une par une** ;
+- pour chaque story : **un seul** Task `@bmad-story-runner`, **`run_in_background: false`**, attendre rapport §7.1 complet ;
+- **interdit** : Task background pour Story Runner ; paralleliser plusieurs stories ;
+- construire un `story_run` complet (spec §6.2) avant chaque delegation ;
+- tu es **writer unique** YAML : transitions mecaniques §9.1 sans demander Strophe ;
+- tu **ne codes pas** toi-meme : toute modif code/doc/tests = delegation Story Runner / worker ;
+- cascade HITL : Worker → Story Runner → toi → Strophe (seulement scope / securite / destructif) ;
+- ne pas modifier `epics.md` pendant le run ;
+- ne pas devier du perimetre non-offline (ADR + runbook §7).
 
-Avant de lancer, verifie que l'ordre story de ce runbook est coherent avec epics.md et sprint-status.yaml. S'il diverge, stoppe et demande arbitrage.
+Boucle par story :
+1. pre-vol + aligner sprint-status si besoin ;
+2. Task Story Runner synchrone jusqu'a PASS/FAIL/NEEDS_* ;
+3. appliquer transitions YAML ;
+4. si `done` → story suivante ; si FAIL/HITL → arbitrer ou stopper avec rapport §14.
 
-Utilise inherit pour les sous-agents sauf raison explicite, mais verifie le modele effectif des agents Cursor avant de supposer que l'heritage fonctionne.
-Si une decision produit non couverte apparait, consigne-la comme decision proposee et remonte a l'Epic Runner ; si elle cree une nouvelle regle produit ou change le scope, demande Strophe avant application.
+Avant la premiere delegation, verifie l'ordre story vs epics.md et sprint-status.yaml.
 ```
 
 ## 14. Conditions de stop

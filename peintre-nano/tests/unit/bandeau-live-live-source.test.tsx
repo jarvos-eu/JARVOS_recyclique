@@ -64,7 +64,8 @@ function renderBandeauLiveLive(
   const C = r.Component;
   const adapter = createMockAuthAdapter({
     session: { authenticated: true, userId: 't' },
-    envelope: createDefaultDemoEnvelope(),
+    // Pas de GET module-config KPI : ces tests comptent les appels `fetch` du bandeau live seul.
+    envelope: createDefaultDemoEnvelope({ siteId: null }),
     ...(accessToken !== undefined ? { accessToken } : {}),
   });
   return render(

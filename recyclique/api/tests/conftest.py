@@ -254,6 +254,10 @@ from recyclic_api.models.login_history import LoginHistory
 from recyclic_api.models.site import Site
 from recyclic_api.models.site_module_config import SiteModuleConfig
 from recyclic_api.models.cash_register import CashRegister
+from recyclic_api.models.registered_device import RegisteredDevice
+from recyclic_api.models.registered_device_credential import RegisteredDeviceCredential
+from recyclic_api.models.device_enrollment_code import DeviceEnrollmentCode
+from recyclic_api.models.device_operator_session import DeviceOperatorSession
 from recyclic_api.models.deposit import Deposit
 from recyclic_api.models.payment_method import PaymentMethodDefinition
 from recyclic_api.models.accounting_config import (
@@ -953,6 +957,10 @@ def create_tables_if_not_exist():
                     RegistrationRequest.__table__,
                     AdminSetting.__table__,
                     CashRegister.__table__,
+                    RegisteredDevice.__table__,
+                    RegisteredDeviceCredential.__table__,
+                    DeviceEnrollmentCode.__table__,
+                    DeviceOperatorSession.__table__,
                     GlobalAccountingSettings.__table__,
                     AccountingConfigRevision.__table__,
                     AccountingPeriodAuthoritySnapshot.__table__,

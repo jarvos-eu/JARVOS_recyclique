@@ -15,6 +15,13 @@ from .payment_method import PaymentMethodDefinition, PaymentMethodKind
 from .payment_transaction import PaymentTransaction
 from .cash_session import CashSession, CashSessionStatus, CashSessionStep
 from .cash_register import CashRegister
+from .registered_device import RegisteredDevice
+from .registered_device_credential import (
+    RegisteredDeviceCredential,
+    RegisteredDeviceCredentialStatus,
+)
+from .device_enrollment_code import DeviceEnrollmentCode, DeviceEnrollmentPurpose
+from .device_operator_session import DeviceOperatorSession, DeviceOperatorSessionStatus
 from .sync_log import SyncLog
 from .registration_request import RegistrationRequest
 from .user_status_history import UserStatusHistory
@@ -69,6 +76,13 @@ __all__ = [
     "CashSessionStatus",
     "CashSessionStep",
     "CashRegister",
+    "RegisteredDevice",
+    "RegisteredDeviceCredential",
+    "RegisteredDeviceCredentialStatus",
+    "DeviceEnrollmentCode",
+    "DeviceEnrollmentPurpose",
+    "DeviceOperatorSession",
+    "DeviceOperatorSessionStatus",
     "SyncLog",
     "RegistrationRequest",
     "UserStatusHistory",

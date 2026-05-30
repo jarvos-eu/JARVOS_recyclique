@@ -19,6 +19,11 @@ import { LiveAuthLoginControllerProvider, type LiveAuthLoginController } from '.
 import { LiveAuthActionsProvider } from './LiveAuthActionsContext';
 import { LiveActivityPresenceBridge } from './LiveActivityPresenceBridge';
 import { LiveEnvelopeRefreshProvider } from './LiveAuthEnvelopeRefreshContext';
+import { SharedWorkstationLockScreen } from '../../domains/shared-workstation/SharedWorkstationLockScreen';
+import {
+  SharedWorkstationOperatorSessionProvider,
+  useSharedWorkstationLockRequired,
+} from '../../domains/shared-workstation/SharedWorkstationOperatorSessionProvider';
 import { clearAllCashflowDraftSessionKeys, resetCashflowDraft } from '../../domains/cashflow/cashflow-draft-store';
 import { CONTEXT_ENVELOPE_SILENT_REFRESH_INTERVAL_MS } from '../../runtime/context-envelope-freshness';
 import type { ContextEnvelopeStub } from '../../types/context-envelope';
@@ -43,6 +48,20 @@ function persistAccessToken(token: string | null): void {
 function initialPhase(): Phase {
   if (typeof window === 'undefined') return 'idle';
   return readStoredAccessToken() ? 'restoring' : 'idle';
+}
+
+/** Routes sans session JWT où l’on ne force pas la redirection vers `/login`. */
+const LIVE_AUTH_PUBLIC_PATHS = new Set(['/login', '/shared-workstation/enroll']);
+
+function isLiveAuthPublicPath(pathname: string): boolean {
+  return LIVE_AUTH_PUBLIC_PATHS.has(pathname);
+}
+
+/** Enrôlement terrain Epic 27.4 — rendu widget sans formulaire login. */
+const SHARED_WORKSTATION_ENROLL_PATH = '/shared-workstation/enroll';
+
+function isSharedWorkstationEnrollPath(pathname: string): boolean {
+  return pathname === SHARED_WORKSTATION_ENROLL_PATH;
 }
 
 function replacePath(path: string): void {
@@ -161,12 +180,12 @@ export function LiveAuthShell({ children }: LiveAuthShellProps) {
     });
   }, [loadContextForToken]);
 
-  /** Hors session : URL attendue `/login` (parité legacy). */
+  /** Hors session : URL attendue `/login` sauf routes publiques (enrôlement poste). */
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (phase === 'restoring' || phase === 'ready') return;
     const path = window.location.pathname;
-    if (path !== '/login') {
+    if (!isLiveAuthPublicPath(path)) {
       replacePath('/login');
     }
   }, [phase]);
@@ -276,6 +295,30 @@ export function LiveAuthShell({ children }: LiveAuthShellProps) {
   }
 
   if (phase !== 'ready' || !envelope || !adapter) {
+    const publicEnroll =
+      typeof window !== 'undefined' &&
+      isSharedWorkstationEnrollPath(window.location.pathname);
+    /** Jeton stocké ou erreur de restauration : surface login/retry (Story 11.2), pas l’enrôlement nu (27.4). */
+    const pendingSessionRecovery = Boolean(readStoredAccessToken()) || Boolean(formError);
+    if (publicEnroll && !pendingSessionRecovery) {
+      const publicAdapter: AuthContextPort = {
+        getSession: () => ({ authenticated: false }),
+        getContextEnvelope: () => ({
+          schemaVersion: '1',
+          siteId: null,
+          activeRegisterId: null,
+          permissions: { permissionKeys: [] },
+          issuedAt: Date.now(),
+          runtimeStatus: 'ok',
+        }),
+        getAccessToken: () => undefined,
+      };
+      return (
+        <AuthRuntimeProvider adapter={publicAdapter}>
+          {children}
+        </AuthRuntimeProvider>
+      );
+    }
     return (
       <LiveAuthLoginControllerProvider value={loginController}>
         <div
@@ -292,11 +335,47 @@ export function LiveAuthShell({ children }: LiveAuthShellProps) {
   return (
     <LiveAuthActionsProvider value={{ requestLogout: () => void onLogout() }}>
       <LiveEnvelopeRefreshProvider value={{ refreshEnvelope }}>
-        <AuthRuntimeProvider adapter={adapter}>
-          <LiveActivityPresenceBridge />
-          {children}
-        </AuthRuntimeProvider>
+        <SharedWorkstationOperatorSessionProvider enabled>
+          <LiveAuthShellAuthenticated
+            adapter={adapter}
+            refreshEnvelope={refreshEnvelope}
+            accessToken={accessToken}
+          >
+            {children}
+          </LiveAuthShellAuthenticated>
+        </SharedWorkstationOperatorSessionProvider>
       </LiveEnvelopeRefreshProvider>
     </LiveAuthActionsProvider>
+  );
+}
+
+type LiveAuthShellAuthenticatedProps = {
+  readonly children: ReactNode;
+  readonly adapter: AuthContextPort;
+  readonly refreshEnvelope: () => Promise<ContextEnvelopeStub | null>;
+  readonly accessToken: string | undefined;
+};
+
+function LiveAuthShellAuthenticated({
+  children,
+  adapter,
+  refreshEnvelope,
+  accessToken,
+}: LiveAuthShellAuthenticatedProps) {
+  const lockRequired = useSharedWorkstationLockRequired();
+
+  const onUnlocked = useCallback(() => {
+    const token = accessToken ?? readStoredAccessToken();
+    if (token) {
+      void refreshEnvelope();
+    }
+  }, [accessToken, refreshEnvelope]);
+
+  return (
+    <AuthRuntimeProvider adapter={adapter}>
+      <LiveActivityPresenceBridge />
+      {lockRequired ? <SharedWorkstationLockScreen onUnlocked={onUnlocked} /> : null}
+      {!lockRequired ? children : null}
+    </AuthRuntimeProvider>
   );
 }

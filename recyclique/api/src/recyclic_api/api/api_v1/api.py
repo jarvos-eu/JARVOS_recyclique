@@ -7,6 +7,8 @@ from .endpoints import (
     sales_router as sales,
     cash_sessions_router as cash_sessions,
     cash_registers as cash_registers,
+    registered_devices as registered_devices,
+    shared_workstation as shared_workstation,
     admin_router as admin,
     admin_session_metrics_router as admin_session_metrics,
     monitoring_router as monitoring,
@@ -46,6 +48,16 @@ api_router.include_router(deposits, prefix="/deposits", tags=["deposits"])
 api_router.include_router(sales, prefix="/sales", tags=["sales"])
 api_router.include_router(cash_sessions, prefix="/cash-sessions", tags=["cash-sessions"])
 api_router.include_router(cash_registers, prefix="/cash-registers", tags=["cash-registers"])
+api_router.include_router(
+    registered_devices,
+    prefix="/registered-devices",
+    tags=["registered-devices"],
+)
+api_router.include_router(
+    shared_workstation,
+    prefix="/shared-workstation",
+    tags=["shared-workstation"],
+)
 api_router.include_router(admin, prefix="/admin", tags=["admin"])
 api_router.include_router(admin_session_metrics, prefix="/admin", tags=["admin"])
 api_router.include_router(monitoring, prefix="/monitoring", tags=["monitoring"])

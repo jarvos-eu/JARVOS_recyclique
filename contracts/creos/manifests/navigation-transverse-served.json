@@ -158,6 +158,19 @@
       }
     },
     {
+      "id": "transverse-admin-registered-devices",
+      "route_key": "transverse-admin-registered-devices",
+      "path": "/admin/registered-devices",
+      "page_key": "transverse-admin-registered-devices",
+      "shortcut_id": "go-transverse-admin-registered-devices",
+      "label_key": "nav.transverse.admin.registeredDevices",
+      "required_permission_keys": ["transverse.admin.view", "caisse.sale_correct"],
+      "visibility": {
+        "permission_any": ["transverse.admin.view"],
+        "contexts_any": ["site"]
+      }
+    },
+    {
       "id": "transverse-admin-sites",
       "route_key": "transverse-admin-sites",
       "path": "/admin/sites",

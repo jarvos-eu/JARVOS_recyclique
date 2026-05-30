@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List
+import uuid
 from recyclic_api.core.database import get_db
 from recyclic_api.core.uuid_validation import validate_and_convert_uuid
 from recyclic_api.models.user import User, UserRole
@@ -22,8 +23,29 @@ from recyclic_api.core.auth import (
 from recyclic_api.core.security import hash_password, verify_password
 from recyclic_api.schemas.context_envelope import ContextEnvelopeResponse
 from recyclic_api.services.context_envelope_service import build_context_envelope
+from recyclic_api.core.shared_workstation_guard import HEADER_DEVICE_ID
 
 router = APIRouter()
+
+
+def _resolve_envelope_device_id(
+    *,
+    x_recyclique_device_id: str | None,
+    device_id: str | None,
+) -> uuid.UUID | None:
+    raw = (x_recyclique_device_id or "").strip() or (device_id or "").strip()
+    if not raw:
+        return None
+    try:
+        return uuid.UUID(raw)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "code": "VALIDATION_ERROR",
+                "message": "device_id doit être un UUID valide.",
+            },
+        ) from exc
 
 
 # --- Self endpoints MUST come before /{user_id} to avoid route shadowing ---
@@ -119,21 +141,39 @@ async def get_my_permissions(
 async def get_my_context_envelope(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    device_id: str | None = Query(
+        None,
+        description="UUID poste partagé (Story 27.2) — fusion contexte serveur si présent.",
+    ),
+    x_recyclique_device_id: str | None = Header(None, alias=HEADER_DEVICE_ID),
 ):
     """ContextEnvelope autoritaire : agrégation site / caisse / session / poste + état runtime (Story 2.2)."""
-    return build_context_envelope(db, current_user.id)
+    resolved_device = _resolve_envelope_device_id(
+        x_recyclique_device_id=x_recyclique_device_id,
+        device_id=device_id,
+    )
+    return build_context_envelope(db, current_user.id, device_id=resolved_device)
 
 
 @router.post("/me/context/refresh", response_model=ContextEnvelopeResponse)
 async def refresh_my_context_envelope(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    device_id: str | None = Query(
+        None,
+        description="UUID poste partagé (Story 27.2) — en-tête X-Recyclique-Device-Id prioritaire.",
+    ),
+    x_recyclique_device_id: str | None = Header(None, alias=HEADER_DEVICE_ID),
 ):
     """
     Recalcul explicite après changement de contexte métier (spec 1.3 §4.2).
     Même logique que GET — point d'appel dédié pour éviter toute bascule implicite côté UI.
     """
-    return build_context_envelope(db, current_user.id)
+    resolved_device = _resolve_envelope_device_id(
+        x_recyclique_device_id=x_recyclique_device_id,
+        device_id=device_id,
+    )
+    return build_context_envelope(db, current_user.id, device_id=resolved_device)
 
 
 @router.get("/active-operators", response_model=List[UserResponse])

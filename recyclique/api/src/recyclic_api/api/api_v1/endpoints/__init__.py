@@ -9,6 +9,8 @@ from .deposits import router as deposits_router
 from .sales import router as sales_router
 from .cash_sessions import router as cash_sessions_router
 from .cash_registers import router as cash_registers
+from .registered_devices import router as registered_devices
+from .shared_workstation import router as shared_workstation
 from .monitoring import router as monitoring_router
 from .auth import router as auth_router
 from .email import router as email_router

@@ -45,7 +45,8 @@ describe('LiveActivityPresenceBridge', () => {
 
     const adapter = createMockAuthAdapter({
       session: { authenticated: true, userId: DEMO_AUTH_STUB_USER_ID },
-      envelope: createDefaultDemoEnvelope(),
+      // Évite le GET module-config KPI (RootProviders) : on isole le ping activité.
+      envelope: createDefaultDemoEnvelope({ siteId: null }),
       accessToken: 'tok',
     });
 

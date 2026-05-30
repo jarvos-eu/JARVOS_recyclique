@@ -23,6 +23,7 @@ from recyclic_api.schemas.context_envelope import (
     ExploitationContextIdsOut,
 )
 from recyclic_api.services.creos_nav_presentation_labels import CREOS_NAV_PRESENTATION_LABELS
+from recyclic_api.services.shared_workstation_context_service import SharedWorkstationContextService
 
 
 def _utc_now() -> datetime:
@@ -57,7 +58,12 @@ def _evaluate_runtime(
     return state, msg
 
 
-def build_context_envelope(db: Session, user_id: uuid.UUID) -> ContextEnvelopeResponse:
+def build_context_envelope(
+    db: Session,
+    user_id: uuid.UUID,
+    *,
+    device_id: Optional[uuid.UUID] = None,
+) -> ContextEnvelopeResponse:
     user = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
     if user is None:
         return ContextEnvelopeResponse(
@@ -118,6 +124,23 @@ def build_context_envelope(db: Session, user_id: uuid.UUID) -> ContextEnvelopeRe
         cash_session_id=str(cash_session_id) if cash_session_id else None,
         reception_post_id=str(reception_post_id) if reception_post_id else None,
     )
+
+    if device_id is not None:
+        sw_result = SharedWorkstationContextService(db).resolve_shared_workstation_context(
+            device_id=str(device_id),
+            actor_user_id=str(user_id),
+        )
+        sw = sw_result.context
+        ctx.device_id = sw.device_id
+        ctx.operator_user_id = sw.operator_user_id
+        ctx.module_key = sw.module_key
+        ctx.override_active = sw.override_active
+        if sw.site_id:
+            ctx.site_id = sw.site_id
+        if sw.runtime_state == ContextRuntimeState.forbidden and sw.restriction_message:
+            if runtime_state == ContextRuntimeState.ok:
+                runtime_state = ContextRuntimeState.degraded
+            restriction_message = restriction_message or sw.restriction_message
 
     permission_keys = list(get_user_permissions(user, db))
     # Epic 5 / CREOS — hub transverse admin : clé UI attendue par les manifests (non forcément en table permissions).
