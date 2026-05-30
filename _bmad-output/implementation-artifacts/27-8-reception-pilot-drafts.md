@@ -1,6 +1,6 @@
 # Story 27.8 : Pilote Reception — brouillons masqués et reprise autorisée
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -387,6 +387,30 @@ Des fichiers **peuvent déjà exister** (WIP parallèle au CS) : migration `s27_
 - [ ] [Review][Medium] Reprise UI en un clic — le serveur exige `confirm: true` (OK) mais le bouton « Reprendre » n'a pas la double confirmation UI comme « Abandonner » (AC §3.12 interprétation UX). [`SharedWorkstationReceptionDraftResumePanel.tsx`]
 - [ ] [Review][Low] Paramètre `viewer` inutilisé dans `build_authorized_summary`. [`shared_workstation_reception_draft_service.py`]
 - [ ] [Review][Low] Routes draft `/context` sans propagation `X-Request-Id` vers audit draft (routes dédiées OK). [`shared_workstation.py`]
+
+### Review Findings (CR loop 1 — 2026-05-30)
+
+**CR loop 0 HIGH — vérifiés toujours corrigés**
+
+- [x] [Review][Patch] Garde PIN incomplète sur routes réception nominaux — corrigé CR1 : close poste/ticket, PUT/DELETE lignes, GET /tickets masqué JWT seul, cross-device ; tests `TestStory278ReceptionGuardM1` (7 cas). [`reception.py`, `reception_service.py`, `test_story_27_8_reception_pilot_drafts.py`]
+- [x] [Review][Patch] Contournement brownfield JWT seul sur poste `registered_device_id` — toujours corrigé via `_assert_enrolled_poste_requires_device_scope`. [`reception_service.py`]
+- [x] [Review][Patch] Fuite cross-device — toujours corrigé : `registered_device_id == scope.device_id` ; test `test_get_ticket_wrong_device_scope_403`. [`reception_service.py`]
+
+**CR loop 0 MEDIUM / LOW — inchangés, non bloquants**
+
+- [ ] [Review][Medium] Reprise UI en un clic sans double confirmation (vs Abandonner). [`SharedWorkstationReceptionDraftResumePanel.tsx`]
+- [ ] [Review][Low] Paramètre `viewer` inutilisé dans `build_authorized_summary`. [`shared_workstation_reception_draft_service.py`]
+- [ ] [Review][Low] Routes draft via `/context` sans propagation `X-Request-Id` vers audit draft. [`shared_workstation.py`]
+
+**CR loop 1 — nouveaux (LOW, non bloquants)**
+
+- [ ] [Review][Low] `receptionHeaders` swallow erreur IndexedDB → headers device vides. [`reception-client.ts`]
+- [ ] [Review][Low] `reception-client.ts` sans `cache:'no-store'` sur fetch nominal (AC network-only partiel). [`reception-client.ts`]
+
+**Couverture CR loop 1 validée**
+
+- [x] Propagation en-têtes device sur nominal réception — `reception-client.ts` + test unit `reception-client-shared-workstation-headers.test.ts`
+- [x] E2E lock sans fuite DOM — `shared-workstation-reception-draft-27-8.e2e.test.tsx` (wizard → lock masque ticket/lignes)
 
 ## Dev Agent Record
 

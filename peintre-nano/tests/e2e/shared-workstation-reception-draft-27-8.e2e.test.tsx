@@ -17,8 +17,20 @@ const sessionMock = vi.hoisted(() => ({
   refreshSessionStatus: vi.fn(async () => true),
 }));
 
+vi.mock('../../src/domains/shared-workstation/device-identity-store', () => ({
+  sharedWorkstationAuthHeaders: vi.fn(async () => ({})),
+  hasDeviceIdentity: vi.fn(async () => false),
+  loadDeviceIdentity: vi.fn(async () => null),
+}));
+
 vi.mock('../../src/api/shared-workstation-operator-pin-client', () => ({
   verifySharedWorkstationOperatorPin: vi.fn(),
+}));
+
+vi.mock('../../src/api/shared-workstation-reception-draft-client', () => ({
+  fetchSharedWorkstationReceptionDraft: vi.fn(async () => ({ ok: true, summary: null })),
+  resumeSharedWorkstationReceptionDraft: vi.fn(),
+  abandonSharedWorkstationReceptionDraft: vi.fn(),
 }));
 
 vi.mock('../../src/domains/shared-workstation/SharedWorkstationOperatorSessionProvider', () => ({
@@ -65,8 +77,8 @@ describe('shared-workstation-reception-draft lock e2e (Story 27.8)', () => {
 
   beforeEach(() => {
     sessionMock.loading = false;
-    sessionMock.hasDevice = true;
-    sessionMock.operatorSessionActive = true;
+    sessionMock.hasDevice = false;
+    sessionMock.operatorSessionActive = false;
     sessionMock.refreshSessionStatus.mockClear();
     vi.clearAllMocks();
   });
@@ -100,9 +112,6 @@ describe('shared-workstation-reception-draft lock e2e (Story 27.8)', () => {
       const url = requestUrl(input);
       const method = (init?.method ?? 'GET').toUpperCase();
 
-      if (url.includes('/v1/shared-workstation/reception-draft') && method === 'GET') {
-        return Promise.resolve({ ok: true, status: 204, text: async () => '' } as Response);
-      }
       if (url.includes('/v1/reception/postes/open') && method === 'POST') {
         return Promise.resolve({
           ok: true,
@@ -161,6 +170,7 @@ describe('shared-workstation-reception-draft lock e2e (Story 27.8)', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     function LockAwareShell({ locked }: { readonly locked: boolean }) {
+      sessionMock.hasDevice = locked;
       sessionMock.operatorSessionActive = !locked;
       const lockRequired =
         sessionMock.hasDevice && (sessionMock.loading || !sessionMock.operatorSessionActive);
@@ -182,6 +192,9 @@ describe('shared-workstation-reception-draft lock e2e (Story 27.8)', () => {
 
     const { rerender } = render(<LockAwareShell locked={false} />);
 
+    await waitFor(() => {
+      expect(screen.getByTestId('reception-open-poste')).toBeTruthy();
+    });
     fireEvent.click(screen.getByTestId('reception-open-poste'));
     await waitFor(() => {
       expect(screen.getByTestId('reception-poste-id').getAttribute('title')).toBe('poste-lock-e2e');

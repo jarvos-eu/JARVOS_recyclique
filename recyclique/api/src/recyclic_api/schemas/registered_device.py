@@ -115,7 +115,8 @@ class RegisteredDeviceCreate(BaseModel):
     allowed_module_keys: List[str] = Field(default_factory=list)
     inactivity_timeout_seconds: Optional[int] = Field(
         None,
-        ge=1,
+        ge=60,
+        le=7200,
         description=f"NULL = défaut serveur ({DEFAULT_INACTIVITY_TIMEOUT_SECONDS}s)",
     )
 
@@ -152,7 +153,7 @@ class RegisteredDeviceUpdate(BaseModel):
     site_id: Optional[str] = None
     status: Optional[str] = None
     allowed_module_keys: Optional[List[str]] = None
-    inactivity_timeout_seconds: Optional[int] = Field(None, ge=1)
+    inactivity_timeout_seconds: Optional[int] = Field(None, ge=60, le=7200)
     last_contact_at: Optional[datetime] = None
 
     @field_validator("status")

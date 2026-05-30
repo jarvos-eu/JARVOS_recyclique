@@ -1579,6 +1579,84 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/operator-session/end:
+    post:
+      operationId: recyclique_sharedWorkstation_endOperatorSession
+      tags:
+        - shared-workstation
+      summary: Terminer session opérateur (verrouillage / passage de main / timeout)
+      description: |
+        Story 27.9 — credential device obligatoire ; fin session avec raison audit.
+        Idempotent si session déjà terminée. `Cache-Control: no-store`.
+      parameters:
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SharedWorkstationOperatorSessionEndV1Request"
+      responses:
+        "200":
+          description: Session terminée ou déjà absente
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationOperatorSessionEndV1Response"
+        "403":
+          description: Credential device invalide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/operator-session/activity:
+    post:
+      operationId: recyclique_sharedWorkstation_touchOperatorSessionActivity
+      tags:
+        - shared-workstation
+      summary: Heartbeat activité opérateur (throttled)
+      description: |
+        Story 27.9 — met à jour `last_activity_at` (max 1/min). 204 si throttled ou touché.
+        `Cache-Control: no-store`.
+      parameters:
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Activité enregistrée ou throttled
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+        "403":
+          description: Pas de session opérateur active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
   /v1/shared-workstation/operator-pin/verify:
     post:
       operationId: recyclique_sharedWorkstation_verifyOperatorPin
@@ -11098,6 +11176,39 @@ components:
           type: string
           format: uuid
           nullable: true
+        session_id:
+          type: string
+          format: uuid
+          nullable: true
+        last_activity_at:
+          type: string
+          format: date-time
+          nullable: true
+        inactivity_timeout_seconds:
+          type: integer
+          nullable: true
+        seconds_until_lock:
+          type: integer
+          nullable: true
+      additionalProperties: false
+    SharedWorkstationOperatorSessionEndV1Request:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - manual_lock
+            - handoff
+            - timeout
+          default: manual_lock
+      additionalProperties: false
+    SharedWorkstationOperatorSessionEndV1Response:
+      type: object
+      required:
+        - ended
+      properties:
+        ended:
+          type: boolean
         session_id:
           type: string
           format: uuid

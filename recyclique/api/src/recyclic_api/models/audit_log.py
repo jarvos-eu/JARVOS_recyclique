@@ -90,6 +90,10 @@ class AuditActionType(str, enum.Enum):
     DEVICE_IDENTITY_LOST_MARKED = "device_identity_lost_marked"
     DEVICE_CONFLICT_RESOLVED = "device_conflict_resolved"
 
+    # Epic 27.9 — timeout inactivité / verrouillage manuel poste partagé
+    SHARED_WORKSTATION_OPERATOR_LOCKED_MANUAL = "shared_workstation_operator_locked_manual"
+    SHARED_WORKSTATION_OPERATOR_LOCKED_TIMEOUT = "shared_workstation_operator_locked_timeout"
+
     # Epic 27.6 — PIN poste partagé (lock screen opérateur)
     SHARED_WORKSTATION_PIN_SUCCESS = "shared_workstation_pin_success"
     SHARED_WORKSTATION_PIN_FAILURE = "shared_workstation_pin_failure"

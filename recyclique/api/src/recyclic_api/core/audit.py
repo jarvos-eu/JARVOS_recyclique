@@ -724,6 +724,80 @@ def log_device_operator_session_ended(
     )
 
 
+def log_shared_workstation_operator_locked_manual(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    reason: str = "manual_lock",
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"reason": reason},
+        request_id=request_id,
+        operation="shared_workstation.operator_lock_manual",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_OPERATOR_LOCKED_MANUAL,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Session opérateur verrouillée manuellement",
+        db=db,
+    )
+
+
+def log_shared_workstation_operator_locked_timeout(
+    *,
+    db: Optional[Session] = None,
+    session_id: Optional[str] = None,
+    device_id: Optional[str] = None,
+    site_id: Optional[str] = None,
+    operator_user_id: Optional[str] = None,
+    module_key: Optional[str] = None,
+    override_active: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    reason: str = "timeout",
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"reason": reason},
+        request_id=request_id,
+        operation="shared_workstation.operator_lock_timeout",
+        outcome="success",
+        site_id=site_id,
+        device_id=device_id,
+        module_key=module_key,
+        override_active=override_active,
+        session_id=session_id,
+        user_id=user_id,
+        operator_user_id=operator_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_OPERATOR_LOCKED_TIMEOUT,
+        actor=None,
+        target_id=_parse_target_uuid(session_id),
+        target_type="device_operator_session",
+        details=details,
+        description="Session opérateur expirée par timeout inactivité",
+        db=db,
+    )
+
+
 def log_shared_workstation_pin_success(
     *,
     db: Optional[Session] = None,

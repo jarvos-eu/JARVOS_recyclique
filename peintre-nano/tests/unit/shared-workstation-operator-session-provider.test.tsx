@@ -20,9 +20,8 @@ vi.mock('../../src/domains/shared-workstation/device-identity-store', () => ({
   sharedWorkstationAuthHeaders: vi.fn(async () => ({})),
 }));
 
-vi.mock('../../src/api/shared-workstation-operator-pin-client', () => ({
+vi.mock('../../src/api/shared-workstation-operator-session-client', () => ({
   fetchOperatorSessionStatus,
-  verifySharedWorkstationOperatorPin: vi.fn(),
 }));
 
 function LockRequiredProbe() {
@@ -68,6 +67,9 @@ describe('useSharedWorkstationLockRequired (Story 27.6 CR-1)', () => {
       active: true,
       operator_user_id: 'u1',
       session_id: 'sess-1',
+      last_activity_at: null,
+      inactivity_timeout_seconds: 900,
+      seconds_until_lock: 900,
     });
 
     await waitFor(() => {
@@ -82,6 +84,9 @@ describe('useSharedWorkstationLockRequired (Story 27.6 CR-1)', () => {
       active: false,
       operator_user_id: null,
       session_id: null,
+      last_activity_at: null,
+      inactivity_timeout_seconds: null,
+      seconds_until_lock: null,
     });
 
     render(

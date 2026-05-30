@@ -8,10 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { hasDeviceIdentity, loadDeviceIdentity } from './device-identity-store';
-import {
-  fetchOperatorSessionStatus,
-  type OperatorSessionStatus,
-} from '../../api/shared-workstation-operator-pin-client';
+import { fetchOperatorSessionStatus, type OperatorSessionStatus } from '../../api/shared-workstation-operator-session-client';
 
 export type SharedWorkstationOperatorSessionState = {
   readonly loading: boolean;

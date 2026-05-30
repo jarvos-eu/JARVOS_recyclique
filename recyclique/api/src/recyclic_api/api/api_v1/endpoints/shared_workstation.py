@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Optional
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -32,6 +33,10 @@ from recyclic_api.schemas.shared_workstation_effective_modules import (
 from recyclic_api.schemas.shared_workstation_operator_pin import (
     SharedWorkstationOperatorPinVerifyRequest,
     SharedWorkstationOperatorPinVerifyResponse,
+)
+from recyclic_api.schemas.shared_workstation_operator_session import (
+    SharedWorkstationOperatorSessionEndRequest,
+    SharedWorkstationOperatorSessionEndResponse,
     SharedWorkstationOperatorSessionStatusResponse,
 )
 from recyclic_api.schemas.shared_workstation_reception_draft import (
@@ -52,6 +57,8 @@ from recyclic_api.services.shared_workstation_operator_pin_service import (
 from recyclic_api.services.shared_workstation_effective_modules_service import (
     SharedWorkstationEffectiveModulesService,
 )
+from recyclic_api.services.device_operator_session_service import DeviceOperatorSessionService
+from recyclic_api.core.exceptions import ValidationError as DomainValidationError
 from recyclic_api.utils.rate_limit import conditional_rate_limit
 
 router = APIRouter()
@@ -248,14 +255,85 @@ async def get_operator_session_status(
     db: Session = Depends(get_db),
 ):
     _no_store(response)
-    active, operator_id, session_id = SharedWorkstationOperatorPinService(db).get_session_status(
-        device_id=device_id
-    )
+    enriched = DeviceOperatorSessionService(db).get_enriched_session_status(device_id=device_id)
+    op_id = enriched.operator_user_id
+    sess_id = enriched.session_id
     return SharedWorkstationOperatorSessionStatusResponse(
-        active=active,
-        operator_user_id=operator_id,
-        session_id=session_id,
+        active=enriched.active,
+        operator_user_id=op_id if op_id else None,
+        session_id=sess_id if sess_id else None,
+        last_activity_at=enriched.last_activity_at,
+        inactivity_timeout_seconds=enriched.inactivity_timeout_seconds,
+        seconds_until_lock=enriched.seconds_until_lock,
     )
+
+
+@router.post(
+    "/operator-session/end",
+    response_model=SharedWorkstationOperatorSessionEndResponse,
+    summary="Terminer session opérateur (verrouillage / passage de main / timeout)",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_endOperatorSession"},
+)
+@conditional_rate_limit("10/minute")
+async def end_operator_session(
+    payload: SharedWorkstationOperatorSessionEndRequest,
+    request: Request,
+    response: Response,
+    device_id: str = Depends(require_valid_device_credential),
+    db: Session = Depends(get_db),
+    actor_user_id: Optional[str] = Depends(_optional_actor_user_id),
+):
+    _no_store(response)
+    service = DeviceOperatorSessionService(db)
+    active = service.get_active_for_device(device_id=device_id)
+    if active is None:
+        return SharedWorkstationOperatorSessionEndResponse(ended=False, session_id=None)
+    ended, session_id = service.end_active_session_for_device(
+        device_id=device_id,
+        reason=payload.reason.value,
+        actor_user_id=actor_user_id,
+        request_id=_request_id(request),
+    )
+    sid = UUID(session_id) if session_id else None
+    return SharedWorkstationOperatorSessionEndResponse(ended=ended, session_id=sid)
+
+
+@router.post(
+    "/operator-session/activity",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Heartbeat activité opérateur (throttled)",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_touchOperatorSessionActivity"},
+)
+@conditional_rate_limit("30/minute")
+async def touch_operator_session_activity(
+    response: Response,
+    device_id: str = Depends(require_valid_device_credential),
+    db: Session = Depends(get_db),
+):
+    _no_store(response)
+    service = DeviceOperatorSessionService(db)
+    active = service.get_active_for_device(device_id=device_id)
+    if active is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "SHARED_WORKSTATION_OPERATOR_REQUIRED",
+                "message": "Session opérateur active requise",
+            },
+        )
+    try:
+        touched = service.record_activity(device_id=device_id)
+    except DomainValidationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "SHARED_WORKSTATION_OPERATOR_REQUIRED",
+                "message": str(exc),
+            },
+        ) from exc
+    if not touched:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post(

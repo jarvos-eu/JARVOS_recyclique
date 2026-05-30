@@ -89,7 +89,12 @@ async function receptionHeaders(
   auth: Pick<AuthContextPort, 'getAccessToken'>,
   json = false,
 ): Promise<Record<string, string>> {
-  const deviceHeaders = await sharedWorkstationAuthHeaders();
+  let deviceHeaders: Record<string, string> = {};
+  try {
+    deviceHeaders = await sharedWorkstationAuthHeaders();
+  } catch {
+    deviceHeaders = {};
+  }
   const headers: Record<string, string> = { Accept: 'application/json', ...deviceHeaders };
   if (json) headers['Content-Type'] = 'application/json';
   const token = auth.getAccessToken?.();

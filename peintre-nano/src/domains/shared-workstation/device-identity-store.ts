@@ -49,7 +49,15 @@ async function withStore<T>(
 }
 
 export async function loadDeviceIdentity(): Promise<DeviceIdentityRecord | null> {
-  const raw = await withStore('readonly', (store) => store.get(RECORD_KEY));
+  if (typeof indexedDB === 'undefined') {
+    return null;
+  }
+  let raw: unknown;
+  try {
+    raw = await withStore('readonly', (store) => store.get(RECORD_KEY));
+  } catch {
+    return null;
+  }
   if (!raw || typeof raw !== 'object') return null;
   const rec = raw as Record<string, unknown>;
   if (typeof rec.device_id !== 'string' || typeof rec.device_secret !== 'string') return null;
@@ -96,10 +104,14 @@ export async function hasDeviceIdentity(): Promise<boolean> {
 
 /** En-têtes API poste partagé — credential + device_id. */
 export async function sharedWorkstationAuthHeaders(): Promise<Record<string, string>> {
-  const identity = await loadDeviceIdentity();
-  if (!identity) return {};
-  return {
-    'X-Recyclique-Device-Id': identity.device_id,
-    'X-Recyclique-Device-Credential': identity.device_secret,
-  };
+  try {
+    const identity = await loadDeviceIdentity();
+    if (!identity) return {};
+    return {
+      'X-Recyclique-Device-Id': identity.device_id,
+      'X-Recyclique-Device-Credential': identity.device_secret,
+    };
+  } catch {
+    return {};
+  }
 }

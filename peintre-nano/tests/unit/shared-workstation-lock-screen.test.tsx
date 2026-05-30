@@ -21,8 +21,10 @@ vi.mock('../../src/domains/shared-workstation/device-identity-store', () => ({
   sharedWorkstationAuthHeaders: vi.fn(async () => ({})),
 }));
 
-vi.mock('../../src/api/shared-workstation-operator-pin-client', () => ({
+vi.mock('../../src/api/shared-workstation-operator-session-client', () => ({
   fetchOperatorSessionStatus,
+}));
+vi.mock('../../src/api/shared-workstation-operator-pin-client', () => ({
   verifySharedWorkstationOperatorPin,
 }));
 

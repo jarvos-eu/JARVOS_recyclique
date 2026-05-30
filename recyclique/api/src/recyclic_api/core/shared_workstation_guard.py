@@ -44,6 +44,7 @@ HEADER_DEVICE_CREDENTIAL = "X-Recyclique-Device-Credential"
 HEADER_CONTEXT_MODULE_KEY = "X-Recyclique-Context-Module-Key"
 
 SHARED_WORKSTATION_OPERATOR_REQUIRED = "SHARED_WORKSTATION_OPERATOR_REQUIRED"
+SHARED_WORKSTATION_OPERATOR_SESSION_EXPIRED = "SHARED_WORKSTATION_OPERATOR_SESSION_EXPIRED"
 SHARED_WORKSTATION_DEVICE_INVALID = "SHARED_WORKSTATION_DEVICE_INVALID"
 DEVICE_CREDENTIAL_REVOKED = "DEVICE_CREDENTIAL_REVOKED"
 DEVICE_IDENTITY_CONFLICT = "DEVICE_IDENTITY_CONFLICT"
@@ -230,6 +231,29 @@ def assert_context_fresh(
         )
 
 
+def _assert_operator_session_not_expired(
+    *,
+    request: Request,
+    db: Session,
+    device_id: str,
+    actor_user_id: Optional[str] = None,
+) -> None:
+    """Story 27.9 — auto-invalide session idle expirée avant mutation sensible."""
+    sessions = DeviceOperatorSessionService(db)
+    if sessions.expire_active_session_if_idle(
+        device_id=device_id,
+        actor_user_id=actor_user_id,
+        request_id=_request_id(request),
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": SHARED_WORKSTATION_OPERATOR_SESSION_EXPIRED,
+                "message": "Session opérateur expirée par inactivité",
+            },
+        )
+
+
 def require_active_operator_context(
     request: Request,
     db: Session = Depends(get_db),
@@ -308,6 +332,13 @@ def require_active_operator_context(
                 "message": ctx.restriction_message or "Opérateur actif requis sur ce poste",
             },
         )
+
+    _assert_operator_session_not_expired(
+        request=request,
+        db=db,
+        device_id=resolved_device_id,
+        actor_user_id=str(current_user.id),
+    )
 
     assert_context_fresh(
         request=request,
@@ -426,6 +457,12 @@ def resolve_shared_workstation_reception_scope_when_device_present(
                 "message": "Opérateur actif requis sur ce poste",
             },
         )
+    _assert_operator_session_not_expired(
+        request=request,
+        db=db,
+        device_id=raw_device,
+        actor_user_id=str(current_user.id),
+    )
     operator_user_id = str(session.operator_user_id)
     SharedWorkstationEffectiveModulesService(db).assert_module_in_effective_set(
         device_id=raw_device,

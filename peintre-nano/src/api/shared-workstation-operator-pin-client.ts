@@ -2,6 +2,11 @@ import { getLiveSnapshotBasePrefix } from './live-snapshot-client';
 import { parseRecycliqueApiErrorBody, toRecycliqueClientFailure } from './recyclique-api-error';
 import { sharedWorkstationAuthHeaders } from '../domains/shared-workstation/device-identity-store';
 
+import {
+  fetchOperatorSessionStatus as fetchOperatorSessionStatusEnriched,
+  type OperatorSessionStatus as EnrichedOperatorSessionStatus,
+} from './shared-workstation-operator-session-client';
+
 export type OperatorSessionStatus =
   | {
       ok: true;
@@ -10,6 +15,20 @@ export type OperatorSessionStatus =
       session_id: string | null;
     }
   | { ok: false; status: number; message: string; code?: string };
+
+/** @deprecated Prefer shared-workstation-operator-session-client for enriched fields. */
+export async function fetchOperatorSessionStatus(
+  signal?: AbortSignal,
+): Promise<OperatorSessionStatus> {
+  const status: EnrichedOperatorSessionStatus = await fetchOperatorSessionStatusEnriched(signal);
+  if (!status.ok) return status;
+  return {
+    ok: true,
+    active: status.active,
+    operator_user_id: status.operator_user_id,
+    session_id: status.session_id,
+  };
+}
 
 export type VerifyOperatorPinBody = {
   readonly operator_user_id: string;
@@ -49,39 +68,6 @@ async function deviceFetch(url: string, init: RequestInit): Promise<Response> {
     credentials: 'include',
     headers,
   });
-}
-
-/** GET /v1/shared-workstation/operator-session/status */
-export async function fetchOperatorSessionStatus(
-  signal?: AbortSignal,
-): Promise<OperatorSessionStatus> {
-  const base = getLiveSnapshotBasePrefix();
-  const url = `${base}/v1/shared-workstation/operator-session/status`;
-  let res: Response;
-  try {
-    res = await deviceFetch(url, { method: 'GET', signal });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Erreur réseau';
-    return { ok: false, status: 0, message: msg };
-  }
-  const text = await res.text();
-  const json = parseJsonText(text);
-  if (!res.ok) {
-    const p = parseRecycliqueApiErrorBody(json, res.status, text || res.statusText);
-    const f = toRecycliqueClientFailure(res.status, p, false);
-    return { ok: false, status: res.status, message: f.message, code: f.code };
-  }
-  if (!json || typeof json !== 'object') {
-    return { ok: false, status: res.status, message: 'Réponse statut session invalide' };
-  }
-  const row = json as Record<string, unknown>;
-  return {
-    ok: true,
-    active: Boolean(row.active),
-    operator_user_id:
-      typeof row.operator_user_id === 'string' ? row.operator_user_id : null,
-    session_id: typeof row.session_id === 'string' ? row.session_id : null,
-  };
 }
 
 /** POST /v1/shared-workstation/operator-pin/verify */

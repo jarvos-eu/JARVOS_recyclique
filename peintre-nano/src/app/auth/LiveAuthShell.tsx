@@ -19,6 +19,7 @@ import { LiveAuthLoginControllerProvider, type LiveAuthLoginController } from '.
 import { LiveAuthActionsProvider } from './LiveAuthActionsContext';
 import { LiveActivityPresenceBridge } from './LiveActivityPresenceBridge';
 import { LiveEnvelopeRefreshProvider } from './LiveAuthEnvelopeRefreshContext';
+import { SharedWorkstationInactivityProvider } from '../../domains/shared-workstation/SharedWorkstationInactivityProvider';
 import { SharedWorkstationLockScreen } from '../../domains/shared-workstation/SharedWorkstationLockScreen';
 import {
   SharedWorkstationOperatorSessionProvider,
@@ -388,8 +389,10 @@ function LiveAuthShellAuthenticated({
   return (
     <AuthRuntimeProvider adapter={adapter}>
       <LiveActivityPresenceBridge />
-      {lockRequired ? <SharedWorkstationLockScreen onUnlocked={onUnlocked} /> : null}
-      {!lockRequired ? children : null}
+      <SharedWorkstationInactivityProvider>
+        {lockRequired ? <SharedWorkstationLockScreen onUnlocked={onUnlocked} /> : null}
+        {!lockRequired ? children : null}
+      </SharedWorkstationInactivityProvider>
     </AuthRuntimeProvider>
   );
 }

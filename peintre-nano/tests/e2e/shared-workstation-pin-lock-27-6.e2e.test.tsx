@@ -68,24 +68,26 @@ function installIndexedDbMock() {
   });
 }
 
-const contextEnvelopeBody = {
-  runtime_state: 'ok',
-  permission_keys: [
-    'transverse.dashboard.view',
-    'transverse.admin.view',
-    'recyclique.exploitation.view-live-band',
-  ],
-  computed_at: '2026-05-30T12:00:00.000Z',
-  presentation_labels: {
-    'nav.transverse.dashboard': 'Tableau de bord',
-  },
-  context: {
-    site_id: siteId,
-    cash_register_id: null,
-    cash_session_id: null,
-    reception_post_id: null,
-  },
-};
+function buildContextEnvelopeBody() {
+  return {
+    runtime_state: 'ok',
+    permission_keys: [
+      'transverse.dashboard.view',
+      'transverse.admin.view',
+      'recyclique.exploitation.view-live-band',
+    ],
+    computed_at: new Date().toISOString(),
+    presentation_labels: {
+      'nav.transverse.dashboard': 'Tableau de bord',
+    },
+    context: {
+      site_id: siteId,
+      cash_register_id: null,
+      cash_session_id: null,
+      reception_post_id: null,
+    },
+  };
+}
 
 type VerifyMode = 'success' | 'invalid' | 'locked';
 
@@ -98,10 +100,32 @@ function createLiveAuthFetchMock(options: { verifyMode?: VerifyMode } = {}) {
     const method = (init?.method ?? 'GET').toUpperCase();
 
     if (url.includes('/v1/users/me/context') && (method === 'GET' || method === 'POST')) {
-      return new Response(JSON.stringify(contextEnvelopeBody), {
+      return new Response(JSON.stringify(buildContextEnvelopeBody()), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
+    }
+
+    if (url.includes('/shared-workstation/effective-modules') && method === 'GET') {
+      if (!operatorSessionActive) {
+        return new Response(
+          JSON.stringify({
+            code: 'SHARED_WORKSTATION_OPERATOR_REQUIRED',
+            message: 'Session opérateur requise',
+          }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } },
+        );
+      }
+      return new Response(
+        JSON.stringify({
+          module_keys: ['kpi-live-banner', 'reception'],
+          computed_at: new Date().toISOString(),
+          site_id: siteId,
+          device_id: deviceId,
+          operator_user_id: operatorUserId,
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
     }
 
     if (url.includes('/shared-workstation/operator-session/status') && method === 'GET') {

@@ -435,6 +435,44 @@ class TestStory278ReceptionGuardM1:
         assert resp.status_code == 403
         assert _api_error_code(resp) == "SHARED_WORKSTATION_OPERATOR_REQUIRED"
 
+    def test_close_poste_without_pin_403(
+        self, super_admin_client: TestClient, db_session: Session
+    ):
+        site = _make_site(db_session)
+        device_id, secret = _enrolled_device(super_admin_client, db_session, site)
+        operator = _make_user(db_session, site=site)
+        _start_session(db_session, device_id, operator)
+        poste_id, _ = _open_poste_and_ticket(
+            super_admin_client, operator=operator, device_id=device_id, secret=secret
+        )
+        headers = _device_auth_headers(operator.id, device_id, secret)
+        _end_device_session(db_session, device_id)
+        resp = super_admin_client.post(
+            v1(f"{_RECEPTION}/postes/{poste_id}/close"),
+            headers=headers,
+        )
+        assert resp.status_code == 403
+        assert _api_error_code(resp) == "SHARED_WORKSTATION_OPERATOR_REQUIRED"
+
+    def test_close_ticket_without_pin_403(
+        self, super_admin_client: TestClient, db_session: Session
+    ):
+        site = _make_site(db_session)
+        device_id, secret = _enrolled_device(super_admin_client, db_session, site)
+        operator = _make_user(db_session, site=site)
+        _start_session(db_session, device_id, operator)
+        _, ticket_id = _open_poste_and_ticket(
+            super_admin_client, operator=operator, device_id=device_id, secret=secret
+        )
+        headers = _device_auth_headers(operator.id, device_id, secret)
+        _end_device_session(db_session, device_id)
+        resp = super_admin_client.post(
+            v1(f"{_RECEPTION}/tickets/{ticket_id}/close"),
+            headers=headers,
+        )
+        assert resp.status_code == 403
+        assert _api_error_code(resp) == "SHARED_WORKSTATION_OPERATOR_REQUIRED"
+
     def test_delete_ligne_without_pin_403(
         self, super_admin_client: TestClient, db_session: Session
     ):
@@ -493,6 +531,19 @@ class TestStory278ReceptionGuardM1:
         _, ticket_id = _open_poste_and_ticket(
             super_admin_client, operator=operator, device_id=device_id, secret=secret
         )
+        category = _make_category(db_session)
+        headers = _device_auth_headers(operator.id, device_id, secret)
+        r_ligne = super_admin_client.post(
+            v1(f"{_RECEPTION}/lignes"),
+            headers=headers,
+            json={
+                "ticket_id": ticket_id,
+                "category_id": str(category.id),
+                "poids_kg": 1.0,
+                "destination": "MAGASIN",
+            },
+        )
+        assert r_ligne.status_code == 200, r_ligne.text
         jwt_only = _auth_headers(operator.id)
         resp = super_admin_client.get(v1(f"{_RECEPTION}/tickets"), headers=jwt_only)
         assert resp.status_code == 200, resp.text

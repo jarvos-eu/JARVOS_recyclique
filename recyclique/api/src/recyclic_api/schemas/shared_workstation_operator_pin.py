@@ -31,11 +31,5 @@ class SharedWorkstationOperatorPinVerifyResponse(BaseModel):
     started_at: datetime
 
 
-class SharedWorkstationOperatorSessionStatusResponse(BaseModel):
-    active: bool
-    operator_user_id: Optional[UUID] = None
-    session_id: Optional[UUID] = None
-
-
 class ClearOperatorPinLockoutRequest(BaseModel):
     operator_user_id: UUID
