@@ -2,6 +2,7 @@ import type { NavigationEntry, NavigationManifest } from '../types/navigation-ma
 import type { ContextEnvelopeStub } from '../types/context-envelope';
 import { isEnvelopeStale } from './context-envelope-freshness';
 import { resolveContextMarkersFromEnvelope } from './resolve-context-markers';
+import { isNavEntryModuleEffective } from '../domains/shared-workstation/shared-workstation-nav-module-mapping';
 
 /**
  * Options pour `filterNavigation` uniquement (fraîcheur / horloge).
@@ -9,6 +10,11 @@ import { resolveContextMarkersFromEnvelope } from './resolve-context-markers';
  */
 export type FilterNavigationOptions = {
   readonly nowMs?: number;
+  /**
+   * Story 27.7 — projection modules effectifs poste partagé (serveur).
+   * `null`/`undefined` = pas de filtrage module (utilisateur web classique).
+   */
+  readonly effectiveModuleKeys?: readonly string[] | null;
 };
 
 function entryPermissionKeysSatisfied(entry: NavigationEntry, effective: ReadonlySet<string>): boolean {
@@ -36,10 +42,17 @@ function filterNavEntry(
   entry: NavigationEntry,
   effectivePerms: ReadonlySet<string>,
   contextMarkers: ReadonlySet<string>,
+  effectiveModuleKeys: readonly string[] | null | undefined,
 ): NavigationEntry | null {
   if (!entryVisibilityPermissionAnySatisfied(entry, effectivePerms)) return null;
   if (!entryPermissionKeysSatisfied(entry, effectivePerms)) return null;
   if (!entryVisibilityContextsSatisfied(entry, contextMarkers)) return null;
+  if (
+    effectiveModuleKeys != null &&
+    !isNavEntryModuleEffective(entry, effectiveModuleKeys)
+  ) {
+    return null;
+  }
 
   if (!entry.children?.length) {
     const { children: _c, ...rest } = entry;
@@ -47,7 +60,7 @@ function filterNavEntry(
   }
 
   const nextChildren = entry.children
-    .map((c) => filterNavEntry(c, effectivePerms, contextMarkers))
+    .map((c) => filterNavEntry(c, effectivePerms, contextMarkers, effectiveModuleKeys))
     .filter((c): c is NavigationEntry => c !== null);
 
   return {
@@ -74,8 +87,9 @@ export function filterNavigation(
 
   const effective = new Set(envelope.permissions.permissionKeys);
   const markers = resolveContextMarkersFromEnvelope(envelope);
+  const moduleKeys = options?.effectiveModuleKeys;
   const entries = manifest.entries
-    .map((e) => filterNavEntry(e, effective, markers))
+    .map((e) => filterNavEntry(e, effective, markers, moduleKeys))
     .filter((e): e is NavigationEntry => e !== null);
   return { version: manifest.version, entries };
 }

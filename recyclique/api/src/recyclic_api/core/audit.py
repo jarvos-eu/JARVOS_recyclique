@@ -843,6 +843,100 @@ def log_shared_workstation_pin_lockout_cleared(
     )
 
 
+def log_shared_workstation_reception_draft_resumed(
+    *,
+    db: Optional[Session] = None,
+    device_id: str,
+    poste_id: str,
+    ticket_id: str,
+    operator_user_id: str,
+    previous_operator_user_id: Optional[str] = None,
+    actor_user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {
+            "poste_id": poste_id,
+            "ticket_id": ticket_id,
+            "previous_operator_user_id": previous_operator_user_id,
+        },
+        request_id=request_id,
+        operation="shared_workstation.reception_draft_resume",
+        outcome="success",
+        device_id=device_id,
+        operator_user_id=operator_user_id,
+        user_id=actor_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_RECEPTION_DRAFT_RESUMED,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Reprise brouillon réception poste partagé",
+        db=db,
+    )
+
+
+def log_shared_workstation_reception_draft_abandoned(
+    *,
+    db: Optional[Session] = None,
+    device_id: str,
+    poste_id: str,
+    ticket_id: str,
+    operator_user_id: str,
+    actor_user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {"poste_id": poste_id, "ticket_id": ticket_id},
+        request_id=request_id,
+        operation="shared_workstation.reception_draft_abandon",
+        outcome="success",
+        device_id=device_id,
+        operator_user_id=operator_user_id,
+        user_id=actor_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_RECEPTION_DRAFT_ABANDONED,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Abandon brouillon réception poste partagé",
+        db=db,
+    )
+
+
+def log_shared_workstation_reception_draft_access_refused(
+    *,
+    db: Optional[Session] = None,
+    device_id: str,
+    operator_user_id: str,
+    actor_user_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+    outcome: str = "forbidden",
+) -> Optional[AuditLog]:
+    details = merge_critical_audit_fields(
+        {},
+        request_id=request_id,
+        operation="shared_workstation.reception_draft_access",
+        outcome=outcome,
+        device_id=device_id,
+        operator_user_id=operator_user_id,
+        user_id=actor_user_id,
+    )
+    return log_audit(
+        action_type=AuditActionType.SHARED_WORKSTATION_RECEPTION_DRAFT_ACCESS_REFUSED,
+        actor=None,
+        target_id=_parse_target_uuid(device_id),
+        target_type="registered_device",
+        details=details,
+        description="Accès brouillon réception refusé",
+        db=db,
+    )
+
+
 def log_registered_device_created(
     *,
     db: Optional[Session] = None,

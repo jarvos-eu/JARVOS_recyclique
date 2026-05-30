@@ -23,6 +23,8 @@ import classes from './RuntimeDemoApp.module.css';
 import { LiveShellBrand } from '../shell/LiveShellBrand';
 import { LiveShellUserMenu } from '../shell/LiveShellUserMenu';
 import { LiveAdminPerimeterStrip } from '../shell/LiveAdminPerimeterStrip';
+import { useOptionalSharedWorkstationOperatorSession } from '../../domains/shared-workstation/SharedWorkstationOperatorSessionProvider';
+import { useSharedWorkstationModuleAccess } from '../../domains/shared-workstation/useSharedWorkstationModuleAccess';
 
 /** Affiche `restriction_message` quand l’enveloppe le fournit — ne remplace pas `resolvePageAccess`. */
 function ContextRestrictionBanner({ message }: { readonly message: string | null | undefined }) {
@@ -326,6 +328,11 @@ export function RuntimeDemoApp() {
   const envelope = useContextEnvelope();
   const authSession = useAuthSession();
   const liveAuthActions = useLiveAuthActions();
+  const { effectiveModuleKeys: fetchedModuleKeys } = useSharedWorkstationModuleAccess();
+  const operatorSession = useOptionalSharedWorkstationOperatorSession();
+  const sharedWorkstationPostPin = Boolean(
+    operatorSession?.hasDevice && operatorSession?.operatorSessionActive,
+  );
   const hideSandboxBanner = liveAuthPresentationMode();
   const { prefs } = useUserRuntimePrefs();
   const [selectedEntryId, setSelectedEntryId] = useState('root-home');
@@ -352,9 +359,25 @@ export function RuntimeDemoApp() {
 
   const bundle = manifestLoadResult.ok ? manifestLoadResult.bundle : null;
 
+  const navEffectiveModuleKeys = useMemo(() => {
+    if (envelope.effectiveModuleKeys != null) {
+      return envelope.effectiveModuleKeys;
+    }
+    // Post-PIN : fail-closed pendant le chargement (liste vide = masquer modules mappés).
+    if (sharedWorkstationPostPin) {
+      return fetchedModuleKeys;
+    }
+    return null;
+  }, [envelope.effectiveModuleKeys, fetchedModuleKeys, sharedWorkstationPostPin]);
+
   const filteredNavigation = useMemo(
-    () => (bundle ? filterNavigation(bundle.navigation, envelope) : null),
-    [bundle, envelope],
+    () =>
+      bundle
+        ? filterNavigation(bundle.navigation, envelope, {
+            effectiveModuleKeys: navEffectiveModuleKeys,
+          })
+        : null,
+    [bundle, envelope, navEffectiveModuleKeys],
   );
 
   const flatFiltered = useMemo(

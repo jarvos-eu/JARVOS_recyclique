@@ -29,7 +29,16 @@ import {
   normalizeReceptionPoidsInput,
   parseReceptionPoidsInput,
 } from './reception-poids-keyboard';
-import { setReceptionPosteUiState } from './reception-poste-ui-state';
+import { setReceptionPosteUiState, resetReceptionPosteUiState } from './reception-poste-ui-state';
+import {
+  fetchSharedWorkstationReceptionDraft,
+  type ReceptionDraftSummary,
+} from '../../api/shared-workstation-reception-draft-client';
+import { SharedWorkstationReceptionDraftResumePanel } from '../shared-workstation/SharedWorkstationReceptionDraftResumePanel';
+import {
+  useOptionalSharedWorkstationOperatorSession,
+  useSharedWorkstationLockRequired,
+} from '../shared-workstation/SharedWorkstationOperatorSessionProvider';
 import styles from './ReceptionNominalWizard.module.css';
 import type { RegisteredWidgetProps } from '../../registry/widget-registry';
 import { CategoryHierarchyPicker } from '../../widgets/category-hierarchy-picker/CategoryHierarchyPicker';
@@ -95,11 +104,15 @@ function ReceptionUnifiedLiveKpiStrip(): ReactNode {
 export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode {
   const auth = useAuthPort();
   const entry = useReceptionEntryBlock();
+  const lockRequired = useSharedWorkstationLockRequired();
+  const wsSession = useOptionalSharedWorkstationOperatorSession();
   const criticalDataState = useReceptionCriticalDataState();
   const dataStale = criticalDataState === 'DATA_STALE';
   const showTestControls = import.meta.env.MODE === 'test';
   const [posteId, setPosteId] = useState<string | null>(null);
   const [ticketId, setTicketId] = useState<string | null>(null);
+  const [pendingDraftSummary, setPendingDraftSummary] = useState<ReceptionDraftSummary | null>(null);
+  const [draftGateChecked, setDraftGateChecked] = useState(false);
   const [ticketDetail, setTicketDetail] = useState<ReceptionTicketDetail | null>(null);
   const [categories, setCategories] = useState<ReceptionCategoryRow[]>([]);
   const [categoriesError, setCategoriesError] = useState<CashflowSubmitSurfaceError | null>(null);
@@ -153,6 +166,35 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
     },
     [],
   );
+
+  useEffect(() => {
+    if (lockRequired) {
+      setPendingDraftSummary(null);
+      setDraftGateChecked(false);
+      return;
+    }
+    if (!wsSession?.hasDevice || posteId) {
+      setDraftGateChecked(true);
+      return;
+    }
+    const token = auth.getAccessToken?.()?.trim();
+    if (!token) {
+      setDraftGateChecked(true);
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const result = await fetchSharedWorkstationReceptionDraft(token);
+      if (cancelled || !isMountedRef.current) return;
+      if (result.ok && result.summary) {
+        setPendingDraftSummary(result.summary);
+      }
+      setDraftGateChecked(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [auth, lockRequired, posteId, wsSession?.hasDevice]);
 
   const setCriticalDataStateIfMounted = useCallback((next: 'NOMINAL' | 'DATA_STALE') => {
     if (!isMountedRef.current) return;
@@ -608,12 +650,40 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
     }
   };
 
+  if (lockRequired) {
+    return null;
+  }
+
   if (entry.blocked) {
     return (
       <Alert color="yellow" title={entry.title} data-testid="reception-context-blocked">
         <Text size="sm">{entry.body}</Text>
       </Alert>
     );
+  }
+
+  const accessToken = auth.getAccessToken?.()?.trim();
+  if (!posteId && pendingDraftSummary && accessToken) {
+    return (
+      <SharedWorkstationReceptionDraftResumePanel
+        accessToken={accessToken}
+        summary={pendingDraftSummary}
+        onResumed={(nextPosteId, nextTicketId) => {
+          setPendingDraftSummary(null);
+          setPosteId(nextPosteId);
+          setTicketId(nextTicketId);
+          setReceptionPosteUiState(true);
+        }}
+        onAbandoned={() => {
+          setPendingDraftSummary(null);
+          resetReceptionPosteUiState();
+        }}
+      />
+    );
+  }
+
+  if (!posteId && wsSession?.hasDevice && !draftGateChecked) {
+    return null;
   }
 
   /** Tant que le GET détail n’a pas répondu, on suppose ticket ouvert (création récente). */

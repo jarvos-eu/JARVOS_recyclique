@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional, List, Tuple
 from uuid import UUID
 from decimal import Decimal
@@ -9,6 +10,8 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import func, desc, and_, or_, String
 from recyclic_api.core.auth import user_has_permission
 from recyclic_api.core.exceptions import AuthorizationError, ConflictError, NotFoundError, ValidationError
+
+_SHARED_WORKSTATION_OPERATOR_REQUIRED = "SHARED_WORKSTATION_OPERATOR_REQUIRED"
 
 from recyclic_api.models import (
     PosteReception,
@@ -29,6 +32,13 @@ from recyclic_api.models.user import User, UserRole
 
 
 RECEPTION_ACCESS_PERMISSION_KEY = "reception.access"
+
+
+@dataclass(frozen=True)
+class SharedWorkstationReceptionScope:
+    """Contexte poste partagé — assouplit les gardes réception inter-opérateur (Story 27.8)."""
+
+    device_id: str
 
 
 class ReceptionService:
@@ -54,18 +64,85 @@ class ReceptionService:
         if user.site_id is None:
             raise AuthorizationError("Aucun site d'exploitation affecté — réception refusée.")
 
-    def _assert_poste_operator(self, poste: PosteReception, user: User) -> None:
-        """Poste sans ``site_id`` en base : on aligne l'opérateur sur ``opened_by_user_id`` (brownfield)."""
+    def _assert_enrolled_poste_requires_device_scope(
+        self,
+        poste: PosteReception,
+        user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> None:
+        """Poste ancré poste partagé : refus brownfield JWT seul (Story 27.8)."""
+        if poste.registered_device_id is None:
+            return
         if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+            return
+        if shared_workstation_scope is None:
+            raise AuthorizationError(
+                "Opérateur actif requis sur ce poste pour accéder à la réception nominale.",
+                code=_SHARED_WORKSTATION_OPERATOR_REQUIRED,
+            )
+        if str(poste.registered_device_id) != str(shared_workstation_scope.device_id):
+            raise AuthorizationError(
+                "Ce poste réception ne correspond pas au poste partagé courant.",
+                code=_SHARED_WORKSTATION_OPERATOR_REQUIRED,
+            )
+
+    def _is_shared_workstation_actor(
+        self,
+        poste: PosteReception,
+        user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> bool:
+        if poste.registered_device_id is None or shared_workstation_scope is None:
+            return False
+        if str(poste.registered_device_id) != str(shared_workstation_scope.device_id):
+            return False
+        if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+            return True
+        self.assert_nominal_reception_eligible(user)
+        return True
+
+    def _assert_poste_operator(
+        self,
+        poste: PosteReception,
+        user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> None:
+        """Poste sans ``registered_device_id`` : brownfield ``opened_by_user_id``."""
+        self._assert_enrolled_poste_requires_device_scope(
+            poste, user, shared_workstation_scope=shared_workstation_scope
+        )
+        if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+            return
+        if self._is_shared_workstation_actor(poste, user, shared_workstation_scope=shared_workstation_scope):
             return
         if poste.opened_by_user_id != user.id:
             raise AuthorizationError(
                 "Ce poste de réception ne correspond pas à votre session opérateur."
             )
 
-    def _assert_ticket_write_actor(self, ticket: TicketDepot, user: User) -> None:
+    def _assert_ticket_write_actor(
+        self,
+        ticket: TicketDepot,
+        user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> None:
         """Mutations sur lignes / fermeture ticket : bénévole du ticket (ou privilégié)."""
+        poste: Optional[PosteReception] = ticket.poste
+        if poste is None:
+            poste = self.poste_repo.get(ticket.poste_id)
+        if poste is not None:
+            self._assert_enrolled_poste_requires_device_scope(
+                poste, user, shared_workstation_scope=shared_workstation_scope
+            )
         if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+            return
+        if poste is not None and self._is_shared_workstation_actor(
+            poste, user, shared_workstation_scope=shared_workstation_scope
+        ):
             return
         self.assert_nominal_reception_eligible(user)
         if ticket.benevole_user_id != user.id:
@@ -73,16 +150,31 @@ class ReceptionService:
                 "Ce ticket ne correspond pas à votre périmètre opérateur réception."
             )
 
-    def _assert_ticket_readable(self, ticket: TicketDepot, user: User) -> None:
+    def _assert_ticket_readable(
+        self,
+        ticket: TicketDepot,
+        user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> None:
         """Lecture détail ticket : bénévole, ouvreur du poste, ou privilégié."""
+        poste: Optional[PosteReception] = ticket.poste
+        if poste is None:
+            poste = self.poste_repo.get(ticket.poste_id)
+        if poste is not None:
+            self._assert_enrolled_poste_requires_device_scope(
+                poste, user, shared_workstation_scope=shared_workstation_scope
+            )
         if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+            return
+        if poste is not None and self._is_shared_workstation_actor(
+            poste, user, shared_workstation_scope=shared_workstation_scope
+        ):
+            self.assert_nominal_reception_eligible(user)
             return
         self.assert_nominal_reception_eligible(user)
         if ticket.benevole_user_id == user.id:
             return
-        poste: Optional[PosteReception] = ticket.poste
-        if poste is None:
-            poste = self.poste_repo.get(ticket.poste_id)
         if poste is not None and poste.opened_by_user_id == user.id:
             return
         raise AuthorizationError("Ticket hors de votre périmètre opérateur réception.")
@@ -96,7 +188,13 @@ class ReceptionService:
         self.db.commit()
 
     # Postes
-    def open_poste(self, *, actor_user: User, opened_at: Optional[datetime] = None) -> PosteReception:
+    def open_poste(
+        self,
+        *,
+        actor_user: User,
+        opened_at: Optional[datetime] = None,
+        registered_device_id: Optional[UUID] = None,
+    ) -> PosteReception:
         """
         Ouvrir un poste de réception.
         
@@ -108,6 +206,10 @@ class ReceptionService:
             PosteReception: Le poste créé
         """
         self.assert_nominal_reception_eligible(actor_user)
+        if registered_device_id is not None:
+            existing = self.poste_repo.find_open_by_registered_device_id(registered_device_id)
+            if existing is not None:
+                raise ConflictError("Un brouillon réception est déjà actif sur ce poste partagé")
         opened_by_user_id = actor_user.id
         # Validation de la date si fournie
         if opened_at is not None:
@@ -126,17 +228,26 @@ class ReceptionService:
         poste = PosteReception(
             opened_by_user_id=opened_by_user_id,
             status=PosteReceptionStatus.OPENED.value,
-            opened_at=opened_at if opened_at is not None else None
+            opened_at=opened_at if opened_at is not None else None,
+            registered_device_id=registered_device_id,
         )
         self.poste_repo.add(poste)
         return self._commit_and_refresh(poste)
 
-    def close_poste(self, poste_id: UUID, actor_user: User) -> PosteReception:
+    def close_poste(
+        self,
+        poste_id: UUID,
+        actor_user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> PosteReception:
         self.assert_nominal_reception_eligible(actor_user)
         poste: Optional[PosteReception] = self.poste_repo.get(poste_id)
         if not poste:
             raise NotFoundError("Poste introuvable")
-        self._assert_poste_operator(poste, actor_user)
+        self._assert_poste_operator(
+            poste, actor_user, shared_workstation_scope=shared_workstation_scope
+        )
 
         # Contrainte métier: pas de tickets ouverts
         open_tickets = self.poste_repo.count_open_tickets(poste.id)
@@ -152,7 +263,12 @@ class ReceptionService:
 
     # Tickets
     def create_ticket(
-        self, poste_id: UUID, benevole_user_id: UUID, actor_user: User
+        self,
+        poste_id: UUID,
+        benevole_user_id: UUID,
+        actor_user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> TicketDepot:
         self.assert_nominal_reception_eligible(actor_user)
         if actor_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
@@ -166,7 +282,9 @@ class ReceptionService:
             raise NotFoundError("Poste introuvable")
         if poste.status != PosteReceptionStatus.OPENED.value:
             raise ConflictError("Poste fermé")
-        self._assert_poste_operator(poste, actor_user)
+        self._assert_poste_operator(
+            poste, actor_user, shared_workstation_scope=shared_workstation_scope
+        )
 
         # Vérifier l'utilisateur
         if not self.user_repo.get(benevole_user_id):
@@ -200,11 +318,19 @@ class ReceptionService:
         self.ticket_repo.add(ticket)
         return self._commit_and_refresh(ticket)
 
-    def close_ticket(self, ticket_id: UUID, actor_user: User) -> TicketDepot:
+    def close_ticket(
+        self,
+        ticket_id: UUID,
+        actor_user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> TicketDepot:
         ticket: Optional[TicketDepot] = self.ticket_repo.get(ticket_id)
         if not ticket:
             raise NotFoundError("Ticket introuvable")
-        self._assert_ticket_write_actor(ticket, actor_user)
+        self._assert_ticket_write_actor(
+            ticket, actor_user, shared_workstation_scope=shared_workstation_scope
+        )
         if ticket.status == TicketDepotStatus.CLOSED.value:
             return ticket
 
@@ -227,12 +353,15 @@ class ReceptionService:
         notes: Optional[str],
         is_exit: Optional[bool] = False,
         actor_user: User,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> LigneDepot:
         """Créer une ligne de dépôt avec règles métier: poids>0 et ticket ouvert."""
         ticket: Optional[TicketDepot] = self.ticket_repo.get(ticket_id)
         if not ticket:
             raise NotFoundError("Ticket introuvable")
-        self._assert_ticket_write_actor(ticket, actor_user)
+        self._assert_ticket_write_actor(
+            ticket, actor_user, shared_workstation_scope=shared_workstation_scope
+        )
         if ticket.status != TicketDepotStatus.OPENED.value:
             raise ConflictError("Ticket fermé")
 
@@ -280,6 +409,7 @@ class ReceptionService:
         notes: Optional[str] = None,
         is_exit: Optional[bool] = None,
         actor_user: User,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> LigneDepot:
         ligne: Optional[LigneDepot] = self.ligne_repo.get(ligne_id)
         if not ligne:
@@ -289,7 +419,9 @@ class ReceptionService:
         ticket: Optional[TicketDepot] = self.ticket_repo.get(ligne.ticket_id)
         if not ticket:
             raise NotFoundError("Ticket introuvable")
-        self._assert_ticket_write_actor(ticket, actor_user)
+        self._assert_ticket_write_actor(
+            ticket, actor_user, shared_workstation_scope=shared_workstation_scope
+        )
         if ticket.status != TicketDepotStatus.OPENED.value:
             raise ConflictError("Ticket fermé")
 
@@ -368,14 +500,22 @@ class ReceptionService:
         self.ligne_repo.update(ligne)
         return self._commit_and_refresh(ligne)
 
-    def delete_ligne(self, *, ligne_id: UUID, actor_user: User) -> None:
+    def delete_ligne(
+        self,
+        *,
+        ligne_id: UUID,
+        actor_user: User,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> None:
         ligne: Optional[LigneDepot] = self.ligne_repo.get(ligne_id)
         if not ligne:
             raise NotFoundError("Ligne introuvable")
         ticket: Optional[TicketDepot] = self.ticket_repo.get(ligne.ticket_id)
         if not ticket:
             raise NotFoundError("Ticket introuvable")
-        self._assert_ticket_write_actor(ticket, actor_user)
+        self._assert_ticket_write_actor(
+            ticket, actor_user, shared_workstation_scope=shared_workstation_scope
+        )
         if ticket.status != TicketDepotStatus.OPENED.value:
             raise ConflictError("Ticket fermé")
         self.ligne_repo.delete(ligne)
@@ -400,6 +540,8 @@ class ReceptionService:
         destinations: Optional[List[str]] = None,
         lignes_min: Optional[int] = None,
         lignes_max: Optional[int] = None,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> Tuple[List[TicketDepot], int]:
         """Récupérer la liste paginée des tickets avec leurs informations de base.
 
@@ -421,6 +563,8 @@ class ReceptionService:
                     PosteReception.opened_by_user_id == actor_user.id,
                 )
             )
+            if shared_workstation_scope is None:
+                query = query.filter(PosteReception.registered_device_id.is_(None))
 
         # Appliquer les filtres
         if status:
@@ -553,12 +697,20 @@ class ReceptionService:
         """Détail ticket sans contrôle acteur (ex. export CSV avec token signé)."""
         return self._fetch_ticket_detail_entity(ticket_id)
 
-    def get_ticket_detail(self, ticket_id: UUID, actor_user: User) -> Optional[TicketDepot]:
+    def get_ticket_detail(
+        self,
+        ticket_id: UUID,
+        actor_user: User,
+        *,
+        shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
+    ) -> Optional[TicketDepot]:
         """Récupérer les détails complets d'un ticket avec ses lignes (Story 7.2 : périmètre acteur)."""
         ticket = self._fetch_ticket_detail_entity(ticket_id)
         if ticket is None:
             return None
-        self._assert_ticket_readable(ticket, actor_user)
+        self._assert_ticket_readable(
+            ticket, actor_user, shared_workstation_scope=shared_workstation_scope
+        )
         return ticket
 
     def _calculate_ticket_totals(self, ticket: TicketDepot) -> Tuple[int, Decimal, Decimal, Decimal, Decimal]:

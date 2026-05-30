@@ -1,9 +1,9 @@
 # Synthèse QA automatisée — Story 27.6 (`pin-lock-operator-session`)
 
 **story_key :** `27-6-pin-lock-operator-session`  
-**Date (run QA) :** 2026-05-30 (re-run worker QA, gates re-exécutés)  
+**Date (run QA) :** 2026-05-30 (re-run worker QA post CR-1, gates re-exécutés)  
 **Verdict :** **PASS**  
-**qa_loop :** 0  
+**qa_loop :** 1  
 **Skill :** `bmad-qa-generate-e2e-tests` — périmètre lock screen PIN poste partagé + session opérateur (API + Peintre LiveAuthShell) ; E2E Vitest jsdom (pas Playwright).
 
 ---
@@ -12,8 +12,9 @@
 
 | Gate | Commande | Résultat |
 |------|----------|----------|
-| Gate story backend | `cd recyclique/api && python -m pytest tests/ -k story_27_6 -q` | **9 passed**, exit 0 (~53 s) |
-| Suite front story 27.6 (regroupée) | `vitest run tests/e2e/shared-workstation-pin-lock-27-6.e2e.test.tsx tests/unit/shared-workstation-lock-screen.test.tsx tests/unit/shared-workstation-operator-pin-client.test.ts tests/unit/live-auth-shell-11-2.test.tsx` | **17 passed** (4 fichiers), exit 0 (~24 s) |
+| Gate story backend | `cd recyclique/api && python -m pytest tests/ -k story_27_6 -q` | **9 passed**, exit 0 (~54 s) |
+| Suite front story 27.6 (regroupée) | `vitest run` … + `shared-workstation-operator-session-provider.test.tsx` | **20 passed** (5 fichiers), exit 0 (~35 s) |
+| CR-1 (lock pendant loading) | `vitest run … -t "CR-1"` + `shared-workstation-operator-session-provider.test.tsx` | **3 passed** (2 fichiers), exit 0 |
 | Dont lock screen unit | `shared-workstation-lock-screen.test.tsx` | **3 passed** (+1 cas `PIN_NOT_CONFIGURED` message neutre) |
 | Dont E2E | `shared-workstation-pin-lock-27-6.e2e.test.tsx` | **5 passed** |
 | Playwright | N/A | **Hors scope** — stack projet = Vitest + jsdom |
@@ -34,7 +35,8 @@
 |---------|-----|------|
 | `peintre-nano/tests/unit/shared-workstation-lock-screen.test.tsx` | 3 | Lock affiché si session inactive ; masqué après succès PIN mock ; **QA** — `PIN_NOT_CONFIGURED` → message neutre identique |
 | `peintre-nano/tests/unit/shared-workstation-operator-pin-client.test.ts` | 3 | URLs, en-têtes device, `no-store`, pas de log PIN |
-| `peintre-nano/tests/unit/live-auth-shell-11-2.test.tsx` | 1 | **QA** — admin sans identité poste : pas de lock screen après login (Story 27.6) |
+| `peintre-nano/tests/unit/live-auth-shell-11-2.test.tsx` | 2 | **QA** — admin sans identité poste (27.6) ; **CR-1** — poste enrôlé : enfant masqué pendant poll session puis visible si active |
+| `peintre-nano/tests/unit/shared-workstation-operator-session-provider.test.tsx` | 2 | **CR-1** — `useSharedWorkstationLockRequired` true pendant loading + poste enrôlé ; false sans identité poste |
 
 ### E2E Vitest — complément QA
 
@@ -51,6 +53,7 @@ Référence : `_bmad-output/implementation-artifacts/27-6-pin-lock-operator-sess
 | AC / gate | Preuve |
 |-----------|--------|
 | Lock screen sans session opérateur active | E2E `lock screen masque le shell` + unit lock screen |
+| Pas de fuite shell pendant poll session (CR-1) | `useSharedWorkstationLockRequired` true si `loading` + poste enrôlé ; LiveAuthShell masque enfant jusqu'à session active |
 | Aucune donnée métier / navigation sous lock | E2E : pas de `shell-zone-main` ni nav tant que lock actif |
 | PIN vérifié côté serveur uniquement | pytest verify + client unit (body POST, pas de log) |
 | PIN jamais stocké localement comme autorité | Revue DS + client unit ; pas de localStorage session opérateur |
@@ -74,6 +77,7 @@ Référence : `_bmad-output/implementation-artifacts/27-6-pin-lock-operator-sess
 | Lock screen overlay `LiveAuthShell` | E2E 5 + unit 2 |
 | Client `shared-workstation-operator-pin-client.ts` | unit 3 |
 | Non-régression admin sans device identity | unit live-auth-shell 1 |
+| Hook lock required (CR-1) | unit `shared-workstation-operator-session-provider` 2 |
 
 ---
 
@@ -134,15 +138,17 @@ Aucun gap bloquant vs AC story 27.6.
 ### Unit / non-régression
 - [x] shared-workstation-lock-screen.test.tsx — 3 (DS + QA `PIN_NOT_CONFIGURED`)
 - [x] shared-workstation-operator-pin-client.test.ts — 3 (DS)
-- [x] live-auth-shell-11-2.test.tsx — +1 cas 27.6 admin sans device (QA)
+- [x] live-auth-shell-11-2.test.tsx — +2 cas 27.6 (admin sans device + CR-1 loading)
+- [x] shared-workstation-operator-session-provider.test.tsx — 2 cas CR-1 (DS post-review)
 
 ## Coverage
 - API scénarios §8 story 27.6 : 9/9
-- Surfaces UI lock screen + shell LiveAuth : 9/9 (unit + e2e)
+- Surfaces UI lock screen + shell LiveAuth : 11/11 (unit + e2e + CR-1 provider)
 - Non-régression admin hors lock screen : 1/1
+- Correctif CR-1 (lock pendant loading) : 3/3
 
 ## Next Steps
-- Story Runner parent : enchaîner **CR** puis clôture 27.6
+- Story Runner parent : clôture 27.6 si CR validé
 - Story 27.7 : intersection modules serveur — nouveaux tests dédiés
 ```
 
@@ -153,9 +159,10 @@ Aucun gap bloquant vs AC story 27.6.
 | Fichier | Action |
 |---------|--------|
 | `peintre-nano/tests/e2e/shared-workstation-pin-lock-27-6.e2e.test.tsx` | **Créé** — 5 cas E2E lock/PIN/enroll |
-| `peintre-nano/tests/unit/live-auth-shell-11-2.test.tsx` | **Modifié** — cas non-régression 27.6 admin sans identité poste |
+| `peintre-nano/tests/unit/live-auth-shell-11-2.test.tsx` | **Modifié** — cas 27.6 admin sans identité + **CR-1** loading/session |
+| `peintre-nano/tests/unit/shared-workstation-operator-session-provider.test.tsx` | **Créé (CR-1)** — `useSharedWorkstationLockRequired` loading / sans identité |
 | `peintre-nano/tests/unit/shared-workstation-lock-screen.test.tsx` | **Complété (re-run QA)** — +1 cas `PIN_NOT_CONFIGURED` message neutre |
-| `_bmad-output/implementation-artifacts/tests/test-summary-story-27-6-pin-lock-operator-session-qa.md` | **Mis à jour** — ce résumé + revue grep |
+| `_bmad-output/implementation-artifacts/tests/test-summary-story-27-6-pin-lock-operator-session-qa.md` | **Mis à jour** — qa_loop 1, preuves CR-1 |
 
 `sprint-status.yaml` : **non modifié** (instruction worker).
 
@@ -163,5 +170,5 @@ Aucun gap bloquant vs AC story 27.6.
 
 ## Prochaines étapes (pipeline Story Runner)
 
-- Gate QA **PASS** — enchaînement parent : code review (CR) story 27.6.
+- Gate QA **PASS** (qa_loop 1 post CR-1) — correctif verrou pendant loading couvert ; clôture 27.6 côté parent si CR OK.
 - Story 27.7 : tests intersection modules post-PIN.

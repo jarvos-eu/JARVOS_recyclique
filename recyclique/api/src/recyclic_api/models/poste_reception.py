@@ -23,6 +23,12 @@ class PosteReception(Base):
     closed_at = Column(DateTime(timezone=True), nullable=True)
     # Option A: VARCHAR + CHECK côté DB (via migration) + validation applicative côté service
     status = Column(String(16), nullable=False, default=PosteReceptionStatus.OPENED.value)
+    registered_device_id = Column(
+        PGUUID(as_uuid=True),
+        ForeignKey("registered_devices.id"),
+        nullable=True,
+        index=True,
+    )
 
     # Relationships
     opened_by = relationship("User")

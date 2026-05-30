@@ -98,9 +98,16 @@ export function useSharedWorkstationOperatorSession(): SharedWorkstationOperator
   return ctx;
 }
 
+/** Variante sans provider (démo hors live-auth) — retourne `null`. */
+export function useOptionalSharedWorkstationOperatorSession(): SharedWorkstationOperatorSessionState | null {
+  return useContext(SharedWorkstationOperatorSessionContext);
+}
+
 /** Indique si le lock screen PIN doit masquer le shell métier. */
 export function useSharedWorkstationLockRequired(): boolean {
-  const { loading, hasDevice, operatorSessionActive } = useSharedWorkstationOperatorSession();
+  const ctx = useOptionalSharedWorkstationOperatorSession();
+  if (!ctx) return false;
+  const { loading, hasDevice, operatorSessionActive } = ctx;
   if (!hasDevice) return false;
   return loading || !operatorSessionActive;
 }

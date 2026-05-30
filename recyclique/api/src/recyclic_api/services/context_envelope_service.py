@@ -24,6 +24,9 @@ from recyclic_api.schemas.context_envelope import (
 )
 from recyclic_api.services.creos_nav_presentation_labels import CREOS_NAV_PRESENTATION_LABELS
 from recyclic_api.services.shared_workstation_context_service import SharedWorkstationContextService
+from recyclic_api.services.shared_workstation_effective_modules_service import (
+    SharedWorkstationEffectiveModulesService,
+)
 
 
 def _utc_now() -> datetime:
@@ -125,6 +128,7 @@ def build_context_envelope(
         reception_post_id=str(reception_post_id) if reception_post_id else None,
     )
 
+    sw_result = None
     if device_id is not None:
         sw_result = SharedWorkstationContextService(db).resolve_shared_workstation_context(
             device_id=str(device_id),
@@ -143,6 +147,19 @@ def build_context_envelope(
             restriction_message = restriction_message or sw.restriction_message
 
     permission_keys = list(get_user_permissions(user, db))
+
+    effective_module_keys: list[str] | None = None
+    if sw_result is not None:
+        sw = sw_result.context
+        if sw_result.has_active_operator and sw.device_id and sw.operator_user_id:
+            eff = SharedWorkstationEffectiveModulesService(db).compute_effective_module_keys(
+                device_id=sw.device_id,
+                operator_user_id=sw.operator_user_id,
+            )
+            effective_module_keys = list(eff.module_keys)
+        elif sw.device_id and not sw_result.has_active_operator:
+            effective_module_keys = []
+
     # Epic 5 / CREOS — hub transverse admin : clé UI attendue par les manifests (non forcément en table permissions).
     if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
         permission_keys.append("transverse.admin.view")
@@ -173,4 +190,5 @@ def build_context_envelope(
         computed_at=_utc_now(),
         restriction_message=restriction_message,
         presentation_labels=presentation_labels,
+        effective_module_keys=effective_module_keys,
     )

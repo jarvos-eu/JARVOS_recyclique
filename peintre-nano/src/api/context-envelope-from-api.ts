@@ -62,6 +62,14 @@ export function contextEnvelopeStubFromApi(body: unknown): ContextEnvelopeStub |
   if (rm === null) restrictionMessage = null;
   else if (typeof rm === 'string') restrictionMessage = rm;
 
+  let effectiveModuleKeys: readonly string[] | null | undefined;
+  const emk = o.effective_module_keys;
+  if (emk === null || emk === undefined) {
+    effectiveModuleKeys = emk as null | undefined;
+  } else if (Array.isArray(emk) && emk.every((k) => typeof k === 'string')) {
+    effectiveModuleKeys = emk as string[];
+  }
+
   return {
     schemaVersion: 'recyclique-context-envelope-v2',
     siteId,
@@ -73,5 +81,6 @@ export function contextEnvelopeStubFromApi(body: unknown): ContextEnvelopeStub |
     runtimeStatus,
     presentationLabels,
     restrictionMessage,
+    effectiveModuleKeys,
   };
 }

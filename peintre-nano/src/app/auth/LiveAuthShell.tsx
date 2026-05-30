@@ -24,7 +24,9 @@ import {
   SharedWorkstationOperatorSessionProvider,
   useSharedWorkstationLockRequired,
 } from '../../domains/shared-workstation/SharedWorkstationOperatorSessionProvider';
+import { SharedWorkstationEffectiveModulesProvider, useSharedWorkstationEffectiveModules } from '../../domains/shared-workstation/SharedWorkstationEffectiveModulesProvider';
 import { clearAllCashflowDraftSessionKeys, resetCashflowDraft } from '../../domains/cashflow/cashflow-draft-store';
+import { resetReceptionPosteUiState } from '../../domains/reception/reception-poste-ui-state';
 import { CONTEXT_ENVELOPE_SILENT_REFRESH_INTERVAL_MS } from '../../runtime/context-envelope-freshness';
 import type { ContextEnvelopeStub } from '../../types/context-envelope';
 
@@ -128,6 +130,7 @@ export function LiveAuthShell({ children }: LiveAuthShellProps) {
 
   const clearSession = useCallback(() => {
     resetCashflowDraft();
+    resetReceptionPosteUiState();
     clearAllCashflowDraftSessionKeys();
     persistAccessToken(null);
     setAccessToken(undefined);
@@ -336,13 +339,15 @@ export function LiveAuthShell({ children }: LiveAuthShellProps) {
     <LiveAuthActionsProvider value={{ requestLogout: () => void onLogout() }}>
       <LiveEnvelopeRefreshProvider value={{ refreshEnvelope }}>
         <SharedWorkstationOperatorSessionProvider enabled>
-          <LiveAuthShellAuthenticated
-            adapter={adapter}
-            refreshEnvelope={refreshEnvelope}
-            accessToken={accessToken}
-          >
-            {children}
-          </LiveAuthShellAuthenticated>
+          <SharedWorkstationEffectiveModulesProvider>
+            <LiveAuthShellAuthenticated
+              adapter={adapter}
+              refreshEnvelope={refreshEnvelope}
+              accessToken={accessToken}
+            >
+              {children}
+            </LiveAuthShellAuthenticated>
+          </SharedWorkstationEffectiveModulesProvider>
         </SharedWorkstationOperatorSessionProvider>
       </LiveEnvelopeRefreshProvider>
     </LiveAuthActionsProvider>
@@ -363,13 +368,22 @@ function LiveAuthShellAuthenticated({
   accessToken,
 }: LiveAuthShellAuthenticatedProps) {
   const lockRequired = useSharedWorkstationLockRequired();
+  const { refreshEffectiveModules } = useSharedWorkstationEffectiveModules();
+
+  useEffect(() => {
+    if (lockRequired) {
+      resetCashflowDraft();
+      resetReceptionPosteUiState();
+    }
+  }, [lockRequired]);
 
   const onUnlocked = useCallback(() => {
     const token = accessToken ?? readStoredAccessToken();
     if (token) {
       void refreshEnvelope();
+      void refreshEffectiveModules();
     }
-  }, [accessToken, refreshEnvelope]);
+  }, [accessToken, refreshEnvelope, refreshEffectiveModules]);
 
   return (
     <AuthRuntimeProvider adapter={adapter}>

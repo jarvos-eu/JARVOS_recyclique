@@ -8,6 +8,7 @@ from datetime import date, datetime
 
 from recyclic_api.core.database import get_db
 from recyclic_api.core.auth import require_role_strict
+from recyclic_api.core.shared_workstation_guard import get_optional_shared_workstation_reception_scope
 from recyclic_api.core.exceptions import AuthorizationError, ConflictError, NotFoundError, ValidationError
 from recyclic_api.utils.domain_exception_http import raise_domain_exception_as_http
 from recyclic_api.models.user import User, UserRole
@@ -43,7 +44,7 @@ from recyclic_api.schemas.reception import (
 )
 from recyclic_api.schemas.stats import ReceptionLiveStatsResponse
 from recyclic_api.models.category import Category
-from recyclic_api.services.reception_service import ReceptionService
+from recyclic_api.services.reception_service import ReceptionService, SharedWorkstationReceptionScope
 from recyclic_api.services.reception_stats_service import ReceptionLiveStatsService
 from recyclic_api.services.statistics_recalculation_service import StatisticsRecalculationService
 from recyclic_api.core.audit import log_audit, log_admin_access
@@ -60,6 +61,15 @@ _RECEPTION_DOMAIN_HTTP = {
 }
 
 
+def _http_for_authorization_error(exc: AuthorizationError) -> HTTPException:
+    if exc.code:
+        return HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": exc.code, "message": str(exc)},
+        )
+    return HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc))
+
+
 def _is_operational_reception_category_name(name: str) -> bool:
     normalized = name.strip().upper()
     if normalized.startswith("ZZ_MCP_"):
@@ -74,6 +84,9 @@ def open_poste(
     payload: Optional[OpenPosteRequest] = Body(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     """
     Ouvrir un poste de réception.
@@ -91,10 +104,29 @@ def open_poste(
             )
     
     service = ReceptionService(db)
+    registered_device_id = UUID(ws_scope.device_id) if ws_scope else None
     try:
-        poste = service.open_poste(actor_user=current_user, opened_at=opened_at)
+        poste = service.open_poste(
+            actor_user=current_user,
+            opened_at=opened_at,
+            registered_device_id=registered_device_id,
+        )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
+    except ConflictError as exc:
+        if registered_device_id is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "code": "SHARED_WORKSTATION_RECEPTION_DRAFT_ALREADY_ACTIVE",
+                    "message": str(exc),
+                },
+            ) from exc
+        raise_domain_exception_as_http(
+            exc,
+            **_RECEPTION_DOMAIN_HTTP,
+            validation_status=status.HTTP_400_BAD_REQUEST,
+        )
     except ValidationError as exc:
         raise_domain_exception_as_http(
             exc,
@@ -109,12 +141,19 @@ def close_poste(
     poste_id: str,
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     service = ReceptionService(db)
     try:
-        poste = service.close_poste(poste_id=UUID(poste_id), actor_user=current_user)
+        poste = service.close_poste(
+            poste_id=UUID(poste_id),
+            actor_user=current_user,
+            shared_workstation_scope=ws_scope,
+        )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     except (NotFoundError, ConflictError) as exc:
         raise_domain_exception_as_http(
             exc,
@@ -129,6 +168,9 @@ def create_ticket(
     payload: CreateTicketRequest,
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     service = ReceptionService(db)
     try:
@@ -136,9 +178,10 @@ def create_ticket(
             poste_id=UUID(payload.poste_id),
             benevole_user_id=current_user.id,
             actor_user=current_user,
+            shared_workstation_scope=ws_scope,
         )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     except (NotFoundError, ConflictError) as exc:
         raise_domain_exception_as_http(
             exc,
@@ -153,12 +196,19 @@ def close_ticket(
     ticket_id: str,
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     service = ReceptionService(db)
     try:
-        ticket = service.close_ticket(ticket_id=UUID(ticket_id), actor_user=current_user)
+        ticket = service.close_ticket(
+            ticket_id=UUID(ticket_id),
+            actor_user=current_user,
+            shared_workstation_scope=ws_scope,
+        )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     except NotFoundError as exc:
         raise_domain_exception_as_http(
             exc,
@@ -175,6 +225,9 @@ def add_ligne(
     payload: CreateLigneRequest,
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     service = ReceptionService(db)
     try:
@@ -186,9 +239,10 @@ def add_ligne(
             notes=payload.notes,
             is_exit=payload.is_exit if payload.is_exit is not None else False,
             actor_user=current_user,
+            shared_workstation_scope=ws_scope,
         )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     except (NotFoundError, ConflictError, ValidationError) as exc:
         raise_domain_exception_as_http(
             exc,
@@ -226,7 +280,7 @@ def get_categories(
     try:
         ReceptionService(db).assert_nominal_reception_eligible(current_user)
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     categories = (
         db.query(Category)
         .filter(
@@ -254,6 +308,9 @@ def update_ligne(
     payload: UpdateLigneRequest,
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     service = ReceptionService(db)
     try:
@@ -265,9 +322,10 @@ def update_ligne(
             notes=payload.notes,
             is_exit=payload.is_exit,
             actor_user=current_user,
+            shared_workstation_scope=ws_scope,
         )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     except (NotFoundError, ConflictError, ValidationError) as exc:
         raise_domain_exception_as_http(
             exc,
@@ -298,6 +356,9 @@ def delete_ligne(
     ligne_id: str,
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     service = ReceptionService(db)
     try:
@@ -306,9 +367,13 @@ def delete_ligne(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid ID format") from exc
 
     try:
-        service.delete_ligne(ligne_id=ligne_uuid, actor_user=current_user)
+        service.delete_ligne(
+            ligne_id=ligne_uuid,
+            actor_user=current_user,
+            shared_workstation_scope=ws_scope,
+        )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     except (NotFoundError, ConflictError) as exc:
         raise_domain_exception_as_http(
             exc,
@@ -348,7 +413,7 @@ def update_ligne_weight(
     try:
         service.assert_nominal_reception_eligible(current_user)
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     
     # Récupérer la ligne pour obtenir l'ancien poids
     ligne = service.ligne_repo.get(ligne_uuid)
@@ -459,6 +524,9 @@ def get_tickets(
     lignes_max: Optional[int] = Query(None, ge=0, description="Nombre maximum de lignes"),
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     """Récupérer la liste des tickets de réception avec pagination."""
     service = ReceptionService(db)
@@ -466,7 +534,7 @@ def get_tickets(
         service.assert_nominal_reception_eligible(current_user)
     except AuthorizationError as exc:
         # Ne pas utiliser `status.HTTP_*` ici : le paramètre Query `status` masque `fastapi.status`.
-        raise HTTPException(status_code=403, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
     benevole_uuid = None
     if benevole_id:
         try:
@@ -498,6 +566,7 @@ def get_tickets(
         destinations=destinations,
         lignes_min=lignes_min,
         lignes_max=lignes_max,
+        shared_workstation_scope=ws_scope,
     )
     return build_ticket_list_response(service, tickets, total, page, per_page)
 
@@ -507,13 +576,18 @@ def get_ticket_detail(
     ticket_id: str,
     db: Session = Depends(get_db),
     current_user=Depends(require_role_strict([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+    ws_scope: Optional[SharedWorkstationReceptionScope] = Depends(
+        get_optional_shared_workstation_reception_scope
+    ),
 ):
     """Récupérer les détails complets d'un ticket de réception."""
     service = ReceptionService(db)
     try:
-        ticket = service.get_ticket_detail(UUID(ticket_id), current_user)
+        ticket = service.get_ticket_detail(
+            UUID(ticket_id), current_user, shared_workstation_scope=ws_scope
+        )
     except AuthorizationError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise _http_for_authorization_error(exc) from exc
 
     if not ticket:
         from fastapi import HTTPException, status

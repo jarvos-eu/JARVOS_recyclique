@@ -25,6 +25,18 @@ class PosteReceptionRepository:
             .count()
         )
 
+    def find_open_by_registered_device_id(self, registered_device_id: UUID) -> Optional[PosteReception]:
+        from recyclic_api.models import PosteReceptionStatus
+
+        return (
+            self.db.query(PosteReception)
+            .filter(
+                PosteReception.registered_device_id == registered_device_id,
+                PosteReception.status == PosteReceptionStatus.OPENED.value,
+            )
+            .first()
+        )
+
     def add(self, poste: PosteReception) -> PosteReception:
         self.db.add(poste)
         return poste

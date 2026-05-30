@@ -15,6 +15,8 @@ from recyclic_api.core.redis import get_redis
 from recyclic_api.core.security import verify_token
 from recyclic_api.core.shared_workstation_guard import (
     require_active_operator_context,
+    require_effective_module_from_path,
+    require_shared_workstation_reception_access,
     require_valid_device_credential,
 )
 from recyclic_api.schemas.device_enrollment import (
@@ -23,16 +25,32 @@ from recyclic_api.schemas.device_enrollment import (
     SharedWorkstationEnrollCompleteResponse,
 )
 from recyclic_api.schemas.shared_workstation_context import SharedWorkstationContextOut
+from recyclic_api.schemas.shared_workstation_effective_modules import (
+    SharedWorkstationEffectiveModulesOut,
+    SharedWorkstationProbeModuleOut,
+)
 from recyclic_api.schemas.shared_workstation_operator_pin import (
     SharedWorkstationOperatorPinVerifyRequest,
     SharedWorkstationOperatorPinVerifyResponse,
     SharedWorkstationOperatorSessionStatusResponse,
+)
+from recyclic_api.schemas.shared_workstation_reception_draft import (
+    SharedWorkstationReceptionDraftAbandonOut,
+    SharedWorkstationReceptionDraftConfirmRequest,
+    SharedWorkstationReceptionDraftGetOut,
+    SharedWorkstationReceptionDraftResumeOut,
+)
+from recyclic_api.services.shared_workstation_reception_draft_service import (
+    SharedWorkstationReceptionDraftService,
 )
 from recyclic_api.services.device_enrollment_service import DeviceEnrollmentService, EnrollmentError
 from recyclic_api.services.registered_device_service import RegisteredDeviceService
 from recyclic_api.services.shared_workstation_operator_pin_service import (
     PinVerifyError,
     SharedWorkstationOperatorPinService,
+)
+from recyclic_api.services.shared_workstation_effective_modules_service import (
+    SharedWorkstationEffectiveModulesService,
 )
 from recyclic_api.utils.rate_limit import conditional_rate_limit
 
@@ -72,15 +90,84 @@ async def _optional_actor_user_id(
 )
 async def get_shared_workstation_context(
     response: Response,
+    db: Session = Depends(get_db),
     context: SharedWorkstationContextOut = Depends(require_active_operator_context),
 ):
     """
     Lecture du tuple autoritaire ``site_id + device_id + operator_user_id + module_key + override_active``.
 
     Story 27.2 — refus 403 sans opérateur actif ; credential invalidé en 27.4 avant résolution.
+    Story 27.7 — enrichit ``effective_module_keys`` si session active.
     """
     _no_store(response)
-    return context
+    out = context.model_copy()
+    if context.device_id and context.operator_user_id:
+        eff = SharedWorkstationEffectiveModulesService(db).compute_effective_module_keys(
+            device_id=context.device_id,
+            operator_user_id=context.operator_user_id,
+        )
+        out = out.model_copy(update={"effective_module_keys": list(eff.module_keys)})
+        from recyclic_api.modules.module_config.registry import MODULE_KEY_RECEPTION
+
+        if MODULE_KEY_RECEPTION in eff.module_keys:
+            summary = SharedWorkstationReceptionDraftService(db).get_draft_for_device(
+                device_id=context.device_id,
+                operator_user_id=context.operator_user_id,
+                actor_user_id=context.operator_user_id,
+            )
+            if summary is not None:
+                out = out.model_copy(update={"reception_draft_summary": summary.model_dump()})
+    return out
+
+
+@router.get(
+    "/effective-modules",
+    response_model=SharedWorkstationEffectiveModulesOut,
+    summary="Modules effectifs poste partagé (intersection serveur)",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_getEffectiveModules"},
+)
+async def get_effective_modules(
+    response: Response,
+    db: Session = Depends(get_db),
+    context: SharedWorkstationContextOut = Depends(require_active_operator_context),
+):
+    """Story 27.7 — intersection site × allowlist × permissions opérateur."""
+    _no_store(response)
+    if context.operator_user_id is None or context.device_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "SHARED_WORKSTATION_OPERATOR_REQUIRED",
+                "message": "Session opérateur active requise",
+            },
+        )
+    result = SharedWorkstationEffectiveModulesService(db).compute_effective_module_keys(
+        device_id=context.device_id,
+        operator_user_id=context.operator_user_id,
+    )
+    return SharedWorkstationEffectiveModulesOut(
+        module_keys=list(result.module_keys),
+        computed_at=result.computed_at,
+        site_id=result.site_id,
+        device_id=result.device_id,
+        operator_user_id=result.operator_user_id,
+    )
+
+
+@router.get(
+    "/probe-module/{module_key}",
+    response_model=SharedWorkstationProbeModuleOut,
+    summary="Probe garde module effectif (tests + preuve refus 403)",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_probeModule"},
+)
+async def probe_effective_module(
+    module_key: str,
+    response: Response,
+    _ctx: SharedWorkstationContextOut = Depends(require_effective_module_from_path),
+):
+    """Route minimale sans données métier — preuve garde require_effective_module."""
+    _no_store(response)
+    return SharedWorkstationProbeModuleOut(module_key=module_key, effective=True)
 
 
 @router.post(
@@ -220,3 +307,100 @@ async def verify_operator_pin(
         site_id=session.site_id,
         started_at=session.started_at,
     )
+
+
+@router.get(
+    "/reception-draft",
+    response_model=SharedWorkstationReceptionDraftGetOut,
+    summary="Résumé brouillon réception poste partagé",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_getReceptionDraft"},
+    responses={204: {"description": "Aucun brouillon actif"}},
+)
+async def get_reception_draft(
+    response: Response,
+    request: Request,
+    db: Session = Depends(get_db),
+    context: SharedWorkstationContextOut = Depends(require_shared_workstation_reception_access),
+):
+    _no_store(response)
+    if context.device_id is None or context.operator_user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "SHARED_WORKSTATION_OPERATOR_REQUIRED",
+                "message": "Session opérateur active requise",
+            },
+        )
+    summary = SharedWorkstationReceptionDraftService(db).get_draft_for_device(
+        device_id=context.device_id,
+        operator_user_id=context.operator_user_id,
+        actor_user_id=context.operator_user_id,
+        request_id=_request_id(request),
+    )
+    if summary is None:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return SharedWorkstationReceptionDraftGetOut(summary=summary)
+
+
+@router.post(
+    "/reception-draft/resume",
+    response_model=SharedWorkstationReceptionDraftResumeOut,
+    summary="Reprendre brouillon réception (confirmation explicite)",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_resumeReceptionDraft"},
+)
+async def resume_reception_draft(
+    payload: SharedWorkstationReceptionDraftConfirmRequest,
+    response: Response,
+    request: Request,
+    db: Session = Depends(get_db),
+    context: SharedWorkstationContextOut = Depends(require_shared_workstation_reception_access),
+):
+    _no_store(response)
+    if context.device_id is None or context.operator_user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "SHARED_WORKSTATION_OPERATOR_REQUIRED",
+                "message": "Session opérateur active requise",
+            },
+        )
+    poste_id, ticket_id = SharedWorkstationReceptionDraftService(db).resume_draft(
+        device_id=context.device_id,
+        operator_user_id=context.operator_user_id,
+        confirm=payload.confirm,
+        actor_user_id=context.operator_user_id,
+        request_id=_request_id(request),
+    )
+    return SharedWorkstationReceptionDraftResumeOut(poste_id=poste_id, ticket_id=ticket_id)
+
+
+@router.post(
+    "/reception-draft/abandon",
+    response_model=SharedWorkstationReceptionDraftAbandonOut,
+    summary="Abandonner brouillon réception (confirmation explicite)",
+    openapi_extra={"operationId": "recyclique_sharedWorkstation_abandonReceptionDraft"},
+)
+async def abandon_reception_draft(
+    payload: SharedWorkstationReceptionDraftConfirmRequest,
+    response: Response,
+    request: Request,
+    db: Session = Depends(get_db),
+    context: SharedWorkstationContextOut = Depends(require_shared_workstation_reception_access),
+):
+    _no_store(response)
+    if context.device_id is None or context.operator_user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "SHARED_WORKSTATION_OPERATOR_REQUIRED",
+                "message": "Session opérateur active requise",
+            },
+        )
+    SharedWorkstationReceptionDraftService(db).abandon_draft(
+        device_id=context.device_id,
+        operator_user_id=context.operator_user_id,
+        confirm=payload.confirm,
+        actor_user_id=context.operator_user_id,
+        request_id=_request_id(request),
+    )
+    return SharedWorkstationReceptionDraftAbandonOut()

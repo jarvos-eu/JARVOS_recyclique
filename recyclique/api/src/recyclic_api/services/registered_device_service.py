@@ -124,7 +124,17 @@ class RegisteredDeviceService:
             else:
                 device.revoked_at = None
         if data.allowed_module_keys is not None:
+            old_keys = list(device.allowed_module_keys or [])
             device.allowed_module_keys = list(data.allowed_module_keys)
+            if old_keys != list(data.allowed_module_keys):
+                from recyclic_api.services.shared_workstation_effective_modules_service import (
+                    SharedWorkstationEffectiveModulesService,
+                )
+
+                SharedWorkstationEffectiveModulesService(self._db).invalidate_on_context_change(
+                    device_id=str(device.id),
+                    reason="device_allowlist_change",
+                )
         if data.inactivity_timeout_seconds is not None:
             device.inactivity_timeout_seconds = data.inactivity_timeout_seconds
         if data.last_contact_at is not None:

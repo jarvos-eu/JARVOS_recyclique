@@ -26,7 +26,13 @@ class AuthenticationError(RecyclicException):
 
 class AuthorizationError(RecyclicException):
     """Raised when authorization fails"""
-    pass
+
+    code: str | None = None
+
+    def __init__(self, message: str, *, code: str | None = None) -> None:
+        self.code = code
+        super().__init__(message)
+
 
 class DatabaseError(RecyclicException):
     """Raised when database operations fail"""

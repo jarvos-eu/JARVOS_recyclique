@@ -868,6 +868,20 @@ def _postgresql_seed_accounting_config_revision_story_223(engine) -> None:
         seed_sess.close()
 
 
+def _sqlite_align_poste_reception_story_278(bind) -> None:
+    """SQLite : colonne registered_device_id sur poste_reception (Story 27.8)."""
+    if not str(bind.url).startswith("sqlite"):
+        return
+    with bind.connect() as conn:
+        insp = inspect(conn)
+        if not insp.has_table("poste_reception"):
+            return
+        cols = {c["name"] for c in insp.get_columns("poste_reception")}
+        if "registered_device_id" not in cols:
+            conn.execute(text("ALTER TABLE poste_reception ADD COLUMN registered_device_id VARCHAR(36)"))
+        conn.commit()
+
+
 def _sqlite_align_payment_canonical_story_221(bind) -> None:
     """SQLite : ajoute le socle canonique `payment_methods` / `payment_transactions` si le schéma existait déjà."""
     if not str(bind.url).startswith("sqlite"):
@@ -994,6 +1008,7 @@ def create_tables_if_not_exist():
             _sqlite_align_payment_canonical_story_221(engine)
             _sqlite_align_accounting_expert_story_223(engine)
             _sqlite_align_accounting_period_authority_story_225(engine)
+            _sqlite_align_poste_reception_story_278(engine)
         else:
             Base.metadata.create_all(bind=engine)
             _postgresql_seed_accounting_config_revision_story_223(engine)

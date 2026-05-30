@@ -38,6 +38,11 @@ afterEach(() => {
 });
 
 describe('useSharedWorkstationLockRequired (Story 27.6 CR-1)', () => {
+  it('retourne false hors provider (harness réception 7.x sans crash)', () => {
+    render(<LockRequiredProbe />);
+    expect(screen.getByTestId('lock-required').textContent).toBe('no');
+  });
+
   it('retourne true pendant loading avec poste enrôlé', async () => {
     let resolveStatus!: (value: Awaited<ReturnType<typeof fetchOperatorSessionStatus>>) => void;
     const pending = new Promise<Awaited<ReturnType<typeof fetchOperatorSessionStatus>>>(
@@ -54,7 +59,9 @@ describe('useSharedWorkstationLockRequired (Story 27.6 CR-1)', () => {
       </SharedWorkstationOperatorSessionProvider>,
     );
 
-    expect(screen.getByTestId('lock-required').textContent).toBe('yes');
+    await waitFor(() => {
+      expect(screen.getByTestId('lock-required').textContent).toBe('yes');
+    });
 
     resolveStatus({
       ok: true,

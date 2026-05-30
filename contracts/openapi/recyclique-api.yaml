@@ -1629,6 +1629,192 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/effective-modules:
+    get:
+      operationId: recyclique_sharedWorkstation_getEffectiveModules
+      tags:
+        - shared-workstation
+        - context
+      summary: Modules effectifs poste partagé (intersection serveur)
+      description: |
+        Story 27.7 — intersection `config module site` × `allowlist poste` × `permissions opérateur`.
+        Refus **403** sans session opérateur active. `Cache-Control: no-store`.
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: device_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Device-Credential
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: X-Recyclique-Context-Module-Key
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Modules effectifs calculés serveur
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationEffectiveModulesV1Response"
+        "403":
+          description: Opérateur requis ou module refusé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "409":
+          description: CONTEXT_STALE
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/probe-module/{module_key}:
+    get:
+      operationId: recyclique_sharedWorkstation_probeModule
+      tags:
+        - shared-workstation
+      summary: Probe garde module effectif (preuve refus 403)
+      description: |
+        Story 27.7 — route minimale sans données métier ; exige module ∈ intersection effective.
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - name: module_key
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: X-Recyclique-Device-Id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: X-Recyclique-Context-Module-Key
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Module autorisé sur ce poste pour l'opérateur actif
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SharedWorkstationProbeModuleV1Response"
+        "403":
+          description: SHARED_WORKSTATION_MODULE_FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+        "409":
+          description: CONTEXT_STALE
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/reception-draft:
+    get:
+      operationId: recyclique_sharedWorkstation_getReceptionDraft
+      tags:
+        - shared-workstation
+      summary: Résumé brouillon réception poste partagé (Story 27.8)
+      security:
+        - bearerOrCookie: []
+      responses:
+        "200":
+          description: Résumé autorisé sans lignes
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+        "204":
+          description: Aucun brouillon actif
+        "403":
+          description: Opérateur ou module refusé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/shared-workstation/reception-draft/resume:
+    post:
+      operationId: recyclique_sharedWorkstation_resumeReceptionDraft
+      tags:
+        - shared-workstation
+      summary: Reprendre brouillon réception (confirm=true)
+      security:
+        - bearerOrCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [confirm]
+              properties:
+                confirm:
+                  type: boolean
+      responses:
+        "200":
+          description: Reprise confirmée
+        "403":
+          description: Refus accès
+        "404":
+          description: Brouillon introuvable
+        "422":
+          description: confirm requis
+  /v1/shared-workstation/reception-draft/abandon:
+    post:
+      operationId: recyclique_sharedWorkstation_abandonReceptionDraft
+      tags:
+        - shared-workstation
+      summary: Abandonner brouillon réception (confirm=true)
+      security:
+        - bearerOrCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [confirm]
+              properties:
+                confirm:
+                  type: boolean
+      responses:
+        "200":
+          description: Abandon confirmé
+        "403":
+          description: Refus accès
+        "404":
+          description: Brouillon introuvable
+        "422":
+          description: confirm requis
   /v1/registered-devices/{device_id}/clear-operator-pin-lockout:
     post:
       operationId: recyclique_registeredDevices_clearOperatorPinLockout
@@ -12175,6 +12361,14 @@ components:
             d'exploitation courant lorsque `context.site_id` est resolu en base (pas d'UUID expose en UI).
           additionalProperties:
             type: string
+        effective_module_keys:
+          type: array
+          nullable: true
+          items:
+            type: string
+          description: |
+            Story 27.7 — intersection serveur site × allowlist poste × permissions opérateur.
+            Présent uniquement quand device_id + operator_user_id actifs ; sinon absent ou [].
       additionalProperties: false
     ExploitationContextIds:
       type: object
@@ -12239,6 +12433,49 @@ components:
         restriction_message:
           type: string
           nullable: true
+        effective_module_keys:
+          type: array
+          nullable: true
+          items:
+            type: string
+          description: Story 27.7 — modules effectifs (intersection serveur) si session opérateur active.
+      additionalProperties: false
+    SharedWorkstationEffectiveModulesV1Response:
+      type: object
+      required:
+        - module_keys
+        - computed_at
+        - site_id
+        - device_id
+        - operator_user_id
+      properties:
+        module_keys:
+          type: array
+          items:
+            type: string
+        computed_at:
+          type: string
+          format: date-time
+        site_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        operator_user_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+    SharedWorkstationProbeModuleV1Response:
+      type: object
+      required:
+        - module_key
+        - effective
+      properties:
+        module_key:
+          type: string
+        effective:
+          type: boolean
       additionalProperties: false
     ExploitationLiveSnapshot:
       type: object

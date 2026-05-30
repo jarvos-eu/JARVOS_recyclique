@@ -32,6 +32,12 @@ from recyclic_api.services.registered_device_credential_service import (
 from recyclic_api.services.shared_workstation_context_service import (
     SharedWorkstationContextService,
 )
+from recyclic_api.services.shared_workstation_effective_modules_service import (
+    SharedWorkstationEffectiveModulesService,
+)
+from recyclic_api.modules.module_config.registry import MODULE_KEY_RECEPTION
+from recyclic_api.services.device_operator_session_service import DeviceOperatorSessionService
+from recyclic_api.services.reception_service import SharedWorkstationReceptionScope
 
 HEADER_DEVICE_ID = "X-Recyclique-Device-Id"
 HEADER_DEVICE_CREDENTIAL = "X-Recyclique-Device-Credential"
@@ -310,4 +316,147 @@ def require_active_operator_context(
         resolved=ctx,
         actor_user_id=str(current_user.id),
     )
+    return ctx
+
+
+def require_effective_module(module_key: str):
+    """
+    Dependency factory : require_active_operator_context + assert_module_in_effective_set.
+    Story 27.7 — refus frontière API si module ∉ intersection effective.
+    """
+
+    def _dependency(
+        request: Request,
+        db: Session = Depends(get_db),
+        ctx: SharedWorkstationContextOut = Depends(require_active_operator_context),
+        current_user: User = Depends(get_current_user),
+    ) -> SharedWorkstationContextOut:
+        _assert_effective_module_in_context(
+            request=request,
+            db=db,
+            ctx=ctx,
+            module_key=module_key,
+            current_user=current_user,
+        )
+        return ctx
+
+    return _dependency
+
+
+def require_effective_module_from_path(
+    module_key: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    ctx: SharedWorkstationContextOut = Depends(require_active_operator_context),
+    current_user: User = Depends(get_current_user),
+) -> SharedWorkstationContextOut:
+    """Dependency pour routes avec ``module_key`` en paramètre de chemin."""
+    _assert_effective_module_in_context(
+        request=request,
+        db=db,
+        ctx=ctx,
+        module_key=module_key,
+        current_user=current_user,
+    )
+    return ctx
+
+
+def _assert_effective_module_in_context(
+    *,
+    request: Request,
+    db: Session,
+    ctx: SharedWorkstationContextOut,
+    module_key: str,
+    current_user: User,
+) -> None:
+    if ctx.operator_user_id is None or ctx.device_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": SHARED_WORKSTATION_OPERATOR_REQUIRED,
+                "message": "Opérateur actif requis sur ce poste",
+            },
+        )
+    SharedWorkstationEffectiveModulesService(db).assert_module_in_effective_set(
+        device_id=ctx.device_id,
+        operator_user_id=ctx.operator_user_id,
+        module_key=module_key,
+        request_id=_request_id(request),
+        actor_user_id=str(current_user.id),
+    )
+
+
+def resolve_shared_workstation_reception_scope_when_device_present(
+    *,
+    request: Request,
+    db: Session,
+    current_user: User,
+    x_recyclique_device_id: Optional[str] = None,
+    x_recyclique_device_credential: Optional[str] = None,
+) -> Optional[SharedWorkstationReceptionScope]:
+    """
+    Si en-têtes device présents : credential + session opérateur + module ``reception``.
+    Sinon None (brownfield web).
+    """
+    raw_device = (x_recyclique_device_id or request.headers.get(HEADER_DEVICE_ID) or "").strip()
+    if not raw_device:
+        return None
+    credential = x_recyclique_device_credential or request.headers.get(HEADER_DEVICE_CREDENTIAL)
+    verify_device_credential_or_raise(
+        request=request,
+        db=db,
+        device_id=raw_device,
+        credential=credential,
+        require_credential=True,
+    )
+    session = DeviceOperatorSessionService(db).get_active_for_device(device_id=raw_device)
+    if session is None:
+        log_shared_workstation_access_refused(
+            db=db,
+            device_id=raw_device,
+            outcome="operator_required",
+            operation="shared_workstation.reception_guard",
+            user_id=str(current_user.id),
+            request_id=_request_id(request),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": SHARED_WORKSTATION_OPERATOR_REQUIRED,
+                "message": "Opérateur actif requis sur ce poste",
+            },
+        )
+    operator_user_id = str(session.operator_user_id)
+    SharedWorkstationEffectiveModulesService(db).assert_module_in_effective_set(
+        device_id=raw_device,
+        operator_user_id=operator_user_id,
+        module_key=MODULE_KEY_RECEPTION,
+        request_id=_request_id(request),
+        actor_user_id=str(current_user.id),
+    )
+    return SharedWorkstationReceptionScope(device_id=raw_device)
+
+
+def get_optional_shared_workstation_reception_scope(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    x_recyclique_device_id: Optional[str] = Header(None, alias=HEADER_DEVICE_ID),
+    x_recyclique_device_credential: Optional[str] = Header(
+        None, alias=HEADER_DEVICE_CREDENTIAL
+    ),
+) -> Optional[SharedWorkstationReceptionScope]:
+    return resolve_shared_workstation_reception_scope_when_device_present(
+        request=request,
+        db=db,
+        current_user=current_user,
+        x_recyclique_device_id=x_recyclique_device_id,
+        x_recyclique_device_credential=x_recyclique_device_credential,
+    )
+
+
+def require_shared_workstation_reception_access(
+    ctx: SharedWorkstationContextOut = Depends(require_effective_module(MODULE_KEY_RECEPTION)),
+) -> SharedWorkstationContextOut:
+    """Dependency — credential + session + module reception effectif (routes shared-workstation)."""
     return ctx

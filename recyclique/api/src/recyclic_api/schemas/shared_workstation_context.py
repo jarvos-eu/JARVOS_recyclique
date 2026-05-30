@@ -24,5 +24,15 @@ class SharedWorkstationContextOut(BaseModel):
     runtime_state: ContextRuntimeState = ContextRuntimeState.forbidden
     restriction_message: str | None = Field(
         default=None,
-        description="Message serveur si forbidden / degraded.",
+        description="Message serveur if forbidden / degraded.",
+    )
+    effective_module_keys: list[str] | None = Field(
+        default=None,
+        description=(
+            "Story 27.7 — modules effectifs (intersection serveur) ; présent si session opérateur active."
+        ),
+    )
+    reception_draft_summary: dict | None = Field(
+        default=None,
+        description="Story 27.8 — résumé brouillon réception si module effectif et brouillon actif.",
     )

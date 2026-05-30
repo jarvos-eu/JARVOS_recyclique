@@ -1,4 +1,5 @@
 import type { AuthContextPort } from '../app/auth/auth-context-port';
+import { sharedWorkstationAuthHeaders } from '../domains/shared-workstation/device-identity-store';
 import { getLiveSnapshotBasePrefix } from './live-snapshot-client';
 import { parseRecycliqueApiErrorBody, toRecycliqueClientFailure } from './recyclique-api-error';
 
@@ -84,8 +85,12 @@ function receptionHttpError(
   };
 }
 
-function authHeaders(auth: Pick<AuthContextPort, 'getAccessToken'>, json = false): Record<string, string> {
-  const headers: Record<string, string> = { Accept: 'application/json' };
+async function receptionHeaders(
+  auth: Pick<AuthContextPort, 'getAccessToken'>,
+  json = false,
+): Promise<Record<string, string>> {
+  const deviceHeaders = await sharedWorkstationAuthHeaders();
+  const headers: Record<string, string> = { Accept: 'application/json', ...deviceHeaders };
   if (json) headers['Content-Type'] = 'application/json';
   const token = auth.getAccessToken?.();
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -117,7 +122,7 @@ export async function postOpenPoste(
     res = await fetch(url, {
       method: 'POST',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: JSON.stringify(body && Object.keys(body).length ? body : {}),
     });
   } catch (e) {
@@ -151,7 +156,7 @@ export async function postClosePoste(
     res = await fetch(url, {
       method: 'POST',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: '{}',
     });
   } catch (e) {
@@ -180,7 +185,7 @@ export async function postCreateReceptionTicket(
     res = await fetch(url, {
       method: 'POST',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: JSON.stringify({ poste_id: posteId }),
     });
   } catch (e) {
@@ -212,7 +217,7 @@ export async function postCloseReceptionTicket(
     res = await fetch(url, {
       method: 'POST',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: '{}',
     });
   } catch (e) {
@@ -258,7 +263,7 @@ export async function postCreateReceptionLigne(
     res = await fetch(url, {
       method: 'POST',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: JSON.stringify(payload),
     });
   } catch (e) {
@@ -320,7 +325,7 @@ export async function putUpdateReceptionLigne(
     res = await fetch(url, {
       method: 'PUT',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: JSON.stringify(payload),
     });
   } catch (e) {
@@ -350,7 +355,7 @@ export async function deleteReceptionLigne(
   const url = `${base}/v1/reception/lignes/${encodeURIComponent(ligneId)}`;
   let res: Response;
   try {
-    res = await fetch(url, { method: 'DELETE', credentials: 'include', headers: authHeaders(auth) });
+    res = await fetch(url, { method: 'DELETE', credentials: 'include', headers: await receptionHeaders(auth) });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erreur réseau';
     return receptionHttpError(0, null, msg, true);
@@ -379,7 +384,7 @@ export async function patchReceptionLigneWeight(
     res = await fetch(url, {
       method: 'PATCH',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: JSON.stringify({ poids_kg: poidsKg }),
     });
   } catch (e) {
@@ -408,7 +413,7 @@ export async function getReceptionCategories(
   const url = `${base}/v1/reception/categories`;
   let res: Response;
   try {
-    res = await fetch(url, { method: 'GET', credentials: 'include', headers: authHeaders(auth) });
+    res = await fetch(url, { method: 'GET', credentials: 'include', headers: await receptionHeaders(auth) });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erreur réseau';
     return receptionHttpError(0, null, msg, true);
@@ -517,7 +522,7 @@ export async function getReceptionTicketsList(
   const url = `${base}/v1/reception/tickets?${q.toString()}`;
   let res: Response;
   try {
-    res = await fetch(url, { method: 'GET', credentials: 'include', headers: authHeaders(auth) });
+    res = await fetch(url, { method: 'GET', credentials: 'include', headers: await receptionHeaders(auth) });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erreur réseau';
     return receptionHttpError(0, null, msg, true);
@@ -562,7 +567,7 @@ export async function postReceptionTicketDownloadToken(
     res = await fetch(url, {
       method: 'POST',
       credentials: 'include',
-      headers: authHeaders(auth, true),
+      headers: await receptionHeaders(auth, true),
       body: '{}',
     });
   } catch (e) {
@@ -601,7 +606,7 @@ export async function getReceptionTicketDetail(
   const url = `${base}/v1/reception/tickets/${encodeURIComponent(ticketId)}`;
   let res: Response;
   try {
-    res = await fetch(url, { method: 'GET', credentials: 'include', headers: authHeaders(auth) });
+    res = await fetch(url, { method: 'GET', credentials: 'include', headers: await receptionHeaders(auth) });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erreur réseau';
     return receptionHttpError(0, null, msg, true);

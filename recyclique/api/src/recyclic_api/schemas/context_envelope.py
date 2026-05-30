@@ -63,3 +63,10 @@ class ContextEnvelopeResponse(BaseModel):
         default=None,
         description="Map label_key CREOS → libellé affichable (Story 5.5) ; présentation uniquement.",
     )
+    effective_module_keys: List[str] | None = Field(
+        default=None,
+        description=(
+            "Story 27.7 — intersection serveur site × allowlist poste × permissions opérateur. "
+            "Présent uniquement quand device_id + operator_user_id actifs ; sinon absent ou []."
+        ),
+    )

@@ -1,6 +1,6 @@
 # Story 27.6 : Lock screen PIN et session opérateur active
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -434,8 +434,38 @@ Composer (worker bmad-dev-story, resume_at DS)
 - `peintre-nano/tests/unit/shared-workstation-operator-pin-client.test.ts`
 - `peintre-nano/tests/unit/live-auth-shell-11-2.test.tsx`
 
+## Code Review (CR — 2026-05-30, cr_loop=0)
+
+**Verdict CR :** **PASS** — Approuvé pour merge.
+
+**Couches :** Blind Hunter + Edge Case Hunter + Acceptance Auditor (exécution inline worker CR, contexte story + ADR + QA summary).
+
+**Synthèse :** 0 bloquant, 0 majeur, 2 mineurs (defer), 3 nit (dismiss/defer). Gates amont confirmés (pytest 9/9, vitest 804/804, lint OK).
+
+### Review Findings
+
+- [x] [Review][Defer] Lockout UI sans auto-déblocage après `Retry-After` [`SharedWorkstationLockScreen.tsx`] — deferred, acceptable MVP story (repli 5 min documenté ; refresh ou retry 429) ; raffiner en 27.9 si besoin terrain.
+- [x] [Review][Defer] OpenAPI sans header `Retry-After` sur 429 verify [`contracts/openapi/recyclique-api.yaml`] — deferred, impl HTTP correcte ; sync contrat non bloquante.
+- [x] [Review][Defer] Fenêtre théorique FOUC avant résolution `hasDeviceIdentity()` [`SharedWorkstationOperatorSessionProvider.tsx`] — deferred, test CR-1 couvre le cas loading post-identité ; race microtask seulement.
+
+**Dismiss (non actionnables) :** audit `failure_kind: not_configured` (serveur, hors UI) ; double audit lockout+failure au 5e échec (redondant, traçabilité OK) ; poll 30s session status (MVP, API garde 403).
+
+### Checklist CR (AC / ADR / runbook §7–§8)
+
+- [x] PIN vérifié serveur (`verify_password`), jamais comparé front.
+- [x] Lockout Redis `shared_ws:pin_*` 5×5 min, distinct step-up ; fail-open documenté.
+- [x] Messages neutres UI + codes API stables ; `PIN_NOT_CONFIGURED` → texte UI identique.
+- [x] Aucun PIN en logs/audit (`sanitize_audit_details`, helpers audit).
+- [x] Lock screen plein écran masque `children` (`LiveAuthShell`) ; admin sans identité poste exempt (test 27.6).
+- [x] Routes dédiées (pas `POST /auth/pin`) ; `Cache-Control: no-store` ; credential device avant PIN.
+- [x] SuperAdmin clear lockout + audit `SHARED_WORKSTATION_PIN_LOCKOUT_CLEARED`.
+- [x] Changement opérateur → superseded + audits session.
+- [x] Hors scope 27.7–27.9 respecté.
+- [x] `sprint-status.yaml` non modifié (policy Epic Runner).
+
 ## Change Log
 
+- 2026-05-30 — Story 27.6 CR (code review) : **PASS** ; 0 bloquant ; findings mineurs defer ; Status `done` ; sprint-status non modifié (writer Epic Runner).
 - 2026-05-30 — Story 27.6 CS (create) : guide dev lock screen PIN + session opérateur ; garde-fous ADR/runbook §7 ; endpoints dédiés poste partagé ; lockout device+opérateur 5×5 min ; Status `ready-for-dev` ; sprint-status non modifié (writer unique).
 - 2026-05-30 — Story 27.6 CS (re-pass worker) : revalidation epics §27.6 + mini-ADR + runbook §7–§8 ; checklist VS remise à vide pour worker VS ; note brownfield WIP ; dépendance 27.3 (déblocage SuperAdmin) explicite dans checklist VS.
 - 2026-05-30 — Story 27.6 VS (validate) : **PASS** (vs_loop=0) — AC epics §27.6 recoupés ; invariants runbook §7 / mini-ADR couverts ; endpoints OpenAPI déjà présents dans le contrat ; décision MVP `operator_user_id` UUID tranchée sans NEEDS_HITL ; `sprint-status.yaml` non modifié.

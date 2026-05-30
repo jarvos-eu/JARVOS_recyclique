@@ -79,6 +79,8 @@ markers = [
     "story_27_4: tests story 27.4 enrôlement poste partagé.",
     "story_27_5: tests story 27.5 PWA non-offline (headers no-store Epic 27).",
     "story_27_6: tests story 27.6 lock screen PIN opérateur poste partagé.",
+    "story_27_7: tests story 27.7 intersection modules poste partagé.",
+    "story_27_8: tests story 27.8 brouillon réception pilote poste partagé.",
 ]
 filterwarnings = [
     "ignore:Type google\\._upb\\._message.*:DeprecationWarning",

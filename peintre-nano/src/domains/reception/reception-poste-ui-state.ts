@@ -22,6 +22,11 @@ export function setReceptionPosteUiState(next: boolean): void {
   emit();
 }
 
+/** Story 27.8 — réinitialiser l’indicateur UI non autoritaire au verrouillage poste partagé. */
+export function resetReceptionPosteUiState(): void {
+  setReceptionPosteUiState(false);
+}
+
 export function useReceptionPosteUiState(): boolean {
   return useSyncExternalStore(
     subscribeReceptionPosteUiState,

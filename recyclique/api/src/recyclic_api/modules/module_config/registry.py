@@ -7,8 +7,11 @@ from typing import Final
 
 MODULE_KEY_KPI_LIVE_BANNER: Final[str] = "kpi-live-banner"
 SCHEMA_VERSION_KPI_LIVE_BANNER_V1: Final[str] = "1.0.0"
+MODULE_KEY_RECEPTION: Final[str] = "reception"
 
-ACTIVE_MODULE_KEYS: Final[frozenset[str]] = frozenset({MODULE_KEY_KPI_LIVE_BANNER})
+ACTIVE_MODULE_KEYS: Final[frozenset[str]] = frozenset(
+    {MODULE_KEY_KPI_LIVE_BANNER, MODULE_KEY_RECEPTION}
+)
 
 
 @dataclass(frozen=True)

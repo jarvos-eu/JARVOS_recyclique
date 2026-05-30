@@ -54,4 +54,9 @@ export interface ContextEnvelopeStub {
   readonly presentationLabels?: Readonly<Record<string, string>>;
   /** Aligné OpenAPI `restriction_message` : message diagnostic UI (non autoritatif). */
   readonly restrictionMessage?: string | null;
+  /**
+   * Story 27.7 — intersection modules poste partagé (serveur).
+   * Présent quand device + session opérateur ; utilisé pour projection navigation.
+   */
+  readonly effectiveModuleKeys?: readonly string[] | null;
 }
