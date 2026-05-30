@@ -38,7 +38,9 @@ Etat BMAD actuel :
 - etape 3 preparee : les stories detaillees historiques ont ete generees pour les epics 1 a 24 alors actifs ;
 - etape 4 preparee : validation finale historique effectuee sur la couverture, les dependances, la granularite des stories et la coherence inter-epics ;
 - correct course `2026-04-19` actif : ajout d'un **Epic 25** documentaire prioritaire pour fermer les decisions structurantes PRD vision kiosque / multisite / permissions avant tout nouveau dev BMAD hors `25-*` ;
-- `epics.md` reste la base canonique de decoupage backlog, mais le chantier `25.*` reouvre explicitement la passe documentaire sur ce perimetre tant que le gel n'est pas leve.
+- le gel process a ete leve par **25.6** ; les Epics **25** et **26** sont `done` dans `sprint-status.yaml` ;
+- ajout documentaire **Epic 27** (2026-05-30) : postes partages enroles + PIN operateur + PWA installable non-offline, en backlog, avec runbook `references/artefacts/2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md` ;
+- `epics.md` reste la base canonique de decoupage backlog, croisee avec `sprint-status.yaml` et les runbooks d'epic actifs.
 
 ### Developpement parallele Piste A / Piste B (cadrage 2026-04-01)
 
@@ -3961,3 +3963,298 @@ So that P2 items from the audit do not stall as tribal knowledge (**F1**, §6.6,
 **And** the legacy missing `TESTS_STABILIZATION_GUIDE.md` situation is closed by restoring content, archiving, or an explicit ADR « no separate guide » plus README alignment
 
 **Note (périmètre story vs garde-fous F7–F11) :** les livrables **obligatoires isolés** de **26.5** sont **ruff** / stratégie repository / traçabilité guide tests (cf. AC). Les points **F9**, **F11**, **F8** (et, par extension, **F7**, **F10**) ne sont **pas** des micro-stories forcées dans **26.5**. **En revanche**, dès qu’une **PR** modifie `exceptions.py`, `conftest.py`, les schémas, le `Dockerfile`, etc., les **garde-fous** du paragraphe « Findings hors lignes P* » **s’appliquent** dans le **DoD de cette PR** — ce n’est **pas** une autorisation à les ignorer tant que le fichier est ouvert.
+
+## Epic 27: Postes partages enroles + PIN operateur + PWA installable non-offline
+
+**Goal:** Permettre a un poste partage enrole de rester techniquement connecte, sans exposer ni actionner de donnees metier tant qu'un operateur n'a pas pris la main par PIN. Apres PIN, les modules accessibles sont calcules cote serveur par l'intersection **configuration module par site x allowlist poste x permissions operateur**.
+
+**Choix PM valides:** modele canonique **`RegisteredDevice`**, identifiant technique stable **`device_id`**, libelle produit/UI **poste partage**, type MVP **`shared_workstation`**, module pilote initial **Reception**. `RegisteredDevice` est volontairement plus large que "poste de travail" pour rester compatible avec le futur registre materiel ; le MVP ne couvre que `shared_workstation`.
+
+**Perimetre:** registre administratif SuperAdmin des postes partages, enrolement, reconnexion/remplacement, PWA installable non-offline, lock screen PIN, session operateur active, intersection serveur par `module_key`, timeout/passer la main, brouillons bornes au module pilote Reception, audit sur le socle `audit_logs`, override SuperAdmin explicite.
+
+**Hors perimetre:** offline metier, file locale d'operations, synchronisation differee, agent local, decouverte reseau automatique, cartographie complete des peripheriques, supervision temps reel du parc, reporting audit avance, nouveaux roles locaux non stabilises, generalisation immediate a caisse / atelier / inventaire, developpement simultane de tous les modules. Cet epic est un palier distinct du PIN kiosque / PWA offline cible PRD ; il ne leve pas le verdict "PWA/offline metier non livre".
+
+**Runbook orchestration:** `references/artefacts/2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md`.
+
+**Definition of Done globale:** les stories **27.1–27.10** sont `done`, les gates backend/front passent, QA et code review ne signalent plus de P0/P1, l'absence d'offline metier est prouvee, l'autorisation effective reste imposee par le serveur a la frontiere API, `device_id` n'est jamais confondu avec `cash_register_id` ni avec un futur `reception_post_id`, et l'audit couvre enrolement, PIN, verrouillage, refus, brouillons, revocation, remplacement et override.
+
+**Gates transverses:** tests backend API/authz/audit/migrations selon fichiers touches ; front lint/build/tests UI pertinents ; contrats via `contracts/openapi/recyclique-api.yaml` si modifies, pas via le YAML standalone deprecie ; aucune autorisation decidee par le front ; aucun PIN en log ; endpoints metier authentifies sans cache offline ; PWA sans service worker interceptant les endpoints metier authentifies ; si service worker present, cache statique uniquement ; secret / identite poste jamais en `localStorage` comme source de verite si une alternative raisonnable existe. Chaque story doit porter des gates explicites ou `gates_skipped_with_hitl: true` limite a un blocage d'environnement documente.
+
+**Ordre Epic Runner:** `27.1 -> 27.2 -> 27.3 -> 27.4 -> 27.5 -> 27.6 -> 27.7 -> 27.8 -> 27.9 -> 27.10`. Une seule story active a la fois ; pas de Story Runner parallele sur le meme depot ; apres correctif QA/CR, repasser par `DS -> gates -> QA -> CR`. Si une story depasse son scope, le Story Runner doit renvoyer `NEEDS_HITL` plutot que fusionner des stories, generaliser a d'autres modules ou transformer une slice bornee en chantier transversal.
+
+**Points HITL restants:** niveau MVP du secret local vs WebCrypto ; politique PIN detaillee (tentatives, lockout, escalade) ; min/max timeout SuperAdmin ; UX statuts poste (perdu, conflit, bloque, a reconnecter) ; UX de confirmation forte pour override SuperAdmin ; cibles tablette/navigateurs PWA ; mecanisme exact de revalidation SuperAdmin. Pendant l'execution, appliquer la cascade du runbook §6 : worker -> Story Runner -> Epic Runner -> Strophe ; ne pas remonter directement a `NEEDS_STROPHE_HITL` si le parent peut trancher sans changer le produit, le scope ou les invariants de securite.
+
+### Story 27.1: Contrat `RegisteredDevice` et registre minimal
+
+**Cle pilotage YAML :** `27-1-registered-device`.
+
+As a platform and security owner,
+I want a minimal server-side `RegisteredDevice` contract for enrolled shared workstations,
+So that shared posts are identified, revocable and future-proof without being confused with cash registers or reception posts.
+
+**Acceptance Criteria:**
+
+**Given** Epic 27 uses `RegisteredDevice` as the canonical model and `device_id` as the stable identifier
+**When** this story is delivered
+**Then** the MVP model covers only `type = shared_workstation` while keeping the name broad enough for a future hardware registry
+**And** the contract includes at minimum name, site, emplacement, administrative status, allowlist `module_key`, timeout, simple last contact, and revocation state
+**And** `device_id` is explicitly distinct from `cash_register_id` and from any future `reception_post_id`
+**And** the story does not implement peripherals, hardware discovery, realtime supervision, or the complete hardware registry
+
+**Dependencies:** `module_key` registry and server-side module configuration by `site_id`.
+
+**Expected gates/tests:** model/API/migration checks as applicable, status and revocation tests, and a non-confusion test or review assertion for `device_id` vs `cash_register_id` / future `reception_post_id`.
+
+**Story Runner notes:** keep this story contractual and server-side first ; do not build the full SuperAdmin panel here.
+
+**Risks / HITL:** exact administrative status vocabulary and "last contact" granularity.
+
+### Story 27.2: Contexte serveur poste partage et audit transversal
+
+**Cle pilotage YAML :** `27-2-server-context-audit`.
+
+As a security owner,
+I want the shared workstation and active PIN operator represented in the server authorization context and audit trail,
+So that every business action is denied or attributed by backend authority, not by UI projection.
+
+**Acceptance Criteria:**
+
+**Given** `ContextEnvelope` remains an evolving alignment target, not a fully redefined contract in this story
+**When** this story is delivered
+**Then** the server invariant is documented or implemented around `site_id + device_id + operator_user_id + module_key + override`
+**And** authorization controls are applied at the API boundary, not only in the UI projection
+**And** no active PIN operator means default refusal for business data and business actions
+**And** changes of workstation, operator, site, module, rights or override trigger explicit server-side recalculation or refusal
+**And** audit uses the existing `audit_logs` / audit helpers instead of a second journal
+**And** no PIN or PIN derivative is stored in logs or audit details
+
+**Dependencies:** Story 27.1 and multi-context authorization invariants.
+
+**Expected gates/tests:** API refusal without operator, context recalculation/refusal tests, audit event coverage, and proof that PIN material is absent from logs.
+
+**Story Runner notes:** use "alignment/evolution of `ContextEnvelope`" language ; do not invent a final OpenAPI shape beyond what the story needs.
+
+**Risks / HITL:** exact mapping between `operator_user_id` and existing `user_id` audit fields.
+
+### Story 27.3: Panel SuperAdmin "Gestion des postes"
+
+**Cle pilotage YAML :** `27-3-superadmin-device-management`.
+
+As a SuperAdmin,
+I want an administrative "Gestion des postes" panel for enrolled shared workstations,
+So that I can configure, revoke and monitor basic status without relying on hidden local state.
+
+**Acceptance Criteria:**
+
+**Given** `RegisteredDevice` exists for `shared_workstation`
+**When** this story is delivered
+**Then** the SuperAdmin can list, create/name, assign site and emplacement, set device type, configure allowed `module_key` values, set timeout, view simple status and last contact, revoke a workstation, and modify configuration remotely
+**And** access to this panel is reserved to SuperAdmin permissions
+**And** configuration changes and revocations are audited
+**And** the panel does not implement realtime fleet supervision, peripheral mapping, network discovery, or advanced audit reporting
+
+**Dependencies:** Stories 27.1 and 27.2.
+
+**Expected gates/tests:** admin API tests, SuperAdmin-only access tests, focused UI tests, audit tests for configuration changes.
+
+**Story Runner notes:** keep the panel administrative ; no fleet health dashboard.
+
+**Risks / HITL:** exact displayed labels for statuses such as lost identity, conflict, blocked, reconnect required.
+
+### Story 27.4: Enrolement, reconnexion et remplacement
+
+**Cle pilotage YAML :** `27-4-enrollment-reconnect-replace`.
+
+As a SuperAdmin and field operator,
+I want a controlled enrollment and replacement flow for shared workstations,
+So that a physical workstation is enrolled by the server rather than guessed by browser fingerprinting.
+
+**Acceptance Criteria:**
+
+**Given** a SuperAdmin can manage `RegisteredDevice` entries
+**When** a workstation is enrolled
+**Then** the MVP flow uses a short code plus SuperAdmin validation
+**And** QR code remains an optional later improvement, not an MVP requirement
+**And** the workstation stores a local workstation identity/secret associated with the server record
+**And** `localStorage` is not used as the source of truth for the workstation identity/secret if a reasonable alternative exists
+**And** loss of local identity can be reconnected to an existing server workstation through SuperAdmin validation
+**And** replacement revokes the old secret
+**And** if an old machine returns with the old identity, it is refused or marked as conflict
+**And** SuperAdmin conflict choices are explicit: refuse, replace definitively, or create a distinct workstation
+
+**Dependencies:** Stories 27.1 to 27.3.
+
+**Expected gates/tests:** nominal enrollment, lost local storage, replacement, old secret refused, conflict state audited.
+
+**Story Runner notes:** stay with short code + SuperAdmin validation ; do not expand to local agent or network discovery.
+
+**Risks / HITL:** whether MVP uses a revocable local secret only or WebCrypto if simple enough.
+
+### Story 27.5: PWA installable non-offline
+
+**Cle pilotage YAML :** `27-5-installable-pwa-non-offline`.
+
+As a field operator,
+I want Recyclique installable as a PWA for a more stable workstation experience,
+So that shared posts feel app-like without promising offline business operation.
+
+**Acceptance Criteria:**
+
+**Given** Epic 27 is explicitly non-offline
+**When** this story is delivered
+**Then** the app provides a PWA manifest, name, icons and standalone launch behavior where supported
+**And** static assets may be cached if needed
+**And** no business data, business API response, draft content, or authenticated endpoint is cached for offline business use
+**And** authenticated business endpoints use `network-only` / `no-store` or an equivalent strategy
+**And** no service worker strategy intercepts authenticated business endpoints
+**And** if a service worker exists, it is limited to static asset caching
+**And** documentation states that installable does not mean offline and recommends a dedicated browser/profile where useful
+
+**Dependencies:** Story 27.4 is useful for end-to-end field use, but PWA installation is not an authorization mechanism.
+
+**Expected gates/tests:** front build, manifest check, service worker/static-cache review, proof/test that authenticated endpoints are not intercepted or cached, and review proof that the app does not promise offline business operation.
+
+**Story Runner notes:** make the "installable != offline" invariant visible in the story and QA evidence.
+
+**Risks / HITL:** target browser/tablet support level.
+
+### Story 27.6: Lock screen PIN et session operateur active
+
+**Cle pilotage YAML :** `27-6-pin-lock-operator-session`.
+
+As a field operator,
+I want to take control of a shared workstation with my PIN,
+So that actions are attributed to me and modules remain inaccessible before I am active.
+
+**Acceptance Criteria:**
+
+**Given** a workstation is enrolled and server context can include `device_id`
+**When** no operator PIN session is active
+**Then** the workstation shows a locked screen with no business data and no module access
+**And** PIN verification is server-side only
+**And** PIN is never stored locally and never logged
+**And** rate-limit / lockout exists with a documented default proposal of 5 failures -> 5 minute lockout on `device_id + operator_user_id`
+**And** UI failure messages are neutral and do not leak whether a PIN or account exists
+**And** a SuperAdmin unblock path is available or explicitly specified
+**And** successful and failed PIN attempts and operator changes are audited
+**And** timeout, warning before lock and handoff behavior are explicitly deferred to Story 27.9
+
+**Dependencies:** Stories 27.2, 27.3 and 27.4.
+
+**Expected gates/tests:** PIN auth tests, refusal without PIN, lock screen UI tests, audit tests, no-PIN-in-log review, timer hooks testable via mocks/injection where used.
+
+**Story Runner notes:** PIN is distinct from web password and from technical workstation session.
+
+**Risks / HITL:** final PIN lockout and escalation policy.
+
+### Story 27.7: Intersection serveur modules / poste / operateur
+
+**Cle pilotage YAML :** `27-7-server-module-intersection`.
+
+As a security and product owner,
+I want the effective modules for a shared workstation session computed by the backend,
+So that a public workstation and a capable operator do not accidentally grant too much access.
+
+**Acceptance Criteria:**
+
+**Given** module configuration by `site_id`, workstation allowlist by `module_key`, and operator permissions all exist
+**When** an operator enters a valid PIN on an enrolled workstation
+**Then** effective modules are calculated server-side as active site module configuration x workstation allowlist x operator permissions
+**And** controls are applied at the API boundary, not only in UI projection
+**And** the frontend only displays a projection of the server decision
+**And** business APIs refuse actions outside the intersection, even if the UI still displays a stale module
+**And** changes of rights, workstation, site, module configuration or override force recalculation or refusal
+**And** the story reuses `module_key` and does not create a competing rights vocabulary
+
+**Dependencies:** Stories 27.1, 27.2 and 27.6.
+
+**Expected gates/tests:** permission matrix tests, 403/forbidden cases, stale UI/action-refused case, `module_key` non-regression.
+
+**Story Runner notes:** backend first, UI projection second.
+
+**Risks / HITL:** exact granularity and current list of available `module_key` values.
+
+### Story 27.8: Pilote Reception : brouillons masques et reprise autorisee
+
+**Cle pilotage YAML :** `27-8-reception-pilot-drafts`.
+
+As a reception operator,
+I want drafts on the Reception module hidden while the workstation is locked and recoverable only by an authorized operator,
+So that the shared workstation pattern is proven on a real field flow without expanding to every module.
+
+**Acceptance Criteria:**
+
+**Given** Reception is the only pilot module for this story
+**When** the workstation is locked or has no active PIN operator
+**Then** Reception drafts are not visible and sensitive draft metadata does not leak
+**And** Reception draft endpoints and payloads remain authenticated and `network-only` / `no-store`
+**And** after PIN, an operator authorized by the site x workstation x permission intersection can see, resume or abandon the draft with explicit confirmation
+**And** an unauthorized operator sees neither content nor sensitive metadata
+**And** resume and abandon actions are audited
+**And** the story does not generalize to caisse / cash register, atelier, inventaire or other modules
+
+**Dependencies:** Stories 27.6 and 27.7.
+
+**Expected gates/tests:** draft hidden without PIN, authorized resume, unauthorized refusal, no sensitive metadata leak, audit resume/abandon, no offline cache for draft data.
+
+**Story Runner notes:** strict Reception pilot only ; any expansion to other modules is `NEEDS_HITL`.
+
+**Risks / HITL:** how much detail to display about the initial draft author and creation time.
+
+### Story 27.9: Timeout, verrouillage et passage de main
+
+**Cle pilotage YAML :** `27-9-timeout-lock-handoff`.
+
+As a field team,
+I want a clear timeout and handoff flow for shared workstations,
+So that one operator can safely leave the post and another can take over without data leakage.
+
+**Acceptance Criteria:**
+
+**Given** a PIN operator session is active on an enrolled workstation
+**When** inactivity reaches the configured threshold
+**Then** the default threshold is 15 minutes unless changed by SuperAdmin policy
+**And** a warning appears before lock
+**And** real user activity can postpone the timer
+**And** "continue" keeps the current operator active
+**And** "lock now" or "passer la main" clears the active operator server-side
+**And** server invalidation happens before new sensitive actions can proceed
+**And** timeout and manual lock events are audited
+**And** timers are testable through mocks/injection to avoid flaky tests
+
+**Dependencies:** Stories 27.3, 27.6, 27.7 and 27.8.
+
+**Expected gates/tests:** timer tests with mocks/injection, server invalidation tests, no business data after lock, audit tests.
+
+**Story Runner notes:** do not duplicate the PIN auth implementation from 27.6 ; extend lifecycle behavior.
+
+**Risks / HITL:** min/max SuperAdmin timeout configuration.
+
+### Story 27.10: Override SuperAdmin explicite et audite
+
+**Cle pilotage YAML :** `27-10-superadmin-override`.
+
+As a SuperAdmin,
+I want an explicit audited override on a shared workstation,
+So that I can intervene without silently bypassing workstation constraints.
+
+**Acceptance Criteria:**
+
+**Given** a SuperAdmin is identified on a shared workstation context
+**When** override is needed
+**Then** override is activated by an explicit action with strong confirmation or revalidation
+**And** override is represented as an explicit server-side context state
+**And** override is never a simple UI flag
+**And** override is never automatic after PIN
+**And** override has a clear exit path
+**And** timeout or lock exits override
+**And** override activation, use and exit are audited
+**And** actions outside valid override are refused by the API boundary
+
+**Dependencies:** Stories 27.2, 27.3, 27.6, 27.7 and 27.9.
+
+**Expected gates/tests:** SuperAdmin permission checks, override activation/exit tests, API refusal outside override, audit tests.
+
+**Story Runner notes:** override is a server state with audit, not a frontend convenience.
+
+**Risks / HITL:** exact UX for strong confirmation / revalidation.

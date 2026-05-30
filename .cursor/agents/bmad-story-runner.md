@@ -1,6 +1,6 @@
 ---
 name: bmad-story-runner
-model: composer-2
+model: composer-2.5
 description: Orchestrateur parent BMAD pour une story — enchaîne CS → VS → DS → gates → QA → CR en spawant un sous-agent (Task) par étape skill ; transmet le brief reçu à chaque enfant. Plan B (tout dans le même contexte) uniquement si spawn impossible (NEEDS_HITL). Brief YAML spec §6.2.
 ---
 
@@ -41,6 +41,7 @@ Ordre logique ; **chaque numéro skill = un Task enfant** (sauf gate shell et sa
 4. **Gates** : Task shell ou exécution contrôlée des commandes du brief (lint / test / build / e2e) avec timeouts (spec §5.2 : Windows, guillemets si espaces). Échec reproductible local → **DS** ; environnement / credentials → **NEEDS_HITL** avec cause.
 5. **`bmad-qa-generate-e2e-tests`** (QA) — `skill_paths.qa_e2e`. Échec bloquant → DS, `qa_loop++`, puis **obligatoirement** refaire **gates → QA → CR** (spec §5, politique `retry_chain`).
 6. **`bmad-code-review`** (CR) — `skill_paths.code_review` : **Task enfant dédié** (contexte frais). Si l'environnement **refuse** l'imbrication Task → **NEEDS_HITL** + appliquer `policy.if_cr_task_unavailable` (spec §6.2) : brief CR seul, nouvelle session. Échec revue → DS, `cr_loop++`, puis **gates → QA → CR**. Plafonds → **HALT**, **NEEDS_HITL**.
+7. **YAML_update** — proposer ou appliquer la mise a jour `sprint-status.yaml` selon la politique writer/HITL du brief et de l'Epic Runner. Si writer ambigu ou autre session active : produire un patch / instructions et remonter `NEEDS_HITL`.
 
 **Important :** invoquer les **skills par leur nom Cursor** côté message enfant : `bmad-qa-generate-e2e-tests`, pas `bmad-bmm-qa-automate`.
 

@@ -144,6 +144,7 @@ project_root: "<abs>"
 resume_at: CS            # CS | VS | DS | GATE | QA | CR — point d'entrée si reprise milieu de cycle
 paths:
   sprint_status: "<abs>/.../sprint-status.yaml"
+  epics_md: "<abs>/.../epics.md"
   story_file: "<abs>/.../{story_key}.md"  # si applicable
 skill_paths:
   create_story: "<abs>/.cursor/skills/bmad-create-story/SKILL.md"
@@ -154,7 +155,7 @@ mode_create_story: create   # puis validate pour VS ; si resume_at: VS, passer d
 gates:                      # liste non vide OU gates_skipped_with_hitl: true (explicite)
   - cmd: "npm test"        # exemple ; adapter au repo ; guillemets si espaces (Windows)
     timeout_sec: 300
-gates_skipped_with_hitl: false   # si true : gates vides acceptés seulement avec validation humaine explicite
+gates_skipped_with_hitl: false   # si true : gates vides acceptés seulement avec validation humaine explicite pour blocage d'environnement documenté ; interdit pour authz, PIN, audit, PWA non-offline, migrations ou contrats API
 max_vs_loop: 3                   # optionnel : rappel plafond (doit matcher brief epic si présent)
 max_qa_loop: 3
 max_cr_loop: 3
@@ -215,7 +216,7 @@ Quand **toutes** les stories de l'epic cible sont `done` :
 - [ ] Skill QA = `bmad-qa-generate-e2e-tests`.
 - [ ] Chaîne retry après correctif = DS → gates → QA → CR.
 - [ ] HITL documentés (merge, YAML, sécurité).
-- [ ] `gates` non vide **ou** `gates_skipped_with_hitl: true` explicite.
+- [ ] `gates` non vide **ou** `gates_skipped_with_hitl: true` explicite et limité à un blocage d'environnement documenté ; ne pas l'utiliser pour contourner authz, PIN, audit, PWA non-offline, migrations ou contrats API.
 - [ ] `resume_at` renseigné **si** reprise milieu de cycle (sinon nouvelle story → `CS` ou omis).
 
 ---
@@ -224,6 +225,7 @@ Quand **toutes** les stories de l'epic cible sont `done` :
 
 - **Epic Runner** : la prochaine story suit **epics.md** croisé avec YAML ; `bmad-sprint-status` n'est pas la seule vérité du graphe interne.
 - **Epic Runner** : ne lance **pas** deux Task Story Runner **en parallèle** sur le même dépôt sans règle d'écriture YAML.
+- **Epic Runner** : si un epic impose une sérialisation stricte (ex. Epic 27), cette règle d'epic prime sur l'autorisation générale de parallélisation ; ne lancer qu'une story active à la fois.
 - **Story Runner** : invoque les skills par **noms Cursor** §4 (dont QA = `bmad-qa-generate-e2e-tests`).
 - **Story Runner** : après correctif CR ou QA, enchaîne **DS → gates → QA → CR** (pas de saut arbitraire de QA si la politique l'exige).
 - **Sorties** : chaque phase annonce **PASS / FAIL / NEEDS_HITL** ; le rapport final respecte **§7.1**.
