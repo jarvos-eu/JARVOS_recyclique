@@ -32,6 +32,9 @@ const { fetchOperatorSessionStatus } = vi.hoisted(() => ({
     active: true,
     operator_user_id: 'u-op',
     session_id: 'sess-1',
+    last_activity_at: null,
+    inactivity_timeout_seconds: null,
+    seconds_until_lock: null,
   })),
 }));
 
@@ -44,8 +47,18 @@ vi.mock('../../src/domains/shared-workstation/device-identity-store', () => ({
   clearDeviceIdentity: vi.fn(async () => undefined),
 }));
 
-vi.mock('../../src/api/shared-workstation-operator-pin-client', () => ({
+vi.mock('../../src/api/shared-workstation-operator-session-client', () => ({
   fetchOperatorSessionStatus,
+  fetchSharedWorkstationDeviceStatus: vi.fn(async () => ({
+    ok: true as const,
+    device_id: 'dev-1',
+    inactivity_timeout_seconds: 600,
+  })),
+  endOperatorSession: vi.fn(async () => ({ ok: true as const, ended: true, session_id: 'sess-1' })),
+  touchOperatorSessionActivity: vi.fn(async () => ({ ok: true as const, throttled: false })),
+}));
+
+vi.mock('../../src/api/shared-workstation-operator-pin-client', () => ({
   verifySharedWorkstationOperatorPin: vi.fn(),
 }));
 
@@ -85,6 +98,9 @@ describe('LiveAuthShell (Story 11.2)', () => {
       active: true,
       operator_user_id: 'u-op',
       session_id: 'sess-1',
+      last_activity_at: null,
+      inactivity_timeout_seconds: null,
+      seconds_until_lock: null,
     });
     postRecycliqueLogin.mockResolvedValue({
       ok: true,
@@ -231,6 +247,9 @@ describe('LiveAuthShell (Story 11.2)', () => {
       active: true,
       operator_user_id: 'u-op',
       session_id: 'sess-1',
+      last_activity_at: null,
+      inactivity_timeout_seconds: null,
+      seconds_until_lock: null,
     });
 
     await waitFor(() => {

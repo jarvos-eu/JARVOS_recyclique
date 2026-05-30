@@ -77,6 +77,39 @@ describe('useSharedWorkstationLockRequired (Story 27.6 CR-1)', () => {
     });
   });
 
+  it('retourne true pendant loading avant confirmation identité poste', async () => {
+    let resolveIdentity!: (value: boolean) => void;
+    const pendingIdentity = new Promise<boolean>((resolve) => {
+      resolveIdentity = resolve;
+    });
+    hasDeviceIdentity.mockReturnValue(pendingIdentity);
+    fetchOperatorSessionStatus.mockResolvedValue({
+      ok: true,
+      active: false,
+      operator_user_id: null,
+      session_id: null,
+      last_activity_at: null,
+      inactivity_timeout_seconds: null,
+      seconds_until_lock: null,
+    });
+
+    render(
+      <SharedWorkstationOperatorSessionProvider enabled>
+        <LockRequiredProbe />
+      </SharedWorkstationOperatorSessionProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('lock-required').textContent).toBe('yes');
+    });
+
+    resolveIdentity(false);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('lock-required').textContent).toBe('no');
+    });
+  });
+
   it('retourne false sans identité poste', async () => {
     hasDeviceIdentity.mockResolvedValue(false);
     fetchOperatorSessionStatus.mockResolvedValue({

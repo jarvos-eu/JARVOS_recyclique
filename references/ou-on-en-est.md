@@ -1,6 +1,6 @@
 # Ou on en est — JARVOS Recyclique
 
-Mis a jour : 2026-05-27
+Mis a jour : 2026-05-30
 
 **Perimetre par version** : voir [references/versioning.md](versioning.md). **Ce depot Git** = developpement **JARVOS Recyclique v2.0** ; la prod actuelle **1.4.4** vit dans **un autre depot** (reference brownfield : `recyclique-1.4.4/` dans ce mono-repo).
 
@@ -38,6 +38,7 @@ Projet JARVOS Recyclique v0.1.0 initialise. **Analyse brownfield 1.4.4 disponibl
 |-------|---------|
 | **v2.0 (plancher)** | Equivalence **robuste** avec **1.4.4** en prod (autre depot) : caisse, reception, compta, parcours deja livres ; **socle modules** : `/admin/modules` livre (story **9.6** **done**) |
 | **Parite gestes (critere plancher)** | Rapport audit **fait** (Agent A) : [`2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md`](artefacts/2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md) + QA2 [`2026-05-27_01`](artefacts/2026-05-27_01_qa2-rapport-parite-plancher-v2-gestes-terrain.md). **C2b HITL terrain** = **a faire plus tard** (stack locale + benevole) — checklist dans [`.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md`](../.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md) § C2b. **Pas** tag `v2.0.0` avant C2b. |
+| **Chantier parite beta v2.0** | **Checklist operationnelle** (code + UI, P0-beta, correct course) : [`2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md`](artefacts/2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md) — a cocher avant beta benevoles ; lie [`besoins-terrains.md`](besoins-terrains.md). |
 | **v2.0.1, v2.0.2…** | **Un module metier a la fois** ; story **9.10** liaison Paheko clôture **`done`** (2026-05-27) — tag **v2.0.1** apres C2b + gate Coordinateur |
 | **HelloAsso** | **Parking** — module prevu, **pas** priorite maintenant ; ne pas perdre (stories 9.4/9.5 = doc / arbitrage sans dev large) |
 | **Ordre Epic 9** | **9.6** **done** ; modules metier **un par un** (9.1–9.5, 9.7+) ; note dans [`epics.md`](../_bmad-output/planning-artifacts/epics.md) § Epic 9 |
@@ -64,7 +65,8 @@ BMAD 6.0.3 installe. Cursor rules actives. Dossier `references/` operationnel.
 
 | Quand | Quoi | Ou |
 |-------|------|-----|
-| **Quand stack locale + benevole dispo** | **C2b** — 30 min, 4 scenarios OK/KO (caisse, paiement, cloture, reception) | Plan [post-9.6](../.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md) § **C2b** |
+| **Reprise chantier parite beta** | Cocher checklist sections A–H + backlog BC-01..12 | [`2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md`](artefacts/2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md) |
+| **Quand stack locale + benevole dispo** | **C2b** — 30 min, 4 scenarios OK/KO (caisse, paiement, cloture, reception) | Plan [post-9.6](../.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md) § **C2b** + checklist §12 |
 | **Apres C2b** | Lire synthese rapport 03 : ecarts **P1 clavier** → backlog **13.8** si KO ; **pas** bloquer B si liaison OK | [`2026-05-26_03_…`](artefacts/2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md) |
 | **Avant tag v2.0.0** | C2b complete + decision PO sur ecarts restants | Plan § Ordre global |
 

@@ -75,6 +75,7 @@ function buildContextEnvelopeBody() {
       'transverse.dashboard.view',
       'transverse.admin.view',
       'recyclique.exploitation.view-live-band',
+      'reception.access',
     ],
     computed_at: new Date().toISOString(),
     presentation_labels: {
@@ -241,6 +242,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  vi.useRealTimers();
   installIndexedDbMock();
   sessionStorage.clear();
 });
@@ -248,6 +250,7 @@ beforeEach(() => {
 afterEach(() => {
   window.history.pushState({}, '', '/');
   sessionStorage.clear();
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
@@ -372,8 +375,8 @@ describe('E2E — lock screen PIN poste partagé (story 27.6)', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('shared-workstation-lock-screen')).toBeTruthy();
+      expect(screen.queryByTestId('shell-zone-main')).toBeNull();
     });
-    expect(screen.queryByTestId('shell-zone-main')).toBeNull();
 
     fillOperatorPinForm('4242');
     fireEvent.click(screen.getByTestId('shared-workstation-pin-submit'));
@@ -381,7 +384,9 @@ describe('E2E — lock screen PIN poste partagé (story 27.6)', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('shared-workstation-lock-screen')).toBeNull();
     });
-    const main = await screen.findByTestId('shell-zone-main');
-    expect(within(main).queryByTestId('page-access-blocked')).toBeNull();
+    await waitFor(() => {
+      const main = screen.getByTestId('shell-zone-main');
+      expect(within(main).queryByTestId('page-access-blocked')).toBeNull();
+    });
   });
 });

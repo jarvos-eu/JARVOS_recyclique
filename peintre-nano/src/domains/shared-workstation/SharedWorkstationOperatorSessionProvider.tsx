@@ -105,7 +105,7 @@ export function useSharedWorkstationLockRequired(): boolean {
   const ctx = useOptionalSharedWorkstationOperatorSession();
   if (!ctx) return false;
   const { loading, hasDevice, operatorSessionActive } = ctx;
-  if (!hasDevice) return false;
+  if (!hasDevice) return loading;
   return loading || !operatorSessionActive;
 }
 

@@ -2,6 +2,8 @@
 
 Liste dynamique des besoins remontés par les utilisatrices terrain (ressourcerie), issues des échanges Discord. À charger pour priorisation, brainstorm brownfield ou ajout de remontées.
 
+**Checklist de verification v2 beta (parite 1.4.4, statut code + UI, P0-beta) :** [`artefacts/2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md`](artefacts/2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md) — document maitre pour reprendre le chantier avant beta test.
+
 **Légende :** `[ ]` à traiter | `[~]` en cours / à l'étude | `[x]` traité ou basculé en idée/story
 
 ---
