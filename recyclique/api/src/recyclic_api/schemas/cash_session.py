@@ -131,6 +131,16 @@ class CashSessionResponse(CashSessionBase):
         description="Identifiant de la ligne paheko_outbox_items ; détail admin GET .../paheko-outbox/items/{id}.",
     )
 
+    # Story 9.11 — feuille PDF anomalie (génération PDF = 9.12)
+    anomaly_close_sheet: Optional[bool] = Field(
+        None,
+        description="True si une feuille de clôture PDF anomalie est requise (écart, seuil, coupure rare).",
+    )
+    close_sheet_pdf_url: Optional[str] = Field(
+        None,
+        description="URL documentée pour télécharger la feuille PDF anomalie ; null si pas d'anomalie.",
+    )
+
     # Story 22.3 — révision comptable figée à l'ouverture (référence stable pour snapshot 22.6)
     accounting_config_revision_id: Optional[str] = Field(
         None,

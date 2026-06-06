@@ -13,6 +13,7 @@ import {
 import { LayoutGrid } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { KPI_LIVE_BANNER_MODULE_KEY } from '../../api/module-config-client';
+import { COMPTAGE_PIECES_BILLETS_MODULE_KEY } from '../../api/comptage-module-config';
 import { useAuthPort } from '../../app/auth/AuthRuntimeProvider';
 import {
   mergeKpiLiveBannerSettings,
@@ -23,12 +24,20 @@ import type { RegisteredWidgetProps } from '../../registry/widget-registry';
 import { ADMIN_TRANSVERSE_LIST_PAGE_MANIFEST_GUARDS } from './admin-transverse-list-page-guards';
 import { KpiLiveBannerSettingsFields } from './KpiLiveBannerSettingsFields';
 
+import { ComptagePiecesBilletsModulePanel } from './ComptagePiecesBilletsModulePanel';
+
 const MODULES_CATALOG = [
   {
     moduleKey: KPI_LIVE_BANNER_MODULE_KEY,
     title: 'Bandeau indicateurs live (KPI)',
     description:
       'Visibilité caisse / réception et fréquence d’appel à l’API live unifiée (`getLiveSnapshot` inchangé).',
+  },
+  {
+    moduleKey: COMPTAGE_PIECES_BILLETS_MODULE_KEY,
+    title: 'Comptage pièces / billets (clôture)',
+    description:
+      "Active l'étape comptage détaillé dans le wizard de clôture caisse — grille 15 lignes, relecture, pictos optionnels.",
   },
 ] as const;
 
@@ -202,11 +211,15 @@ export function AdminModulesWidget(_props: RegisteredWidgetProps) {
                 <Text size="xs" c="dimmed">
                   Clé module : <code>{mod.moduleKey}</code>
                 </Text>
-                <KpiLiveBannerSettingsFields
-                  value={draft}
-                  onChange={onDraftChange}
-                  disabled={isLoading || saving}
-                />
+                {mod.moduleKey === KPI_LIVE_BANNER_MODULE_KEY ? (
+                  <KpiLiveBannerSettingsFields
+                    value={draft}
+                    onChange={onDraftChange}
+                    disabled={isLoading || saving}
+                  />
+                ) : mod.moduleKey === COMPTAGE_PIECES_BILLETS_MODULE_KEY ? (
+                  <ComptagePiecesBilletsModulePanel motif={motif} disabled={saving} />
+                ) : null}
               </Stack>
             </Accordion.Panel>
           </Accordion.Item>

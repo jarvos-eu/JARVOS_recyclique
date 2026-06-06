@@ -186,7 +186,7 @@ Aligné [`05-MOD-registre-module-key.md`](05-MOD-registre-module-key.md) §3 et 
 | `kpi-live-banner` | `kpi-live-banner.v1.json` | **Publié** | Non (après T-MOD-3 + impl.) |
 | `cashflow` | `cashflow.v1.json` (nom indicatif) | **Absent** | Oui si promu actif |
 | `reception` | `reception.v1.json` | **Absent** | Oui |
-| `comptage-pieces-billets` | stub minimal `{ enabled, skip_allowed }` ? (Q-HITL-12) | **Absent** | Oui — métier surtout en tables |
+| `comptage-pieces-billets` | `comptage-pieces-billets.v1.json` | **Publié** (Story 9.13) | Non (handler + schema) |
 | `helloasso` | *À définir* — secrets hors payload | **Absent** | Oui |
 | `eco-organismes` | *À définir* | **Absent** | Oui |
 | `adherents` | *À définir* | **Absent** | Oui |

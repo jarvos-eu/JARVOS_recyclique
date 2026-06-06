@@ -272,8 +272,18 @@ def build_accounting_close_snapshot_v1(
     theoretical_cash_amount: float,
     actual_cash_amount: float,
     cash_variance: float,
+    denomination_count_v1: Optional[dict] = None,
 ) -> CashSessionAccountingCloseSnapshotV1:
+    from recyclic_api.schemas.cash_denomination import DenominationCountSnapshotV1
+
+    denom_block = None
+    schema_version: int = 2
+    if denomination_count_v1:
+        denom_block = DenominationCountSnapshotV1.model_validate(denomination_count_v1)
+        schema_version = 3
+
     return CashSessionAccountingCloseSnapshotV1(
+        schema_version=schema_version,  # type: ignore[arg-type]
         session_id=str(session_id),
         site_id=str(site_id),
         register_id=str(register_id) if register_id else None,
@@ -288,4 +298,5 @@ def build_accounting_close_snapshot_v1(
             actual_cash_amount=float(actual_cash_amount),
             cash_variance=float(cash_variance),
         ),
+        denomination_count_v1=denom_block,
     )

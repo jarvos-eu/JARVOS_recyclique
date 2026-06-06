@@ -11,14 +11,19 @@ from sqlalchemy.orm import Session
 from recyclic_api.models.site import Site
 from recyclic_api.modules.module_config.registry import (
     ACTIVE_MODULE_KEYS,
+    MODULE_KEY_COMPTAGE_PIECES_BILLETS,
     MODULE_KEY_KPI_LIVE_BANNER,
     MODULE_KEY_RECEPTION,
     is_active_module_key,
 )
 from recyclic_api.services.reception_service import RECEPTION_ACCESS_PERMISSION_KEY
-from recyclic_api.modules.module_config.service import ModuleConfigService
+from recyclic_api.modules.module_config.service import (
+    ModuleConfigService,
+    comptage_module_enabled_from_payload,
+)
 
 PERMISSION_VIEW_LIVE_BAND: Final[str] = "recyclique.exploitation.view-live-band"
+CAISSE_ACCESS_PERMISSION_KEY: Final[str] = "caisse.access"
 
 
 @dataclass(frozen=True)
@@ -37,6 +42,15 @@ def _resolve_reception_site_enabled(_db: Session, site: Site | None) -> bool:
     return site is not None and bool(site.is_active)
 
 
+def _resolve_comptage_site_enabled(db: Session, site: Site | None) -> bool:
+    if site is None:
+        return False
+    payload = ModuleConfigService(db).resolve_payload_for_site(
+        site.id, MODULE_KEY_COMPTAGE_PIECES_BILLETS
+    )
+    return comptage_module_enabled_from_payload(payload)
+
+
 _MODULE_ACCESS_REGISTRY: dict[str, ModuleAccessEntry] = {
     MODULE_KEY_KPI_LIVE_BANNER: ModuleAccessEntry(
         module_key=MODULE_KEY_KPI_LIVE_BANNER,
@@ -47,6 +61,11 @@ _MODULE_ACCESS_REGISTRY: dict[str, ModuleAccessEntry] = {
         module_key=MODULE_KEY_RECEPTION,
         required_permission_keys=(RECEPTION_ACCESS_PERMISSION_KEY,),
         site_enabled_resolver=_resolve_reception_site_enabled,
+    ),
+    MODULE_KEY_COMPTAGE_PIECES_BILLETS: ModuleAccessEntry(
+        module_key=MODULE_KEY_COMPTAGE_PIECES_BILLETS,
+        required_permission_keys=(CAISSE_ACCESS_PERMISSION_KEY,),
+        site_enabled_resolver=_resolve_comptage_site_enabled,
     ),
 }
 

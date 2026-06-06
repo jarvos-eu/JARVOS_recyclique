@@ -10,6 +10,9 @@ import {
   KPI_LIVE_BANNER_MODULE_KEY,
   KPI_LIVE_BANNER_SCHEMA_VERSION,
 } from '../../src/api/module-config-client';
+import {
+  COMPTAGE_PIECES_BILLETS_MODULE_KEY,
+} from '../../src/api/comptage-module-config';
 import '../../src/styles/tokens.css';
 
 const siteId = '550e8400-e29b-41d4-a716-446655440000';
@@ -191,5 +194,87 @@ describe('AdminModulesWidget', () => {
       </RootProviders>,
     );
     expect(screen.getByTestId('admin-modules-denied')).toBeTruthy();
+  });
+
+  it('affiche la carte comptage pièces/billets dans le catalogue', async () => {
+    const comptageDefault = {
+      schema_version: '1.0.0',
+      payload: {
+        enabled: false,
+        skip_allowed: true,
+        require_denomination_grid: false,
+        show_images: true,
+      },
+      version: 0,
+    };
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url.includes(moduleConfigUrl()) && (!init?.method || init.method === 'GET')) {
+        return okJson(defaultDoc, 200, 'W/"0"');
+      }
+      if (url.includes(`/module-config/${COMPTAGE_PIECES_BILLETS_MODULE_KEY}`) && (!init?.method || init.method === 'GET')) {
+        return okJson(comptageDefault, 200, 'W/"0"');
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(wrap(<AdminModulesWidget />));
+
+    await waitFor(() => {
+      expect(screen.getByTestId(`admin-modules-accordion-${COMPTAGE_PIECES_BILLETS_MODULE_KEY}`)).toBeTruthy();
+    });
+    expect(screen.getByText('Comptage pièces / billets (clôture)')).toBeTruthy();
+  });
+
+  it('enregistre comptage via PATCH avec If-Match', async () => {
+    const comptageDefault = {
+      schema_version: '1.0.0',
+      payload: {
+        enabled: false,
+        skip_allowed: true,
+        require_denomination_grid: false,
+        show_images: true,
+      },
+      version: 0,
+    };
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url.includes(moduleConfigUrl()) && (!init?.method || init.method === 'GET')) {
+        return okJson(defaultDoc, 200, 'W/"0"');
+      }
+      if (url.includes(`/module-config/${COMPTAGE_PIECES_BILLETS_MODULE_KEY}`) && (!init?.method || init.method === 'GET')) {
+        return okJson(comptageDefault, 200, 'W/"0"');
+      }
+      if (url.includes(`/module-config/${COMPTAGE_PIECES_BILLETS_MODULE_KEY}`) && init?.method === 'PATCH') {
+        expect(init.headers).toMatchObject({ 'If-Match': 'W/"0"' });
+        const body = JSON.parse(String(init.body)) as typeof comptageDefault;
+        expect(body.payload.enabled).toBe(true);
+        return okJson(
+          {
+            ...comptageDefault,
+            payload: { ...comptageDefault.payload, enabled: true },
+            version: 1,
+          },
+          200,
+          'W/"1"',
+        );
+      }
+      return new Response('not found', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(wrap(<AdminModulesWidget />));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('comptage-pieces-billets-module-panel')).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByTestId('admin-comptage-toggle-enabled'));
+    fireEvent.click(screen.getByTestId('admin-comptage-save'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('admin-comptage-save-success')).toBeTruthy();
+    });
   });
 });

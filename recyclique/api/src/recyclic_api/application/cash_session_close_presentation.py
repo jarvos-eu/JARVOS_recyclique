@@ -142,5 +142,7 @@ def present_close_cash_session_outcome(
             "report_email_sent": email_sent,
             "paheko_sync_correlation_id": paheko_cid,
             "paheko_outbox_item_id": paheko_oid,
+            "anomaly_close_sheet": outcome.anomaly_close_sheet,
+            "close_sheet_pdf_url": outcome.close_sheet_pdf_url,
         }
     )

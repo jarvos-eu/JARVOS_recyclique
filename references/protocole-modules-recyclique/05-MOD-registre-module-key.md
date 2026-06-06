@@ -91,7 +91,7 @@ Les capacités **Adhérents**, **Synchronisation Paheko** et **Config admin simp
 | **`kpi-live-banner`** | **pilote** (+ obligatoire v2 bandeau) | slice-transverse | **actif** (handler + tests 2026-05-20) | `1.0.0` → [`kpi-live-banner.v1.json`](../config-modules-site-id/schemas/kpi-live-banner.v1.json) | `recyclique_moduleConfig_getSiteModuleConfig`, `recyclique_moduleConfig_patchSiteModuleConfig` | `recyclique_exploitation_getLiveSnapshot` ; **deprecated** `recyclique_exploitation_patchBandeauLiveSlice` | Epic 4 · `4-1`…`4-6b` · Epic 9.6 **done** |
 | **`cashflow`** | **obligatoire v2** | domaine-parcours | **réservé** | *À définir* (ex. `1.0.0`) | idem générique (post-fusion) | Famille `recyclique_cashSessions_*`, `POST /v1/sales/`, etc. | Epic 6 · PRD §7 |
 | **`reception`** | **obligatoire v2** | domaine-parcours | **réservé** | *À définir* | idem | Famille `recyclique_reception_*` sous `/v1/reception/` | Epic 7 · PRD §7 |
-| **`comptage-pieces-billets`** | **optionnel** (pilote #2 protocole) | workflow-step | **réservé** | *À définir* — **données métier en tables**, pas god-namespace JSON | idem | Clôture caisse + outbox Paheko (pas d’op unique figée) | Epic 6 clôture · T-MET-1 · [`08-MOD-exemple-pilote-comptage-pieces-billets.md`](08-MOD-exemple-pilote-comptage-pieces-billets.md) |
+| **`comptage-pieces-billets`** | **optionnel** (pilote #2 protocole) | workflow-step | **actif** (Story **9.13**) | `1.0.0` → [`comptage-pieces-billets.v1.json`](../config-modules-site-id/schemas/comptage-pieces-billets.v1.json) | idem | Clôture caisse + outbox Paheko (pas d’op unique figée) | Epic 6 clôture · Story **9.13** · [`08-MOD-exemple-pilote-comptage-pieces-billets.md`](08-MOD-exemple-pilote-comptage-pieces-billets.md) |
 | **`helloasso`** | **obligatoire v2** (connecteur) | connecteur | **réservé** | *À définir* (secrets **hors** payload JSON générique) | idem | Étude / spec migration Paheko ; pas d’`operationId` unique dans ce registre | Epic 9 · Story 9.4 · PRD §7.1 |
 | **`eco-organismes`** | **obligatoire v2** | module-metier | **réservé** | *À définir* (mappings super-admin ≠ tout le métier) | idem | Module déclarations (à stabiliser dans OpenAPI) | Epic 9 · PRD §9.5 · **après** preuve bandeau |
 | **`adherents`** | **obligatoire v2** | module-metier | **réservé** | *À définir* — vie associative minimale (FR60) | idem | API adhérents / vie asso (à stabiliser) | Epic 9 · PRD §7.1 |
@@ -120,7 +120,7 @@ Les capacités **Adhérents**, **Synchronisation Paheko** et **Config admin simp
 | `kpi-live-banner` | [`kpi-live-banner.v1.json`](../config-modules-site-id/schemas/kpi-live-banner.v1.json) | **Oui** (seul schéma publié) |
 | `config-admin-simple` | [`config-admin-simple.v1.json`](../config-modules-site-id/schemas/config-admin-simple.v1.json) | **Placeholder** P1 (Story 9.6 — payload minimal) |
 | `cashflow`, `reception`, `helloasso`, `eco-organismes`, `adherents` | *Absent* — ligne **réservée** §3 | **Non** tant que HITL + fichier schema |
-| `comptage-pieces-billets` | *Absent* — stub minimal attendu (Q-HITL-12) | Métier en **tables** ; JSON config étroit si actif |
+| `comptage-pieces-billets` | [`comptage-pieces-billets.v1.json`](../config-modules-site-id/schemas/comptage-pieces-billets.v1.json) | **Oui** (Story 9.13) | Métier en **tables** ; JSON config étroit |
 | `synchronisation-paheko` | **N/A** | Hors `module-config` nominal |
 
 **Crosswalk grep / fusion OpenAPI :** [`18-MOD-config-modules-crosswalk.md`](18-MOD-config-modules-crosswalk.md) §7 — ne pas promouvoir une clé **actif** sans **(a)** schéma publié ou **(b)** HITL « config vide v1 ».
@@ -287,7 +287,7 @@ Source epics : **FR56**, Epic 7.
 |-------|--------|
 | **Statut produit** | **Optionnel** par site (feature module) |
 | **Type** | workflow-step (+ tables métier) |
-| **Registre serveur** | **réservé** |
+| **Registre serveur** | **actif** (Story **9.13**) |
 | **Distinction critique** | **Ne pas** modéliser le comptage uniquement dans `payload` JSON générique — volumétrie, contraintes, audit Paheko → **tables dédiées** (ADR-001 § god-namespace) |
 
 #### Dépendances
@@ -301,7 +301,14 @@ Source epics : **FR56**, Epic 7.
 
 #### Schéma JSON config
 
-**À définir** — périmètre attendu **étroit** : ex. `{ "enabled": true, "skip_allowed": false }` — les **montants et dénominations** restent côté API métier / BDD.
+**Publié** — [`comptage-pieces-billets.v1.json`](../config-modules-site-id/schemas/comptage-pieces-billets.v1.json) (`schema_version` `1.0.0`) :
+
+- `enabled` (boolean) — master switch ;
+- `skip_allowed` (boolean) — passage sans comptage ;
+- `require_denomination_grid` (boolean) — grille 15 lignes obligatoire ;
+- `show_images` (boolean) — pictos stylisés wizard (D-CPT-06).
+
+Les **montants et dénominations** restent côté API métier / BDD (pas dans ce JSON).
 
 #### Opérations OpenAPI — données
 

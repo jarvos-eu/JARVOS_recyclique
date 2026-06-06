@@ -7,7 +7,7 @@ from .reception import router as reception_router
 from .sites import router as sites_router
 from .deposits import router as deposits_router
 from .sales import router as sales_router
-from .cash_sessions import router as cash_sessions_router
+from .cash_sessions import cash_denominations_router, router as cash_sessions_router
 from .cash_registers import router as cash_registers
 from .registered_devices import router as registered_devices
 from .shared_workstation import router as shared_workstation

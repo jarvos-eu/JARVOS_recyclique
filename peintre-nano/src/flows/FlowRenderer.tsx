@@ -16,6 +16,8 @@ export type FlowRendererProps = {
   readonly panels: readonly FlowRendererPanel[];
   readonly activeIndex: number;
   readonly onActiveIndexChange: (index: number) => void;
+  /** Onglets non cliquables (progression séquentielle wizard). */
+  readonly isTabDisabled?: (index: number) => boolean;
   /**
    * Si true, les panneaux inactifs restent montés (ex. wizard caisse : ne pas perdre l’état local des champs).
    */
@@ -34,6 +36,7 @@ export function FlowRenderer({
   panels,
   activeIndex,
   onActiveIndexChange,
+  isTabDisabled,
   keepMounted = false,
   presentation = 'default',
 }: FlowRendererProps): ReactElement {
@@ -53,7 +56,7 @@ export function FlowRenderer({
         onChange={(v) => {
           if (!v) return;
           const idx = panels.findIndex((p) => p.id === v);
-          if (idx >= 0) onActiveIndexChange(idx);
+          if (idx >= 0 && !isTabDisabled?.(idx)) onActiveIndexChange(idx);
         }}
         keepMounted={keepMounted}
         variant={kioskSteps ? 'pills' : 'default'}
@@ -71,6 +74,7 @@ export function FlowRenderer({
             <Tabs.Tab
               key={p.id}
               value={p.id}
+              disabled={isTabDisabled?.(stepIndex) ?? false}
               aria-label={`Étape ${stepIndex + 1} sur ${panels.length} : ${p.title}`}
             >
               {kioskSteps ? (

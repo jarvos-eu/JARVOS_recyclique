@@ -25,6 +25,7 @@ from recyclic_api.core.exceptions import (
 from recyclic_api.models.cash_session import CashSession
 from recyclic_api.models.user import User, UserRole
 from recyclic_api.schemas.cash_session import CashSessionClose
+from recyclic_api.services.cash_denomination_service import CashDenominationService
 from recyclic_api.services.cash_session_service import CashSessionService
 from recyclic_api.utils.domain_exception_http import raise_domain_exception_as_http
 
@@ -46,6 +47,9 @@ class CloseCashSessionOutcome:
 
     session_id: str
     """Identifiant de route (UUID string), inchangé après suppression logique."""
+
+    anomaly_close_sheet: bool = False
+    close_sheet_pdf_url: Optional[str] = None
 
 
 def _audit_ctx_from_session(session: CashSession) -> tuple[Optional[str], Optional[str]]:
@@ -118,6 +122,13 @@ def run_close_cash_session(
                 },
             )
 
+        denom_service = CashDenominationService(db)
+        resolved_amount, grid_response = denom_service.resolve_close_actual_amount(
+            session,
+            close_data.actual_amount,
+        )
+        close_data = close_data.model_copy(update={"actual_amount": resolved_amount})
+
         closing_preview = service.validate_session_close(
             session,
             close_data.actual_amount,
@@ -148,6 +159,13 @@ def run_close_cash_session(
             bool(close_data.variance_comment),
         )
 
+        denom_snapshot = denom_service.build_snapshot_block(session)
+        anomaly_flag, anomaly_url = denom_service.evaluate_anomaly_close_sheet(
+            session,
+            variance_cents=int(round(variance * 100)),
+            grid=grid_response,
+        )
+
         try:
             closed_session = service.close_session_with_amounts(
                 session_id,
@@ -155,6 +173,7 @@ def run_close_cash_session(
                 close_data.variance_comment,
                 preview=closing_preview,
                 sync_correlation_id=request_id,
+                denomination_count_v1=denom_snapshot,
             )
         except PahekoSyncPolicyBlockedError as e:
             site_id, reg_id = _audit_ctx_from_session(session)
@@ -182,7 +201,12 @@ def run_close_cash_session(
                 site_id=site_id,
                 cash_register_id=reg_id,
             )
-            return CloseCashSessionOutcome(closed_session=None, session_id=session_id)
+            return CloseCashSessionOutcome(
+                closed_session=None,
+                session_id=session_id,
+                anomaly_close_sheet=False,
+                close_sheet_pdf_url=None,
+            )
 
         site_id, reg_id = _audit_ctx_from_session(closed_session)
         log_cash_session_closing(
@@ -197,7 +221,10 @@ def run_close_cash_session(
             cash_register_id=reg_id,
         )
         return CloseCashSessionOutcome(
-            closed_session=closed_session, session_id=session_id
+            closed_session=closed_session,
+            session_id=session_id,
+            anomaly_close_sheet=anomaly_flag,
+            close_sheet_pdf_url=anomaly_url,
         )
 
     except NotFoundError as e:

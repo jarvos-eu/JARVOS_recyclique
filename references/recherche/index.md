@@ -16,6 +16,8 @@ Prompts et réponses de recherche externe (Perplexity, Claude.ai, GPT, etc.) et 
 
 | Fichier | Sujet / usage |
 |---------|----------------|
+| **2026-06-06_comptage-pieces-billets-fermeture-caisse-ux-terrain_perplexity_prompt.md** | **Perplexity Pro** — UX terrain comptage pièces/billets à la clôture, référentiel dénominations EUR, fond de caisse, archivage ; amont module `comptage-pieces-billets` (Socle v2 pilote La Clique). Complète recherche compta mai 2026. |
+| **2026-06-06_comptage-pieces-billets-fermeture-caisse-ux-terrain_perplexity_reponse.md** | **Réponse** Perplexity — référentiel 15 dénominations (500 € masqué par défaut), UX grille hybride, fond compté dans le tiroir, archivage 10 ans, wireframe 7 étapes, arbitrages P0/P1. |
 | **2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_prompt.md** | **Perplexity Pro** — prompt Deep Research : fermeture caisse associative, module comptage monnaie, ventes réemploi 7070 / dons 7541, dons matière -18 ; amont brainstorm Liaison Paheko (mai 2026). |
 | **2026-05-21_liaison-paheko-caisse-compta-terrain_perplexity_reponse.md** | **Réponse** Perplexity (1re passe). Ventilée → [guide](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md), `decisions`, `repertoire-comptes`. |
 | **2026-05-21_validation-comptes-liaison-paheko_perplexity_prompt.md** | **2e passe** Perplexity — prompt **autonome** (contexte + 1re recherche + plan Paheko/Recyclique + 11 questions dans le bloc copier-coller). |

@@ -13,7 +13,9 @@ from recyclic_api.models.site import Site
 from recyclic_api.models.site_module_config import SiteModuleConfig
 from recyclic_api.models.user import User, UserRole
 from recyclic_api.modules.module_config.registry import (
+    MODULE_KEY_COMPTAGE_PIECES_BILLETS,
     MODULE_KEY_KPI_LIVE_BANNER,
+    SCHEMA_VERSION_COMPTAGE_PIECES_BILLETS_V1,
     SCHEMA_VERSION_KPI_LIVE_BANNER_V1,
     get_registry_entry,
     is_active_module_key,
@@ -32,10 +34,27 @@ KPI_LIVE_BANNER_DEFAULT_PAYLOAD: dict[str, Any] = {
     "refresh_interval_seconds": 60,
 }
 
+COMPTAGE_PIECES_BILLETS_DEFAULT_PAYLOAD: dict[str, Any] = {
+    "enabled": False,
+    "skip_allowed": True,
+    "require_denomination_grid": False,
+    "show_images": True,
+}
+
+_DEFAULT_PAYLOAD_BY_MODULE: dict[str, dict[str, Any]] = {
+    MODULE_KEY_KPI_LIVE_BANNER: KPI_LIVE_BANNER_DEFAULT_PAYLOAD,
+    MODULE_KEY_COMPTAGE_PIECES_BILLETS: COMPTAGE_PIECES_BILLETS_DEFAULT_PAYLOAD,
+}
+
 
 def kpi_live_banner_slice_enabled_from_payload(payload: dict[str, Any]) -> bool:
     """Slice actif si au moins un flux d'affichage est activé."""
     return bool(payload.get("show_on_caisse")) or bool(payload.get("show_on_reception"))
+
+
+def comptage_module_enabled_from_payload(payload: dict[str, Any]) -> bool:
+    """Master switch module comptage pièces/billets."""
+    return bool(payload.get("enabled"))
 
 
 class ModuleConfigService:
@@ -78,17 +97,39 @@ class ModuleConfigService:
         entry = get_registry_entry(module_key)
         if entry is None:
             raise NotFoundError("Module inconnu")
-        if module_key == entry.module_key:
-            payload = dict(KPI_LIVE_BANNER_DEFAULT_PAYLOAD)
-            return (
-                ModuleConfigDocument(
-                    schema_version=SCHEMA_VERSION_KPI_LIVE_BANNER_V1,
-                    payload=payload,
-                    version=0,
-                ),
-                0,
+        default_payload = _DEFAULT_PAYLOAD_BY_MODULE.get(module_key)
+        if default_payload is None:
+            raise NotFoundError("Module inconnu")
+        return (
+            ModuleConfigDocument(
+                schema_version=entry.schema_version,
+                payload=dict(default_payload),
+                version=0,
+            ),
+            0,
+        )
+
+    def resolve_payload_for_site(self, site_id: uuid.UUID, module_key: str) -> dict[str, Any]:
+        """Lecture interne sans auth — defaults registre si aucune ligne PG."""
+        self.assert_module_key(module_key)
+        row = (
+            self.db.query(SiteModuleConfig)
+            .filter(
+                SiteModuleConfig.site_id == site_id,
+                SiteModuleConfig.module_key == module_key,
             )
-        raise NotFoundError("Module inconnu")
+            .one_or_none()
+        )
+        if row is None:
+            doc, _ = self.default_document(module_key)
+            return dict(doc.payload)
+        if isinstance(row.payload, dict):
+            return dict(row.payload)
+        fallback = _DEFAULT_PAYLOAD_BY_MODULE.get(module_key)
+        if fallback is not None:
+            return dict(fallback)
+        doc, _ = self.default_document(module_key)
+        return dict(doc.payload)
 
     def get_site_module_config(
         self,
@@ -111,9 +152,15 @@ class ModuleConfigService:
         if row is None:
             return self.default_document(module_key)
 
+        if isinstance(row.payload, dict):
+            payload = dict(row.payload)
+        else:
+            fallback = _DEFAULT_PAYLOAD_BY_MODULE.get(module_key)
+            payload = dict(fallback) if fallback is not None else {}
+
         doc = ModuleConfigDocument(
             schema_version=row.schema_version,
-            payload=dict(row.payload) if isinstance(row.payload, dict) else {},
+            payload=payload,
             version=row.version,
         )
         return doc, int(row.version)

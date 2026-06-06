@@ -81,6 +81,8 @@ export interface paths {
          *     site actif ; voir Story 2.3), alignée sur `GET /v1/users/me/permissions`.
          *     Le client ne reconstruit pas l'enveloppe depuis des manifests ; il consomme cette réponse.
          *     Lecture toujours recalculée depuis la base (pas d'inférence silencieuse).
+         *     **Story 27.2** : paramètre `device_id` ou en-tête `X-Recyclique-Device-Id` (prioritaire) fusionne
+         *     le contexte poste partagé (`device_id`, `operator_user_id`, `module_key`, `override_active`).
          */
         get: operations["recyclique_users_getContextEnvelope"];
         put?: never;
@@ -105,6 +107,7 @@ export interface paths {
          * @description Recalcul serveur après changement de site, caisse, session ou poste (spec 1.3 §4.2).
          *     Même charge utile que `GET /v1/users/me/context` ; endpoint dédié pour que le client déclenche
          *     explicitement un nouveau calcul sans supposer de mise à jour silencieuse.
+         *     **Story 27.2** : fusion contexte poste partagé via `device_id` query ou en-tête `X-Recyclique-Device-Id`.
          */
         post: operations["recyclique_users_refreshContextEnvelope"];
         delete?: never;
@@ -351,6 +354,423 @@ export interface paths {
         patch: operations["recyclique_cashRegisters_updateCashRegister"];
         trace?: never;
     };
+    "/v1/registered-devices/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lister les postes partagés enregistrés
+         * @description Registre serveur des postes partagés enrôlés (Epic 27). Identifiant canonique **`device_id`**
+         *     — distinct de `CashRegisterV1Response.id` (caisse) et de `PosteReception` (session réception métier).
+         *     Réservé **SUPER_ADMIN**. Réponses `Cache-Control: no-store`.
+         */
+        get: operations["recyclique_registeredDevices_listRegisteredDevices"];
+        put?: never;
+        /**
+         * Créer un poste partagé (shared_workstation)
+         * @description MVP : seul `device_type=shared_workstation`. Statut initial par défaut `pending_enrollment`.
+         *     Allowlist `allowed_module_keys` validée contre le registre serveur (`is_active_module_key`).
+         */
+        post: operations["recyclique_registeredDevices_createRegisteredDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/registered-devices/{device_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Détail d'un poste partagé par device_id */
+        get: operations["recyclique_registeredDevices_getRegisteredDeviceById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Mettre à jour un poste partagé */
+        patch: operations["recyclique_registeredDevices_updateRegisteredDevice"];
+        trace?: never;
+    };
+    "/v1/registered-devices/{device_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Révoquer un poste partagé
+         * @description Révocation explicite : `status=revoked` et `revoked_at` renseigné (idempotent si déjà révoqué).
+         */
+        post: operations["recyclique_registeredDevices_revokeRegisteredDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Contexte poste partagé résolu (vérité serveur)
+         * @description Story 27.2 — tuple autoritaire `site_id + device_id + operator_user_id + module_key + override_active`.
+         *     Refus **403** `SHARED_WORKSTATION_OPERATOR_REQUIRED` sans session opérateur active.
+         *     En-tête `X-Recyclique-Device-Id` requis (ou paramètre `device_id`).
+         *     Intersection modules effective — story 27.7.
+         */
+        get: operations["recyclique_sharedWorkstation_getContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/enroll/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Compléter l'enrôlement poste (semi-public)
+         * @description Story 27.4 — route semi-publique sans JWT utilisateur. Body `{ "code": "XXXXXXXX" }`.
+         *     Retourne `device_secret` une seule fois ; stockage client IndexedDB (pas localStorage).
+         *     QR code scanner = amélioration future, hors MVP.
+         */
+        post: operations["recyclique_sharedWorkstation_completeEnrollment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/device-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Statut poste avec credential device valide
+         * @description Story 27.4 — exige en-têtes `X-Recyclique-Device-Id` + `X-Recyclique-Device-Credential`.
+         *     Pas de session opérateur requise.
+         */
+        get: operations["recyclique_sharedWorkstation_getDeviceStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/operator-session/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Statut session opérateur sur le poste
+         * @description Story 27.6 — credential device requis ; retourne si une session opérateur active existe (vérité serveur).
+         *     `Cache-Control: no-store`.
+         */
+        get: operations["recyclique_sharedWorkstation_getOperatorSessionStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/operator-session/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Terminer session opérateur (verrouillage / passage de main / timeout)
+         * @description Story 27.9 — credential device obligatoire ; fin session avec raison audit.
+         *     Idempotent si session déjà terminée. `Cache-Control: no-store`.
+         */
+        post: operations["recyclique_sharedWorkstation_endOperatorSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/operator-session/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Heartbeat activité opérateur (throttled)
+         * @description Story 27.9 — met à jour `last_activity_at` (max 1/min). 204 si throttled ou touché.
+         *     `Cache-Control: no-store`.
+         */
+        post: operations["recyclique_sharedWorkstation_touchOperatorSessionActivity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/override/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Activer override SuperAdmin (confirmation PIN)
+         * @description Story 27.10 — credential device + session opérateur SuperAdmin active ;
+         *     confirmation PIN opérateur (step-up). `Cache-Control: no-store`.
+         */
+        post: operations["recyclique_sharedWorkstation_activateOverride"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/override/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Désactiver override SuperAdmin
+         * @description Story 27.10 — sortie explicite override. Idempotent si déjà inactif.
+         *     `Cache-Control: no-store`.
+         */
+        post: operations["recyclique_sharedWorkstation_deactivateOverride"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/operator-pin/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Vérifier PIN opérateur et démarrer session
+         * @description Story 27.6 — distinct de `POST /v1/auth/pin` (caisse JWT). Credential device obligatoire ;
+         *     JWT utilisateur optionnel (acteur audit). Lockout 5 échecs / 5 min sur `device_id + operator_user_id`.
+         */
+        post: operations["recyclique_sharedWorkstation_verifyOperatorPin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/effective-modules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Modules effectifs poste partagé (intersection serveur)
+         * @description Story 27.7 — intersection `config module site` × `allowlist poste` × `permissions opérateur`.
+         *     Refus **403** sans session opérateur active. `Cache-Control: no-store`.
+         */
+        get: operations["recyclique_sharedWorkstation_getEffectiveModules"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/probe-module/{module_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Probe garde module effectif (preuve refus 403)
+         * @description Story 27.7 — route minimale sans données métier ; exige module ∈ intersection effective.
+         */
+        get: operations["recyclique_sharedWorkstation_probeModule"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/reception-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Résumé brouillon réception poste partagé (Story 27.8) */
+        get: operations["recyclique_sharedWorkstation_getReceptionDraft"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/reception-draft/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reprendre brouillon réception (confirm=true) */
+        post: operations["recyclique_sharedWorkstation_resumeReceptionDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shared-workstation/reception-draft/abandon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Abandonner brouillon réception (confirm=true) */
+        post: operations["recyclique_sharedWorkstation_abandonReceptionDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/registered-devices/{device_id}/clear-operator-pin-lockout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Débloquer lockout PIN opérateur (SuperAdmin) */
+        post: operations["recyclique_registeredDevices_clearOperatorPinLockout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/registered-devices/{device_id}/enrollment-codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Générer un code d'enrôlement */
+        post: operations["recyclique_registeredDevices_issueEnrollmentCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/registered-devices/{device_id}/mark-identity-lost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marquer identité locale perdue */
+        post: operations["recyclique_registeredDevices_markIdentityLost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/registered-devices/{device_id}/resolve-conflict": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Résoudre un conflit d'identité poste */
+        post: operations["recyclique_registeredDevices_resolveConflict"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/cash-sessions/current": {
         parameters: {
             query?: never;
@@ -510,6 +930,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/cash-denominations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Référentiel dénominations EUR (Story 9.11)
+         * @description Liste les **15** codes stables ``EUR_001`` … ``EUR_50000``. ``display_default: false`` uniquement pour ``EUR_50000`` (D-CPT-01).
+         */
+        get: operations["recyclique_cashDenominations_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cash-sessions/{session_id}/denomination-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lire le comptage par dénomination (Story 9.11)
+         * @description Retourne la grille, les totaux **serveur** (``total_counted_cents``, ``theoretical_cash_cents``, ``variance_cents``,
+         *     ``float_target_cents``, ``withdraw_cents``) et le référentiel embarqué.
+         */
+        get: operations["recyclique_cashSessions_getDenominationCount"];
+        /**
+         * Enregistrer le comptage par dénomination (Story 9.11)
+         * @description UPSERT des quantités par code pour une session **ouverte**. Codes absents du corps traités comme **0**.
+         *     Refus si session fermée.
+         */
+        put: operations["recyclique_cashSessions_upsertDenominationCount"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/cash-sessions/{session_id}/close": {
         parameters: {
             query?: never;
@@ -548,6 +1014,13 @@ export interface paths {
          *     (`GET /v1/admin/settings/cash-close-variance-max`, défaut 2,00 €), réponse **422** avec `detail`
          *     explicite (ex. « Écart de caisse (+X.XX€) supérieur au seuil autorisé (Y.YY€)… »). Distinct de la
          *     tolérance commentaire obligatoire 0,05 € côté métier caisse.
+         *
+         *     **Story 9.11** — module ``comptage-pieces-billets`` actif (``enabled: true``, ``skip_allowed: false``,
+         *     ``require_denomination_grid: true``) : un ``PUT …/denomination-count`` valide est **requis** avant clôture.
+         *     Réponse **400** ``COMPTAGE_REQUIRED`` si grille absente ou total 0 avec théorique espèces > 0.
+         *     Le serveur **écrase** ``actual_amount`` par le total grille ; écart client → **400** ``COMPTAGE_AMOUNT_MISMATCH``.
+         *     Champ ``actual_amount`` **déprécié** comme vérité terrain quand le module est actif.
+         *     Réponse 200 enrichie : ``anomaly_close_sheet``, ``close_sheet_pdf_url`` (PDF généré en 9.12).
          */
         post: operations["recyclique_cashSessions_closeSession"];
         delete?: never;
@@ -3560,7 +4033,48 @@ export interface components {
             /** @description Code résolution mapping 8.3 (`mapping_missing`, `mapping_disabled`, …) si refus P2. */
             mapping_resolution_code?: string | null;
         };
+        CashDenominationV1: {
+            /** @example EUR_2000 */
+            code: string;
+            label_fr: string;
+            /** @enum {string} */
+            kind: "coin" | "note";
+            unit_value_cents: number;
+            display_order: number;
+            display_default: boolean;
+        };
+        DenominationCountLineInputV1: {
+            code: string;
+            quantity: number;
+        };
+        DenominationCountUpsertV1: {
+            lines: components["schemas"]["DenominationCountLineInputV1"][];
+        };
+        DenominationCountBreakdownLineV1: {
+            code: string;
+            quantity: number;
+            unit_value_cents: number;
+            line_total_cents: number;
+        };
+        DenominationCountResponseV1: {
+            denominations: components["schemas"]["CashDenominationV1"][];
+            breakdown: components["schemas"]["DenominationCountBreakdownLineV1"][];
+            total_counted_cents: number;
+            theoretical_cash_cents: number;
+            variance_cents: number;
+            /** @description Fond cible à laisser dans le tiroir (centimes). */
+            float_target_cents: number;
+            /** @description Montant à retirer après clôture (centimes). */
+            withdraw_cents: number;
+            /** Format: date-time */
+            recorded_at?: string | null;
+            has_count_recorded: boolean;
+        };
         CashSessionCloseBody: {
+            /**
+             * @description Montant physique compté. **Déprécié** comme vérité terrain si module comptage actif (Story 9.11) —
+             *     le serveur utilise le total grille.
+             */
             actual_amount: number;
             variance_comment?: string | null;
         };
@@ -3702,6 +4216,185 @@ export interface components {
             enable_virtual?: boolean;
             enable_deferred?: boolean;
         };
+        /**
+         * @description Poste partagé enrôlé (`RegisteredDevice`). **`device_id`** est l'identifiant stable —
+         *     ne pas confondre avec `CashRegisterV1Response.id` (caisse) ni l'id session `PosteReception`.
+         */
+        RegisteredDeviceV1Response: {
+            /** Format: uuid */
+            device_id: string;
+            /** @enum {string} */
+            device_type: "shared_workstation";
+            name: string;
+            location?: string | null;
+            /** Format: uuid */
+            site_id: string;
+            /** @enum {string} */
+            status: "active" | "pending_enrollment" | "identity_lost" | "conflict" | "revoked";
+            /** Format: date-time */
+            revoked_at?: string | null;
+            allowed_module_keys: string[];
+            inactivity_timeout_seconds?: number | null;
+            /** Format: date-time */
+            last_contact_at?: string | null;
+            /** Format: date-time */
+            created_at?: string | null;
+            /** Format: date-time */
+            updated_at?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        RegisteredDeviceV1Create: {
+            name: string;
+            /** Format: uuid */
+            site_id: string;
+            location?: string | null;
+            /**
+             * @default shared_workstation
+             * @enum {string}
+             */
+            device_type: "shared_workstation";
+            /** @default pending_enrollment */
+            status: string;
+            /** @default [] */
+            allowed_module_keys: string[];
+            inactivity_timeout_seconds?: number | null;
+        };
+        RegisteredDeviceV1Update: {
+            name?: string;
+            location?: string | null;
+            /** Format: uuid */
+            site_id?: string;
+            /** @enum {string} */
+            status?: "active" | "pending_enrollment" | "identity_lost" | "conflict";
+            allowed_module_keys?: string[];
+            inactivity_timeout_seconds?: number;
+            /** Format: date-time */
+            last_contact_at?: string | null;
+        };
+        RegisteredDeviceRevokeV1Request: {
+            reason?: string;
+        };
+        DeviceEnrollmentCodeV1IssueRequest: {
+            /** @enum {string} */
+            purpose: "initial_enrollment" | "reconnect" | "replace";
+        };
+        DeviceEnrollmentCodeV1IssueResponse: {
+            code: string;
+            /** Format: date-time */
+            expires_at: string;
+            purpose: string;
+        };
+        SharedWorkstationEnrollCompleteV1Request: {
+            code: string;
+        };
+        SharedWorkstationEnrollCompleteV1Response: {
+            /** Format: uuid */
+            device_id: string;
+            /** @description Secret one-time — jamais re-listable */
+            device_secret: string;
+            device_name: string;
+            /** Format: uuid */
+            site_id: string;
+        };
+        SharedWorkstationDeviceStatusV1Response: {
+            /** Format: uuid */
+            device_id: string;
+            device_name: string;
+            /** Format: uuid */
+            site_id: string;
+            status: string;
+            allowed_module_keys: string[];
+            inactivity_timeout_seconds?: number | null;
+        };
+        SharedWorkstationOperatorSessionStatusV1Response: {
+            active: boolean;
+            /** Format: uuid */
+            operator_user_id?: string | null;
+            /** Format: uuid */
+            session_id?: string | null;
+            /** Format: date-time */
+            last_activity_at?: string | null;
+            inactivity_timeout_seconds?: number | null;
+            seconds_until_lock?: number | null;
+            /** @default false */
+            override_active: boolean;
+            /** Format: date-time */
+            override_started_at?: string | null;
+            override_seconds_remaining?: number | null;
+            /** @default false */
+            can_activate_super_admin_override: boolean;
+        };
+        SharedWorkstationOverrideActivateV1Request: {
+            confirmation_pin: string;
+        };
+        SharedWorkstationOverrideActivateV1Response: {
+            override_active: boolean;
+            /** Format: date-time */
+            override_started_at: string;
+            /** Format: date-time */
+            override_expires_at: string;
+        };
+        SharedWorkstationOverrideDeactivateV1Request: {
+            /**
+             * @default user_exit
+             * @enum {string}
+             */
+            reason: "user_exit" | "admin_action";
+        };
+        SharedWorkstationOverrideDeactivateV1Response: {
+            override_active: boolean;
+        };
+        SharedWorkstationOperatorSessionEndV1Request: {
+            /**
+             * @default manual_lock
+             * @enum {string}
+             */
+            reason: "manual_lock" | "handoff" | "timeout";
+        };
+        SharedWorkstationOperatorSessionEndV1Response: {
+            ended: boolean;
+            /** Format: uuid */
+            session_id?: string | null;
+        };
+        SharedWorkstationOperatorPinVerifyV1Request: {
+            /** Format: uuid */
+            operator_user_id: string;
+            pin: string;
+        };
+        SharedWorkstationOperatorPinVerifyV1Response: {
+            /** Format: uuid */
+            session_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /** Format: uuid */
+            operator_user_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date-time */
+            started_at: string;
+        };
+        ClearOperatorPinLockoutV1Request: {
+            /** Format: uuid */
+            operator_user_id: string;
+        };
+        RegisteredDeviceConflictResolveV1Request: {
+            /** @enum {string} */
+            action: "refuse" | "replace_definitively" | "create_distinct";
+            name?: string;
+        };
+        RegisteredDeviceConflictResolveV1Response: {
+            /** Format: uuid */
+            device_id: string;
+            status: string;
+            /** Format: uuid */
+            distinct_device_id?: string | null;
+            /** @description Code replace auto-émis pour action replace_definitively */
+            enrollment_code?: string | null;
+            /** Format: date-time */
+            enrollment_code_expires_at?: string | null;
+            enrollment_code_purpose?: string | null;
+        };
         CashRegisterStatusRowV1: {
             /** Format: uuid */
             id: string;
@@ -3772,6 +4465,10 @@ export interface components {
              *     Présent pour les sessions ouvertes ; null si session fermée.
              */
             closing_preview_theoretical_amount?: number | null;
+            /** @description Story 9.11 — true si feuille PDF anomalie requise (écart, seuil, coupure rare EUR_50000). */
+            anomaly_close_sheet?: boolean | null;
+            /** @description Story 9.11 — URL documentée pour la feuille PDF anomalie ; absent si ``anomaly_close_sheet`` est false. */
+            close_sheet_pdf_url?: string | null;
         } & {
             [key: string]: unknown;
         };
@@ -4242,6 +4939,11 @@ export interface components {
             presentation_labels?: {
                 [key: string]: string;
             } | null;
+            /**
+             * @description Story 27.7 — intersection serveur site × allowlist poste × permissions opérateur.
+             *     Présent uniquement quand device_id + operator_user_id actifs ; sinon absent ou [].
+             */
+            effective_module_keys?: string[] | null;
         };
         /** @description Identifiants de contexte visibles (alignement Story 1.3, ContextEnvelope lorsque exposes au client). */
         ExploitationContextIds: {
@@ -4249,6 +4951,46 @@ export interface components {
             cash_register_id?: string;
             cash_session_id?: string | null;
             reception_post_id?: string | null;
+            /** @description UUID canonique RegisteredDevice (Story 27.2) — distinct de cash_register_id et reception_post_id. */
+            device_id?: string | null;
+            /** @description Opérateur PIN actif sur le poste (session serveur device_operator_sessions). */
+            operator_user_id?: string | null;
+            /** @description Module courant session opérateur ; intersection effective en story 27.7. */
+            module_key?: string | null;
+            /** @description Override SuperAdmin actif côté serveur (activation complète story 27.10). */
+            override_active?: boolean | null;
+        };
+        /**
+         * @description Contexte poste partagé résolu côté serveur (Story 27.2).
+         *     Invariant : site_id + device_id + operator_user_id + module_key + override_active.
+         */
+        SharedWorkstationContext: {
+            site_id?: string | null;
+            /** @description UUID canonique RegisteredDevice — distinct cash_register_id / reception_post_id. */
+            device_id?: string | null;
+            operator_user_id?: string | null;
+            module_key?: string | null;
+            override_active?: boolean | null;
+            /** @enum {string} */
+            runtime_state?: "ok" | "degraded" | "forbidden";
+            restriction_message?: string | null;
+            /** @description Story 27.7 — modules effectifs (intersection serveur) si session opérateur active. */
+            effective_module_keys?: string[] | null;
+        };
+        SharedWorkstationEffectiveModulesV1Response: {
+            module_keys: string[];
+            /** Format: date-time */
+            computed_at: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /** Format: uuid */
+            operator_user_id: string;
+        };
+        SharedWorkstationProbeModuleV1Response: {
+            module_key: string;
+            effective: boolean;
         };
         /**
          * @description **Contrat gelé (Story 2.6 — codegen / types partagés)** : présence des champs nommés ci-dessous,
@@ -5162,8 +5904,14 @@ export interface operations {
     };
     recyclique_users_getContextEnvelope: {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description UUID poste partagé enrôlé (Story 27.2). */
+                device_id?: string;
+            };
+            header?: {
+                /** @description UUID poste partagé — prioritaire sur device_id query si présent. */
+                "X-Recyclique-Device-Id"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5191,8 +5939,12 @@ export interface operations {
     };
     recyclique_users_refreshContextEnvelope: {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                device_id?: string;
+            };
+            header?: {
+                "X-Recyclique-Device-Id"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -6101,6 +6853,988 @@ export interface operations {
             };
         };
     };
+    recyclique_registeredDevices_listRegisteredDevices: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+                site_id?: string;
+                status?: string;
+                include_revoked?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Liste des postes */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceV1Response"][];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Accès refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_registeredDevices_createRegisteredDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisteredDeviceV1Create"];
+            };
+        };
+        responses: {
+            /** @description Poste créé */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceV1Response"];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Accès refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Site introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Corps invalide (device_type, module_key, etc.) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_registeredDevices_getRegisteredDeviceById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Poste */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceV1Response"];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Accès refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Poste introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_registeredDevices_updateRegisteredDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisteredDeviceV1Update"];
+            };
+        };
+        responses: {
+            /** @description Poste mis à jour */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceV1Response"];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Accès refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Poste introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Corps invalide */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_registeredDevices_revokeRegisteredDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["RegisteredDeviceRevokeV1Request"];
+            };
+        };
+        responses: {
+            /** @description Poste révoqué */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceV1Response"];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Accès refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Poste introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_getContext: {
+        parameters: {
+            query?: {
+                device_id?: string;
+            };
+            header?: {
+                "X-Recyclique-Device-Id"?: string;
+                /** @description Module annoncé — doit matcher active_module_key si session active (409 CONTEXT_STALE si désaligné). */
+                "X-Recyclique-Context-Module-Key"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Contexte poste partagé résolu */
+            200: {
+                headers: {
+                    /** @description no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationContext"];
+                };
+            };
+            /** @description device_id manquant ou invalide */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Poste invalide ou opérateur requis */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Poste introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description CONTEXT_STALE — en-têtes désalignés */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_completeEnrollment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SharedWorkstationEnrollCompleteV1Request"];
+            };
+        };
+        responses: {
+            /** @description Enrôlement complété */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationEnrollCompleteV1Response"];
+                };
+            };
+            /** @description ENROLLMENT_CODE_INVALID */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description ENROLLMENT_CODE_CONSUMED */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description ENROLLMENT_CODE_EXPIRED */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description DEVICE_ENROLLMENT_STATE_INVALID */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_getDeviceStatus: {
+        parameters: {
+            query?: {
+                device_id?: string;
+            };
+            header: {
+                "X-Recyclique-Device-Id"?: string;
+                /** @description Secret émis à l'enrôlement (preuve possession poste). */
+                "X-Recyclique-Device-Credential": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Statut poste */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationDeviceStatusV1Response"];
+                };
+            };
+            /** @description DEVICE_CREDENTIAL_REVOKED ou DEVICE_IDENTITY_CONFLICT */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_getOperatorSessionStatus: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Recyclique-Device-Id": string;
+                "X-Recyclique-Device-Credential": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Statut session opérateur */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationOperatorSessionStatusV1Response"];
+                };
+            };
+            /** @description Credential device invalide */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_endOperatorSession: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Recyclique-Device-Id": string;
+                "X-Recyclique-Device-Credential": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SharedWorkstationOperatorSessionEndV1Request"];
+            };
+        };
+        responses: {
+            /** @description Session terminée ou déjà absente */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationOperatorSessionEndV1Response"];
+                };
+            };
+            /** @description Credential device invalide */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_touchOperatorSessionActivity: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Recyclique-Device-Id": string;
+                "X-Recyclique-Device-Credential": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Activité enregistrée ou throttled */
+            204: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Pas de session opérateur active */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_activateOverride: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Recyclique-Device-Id": string;
+                "X-Recyclique-Device-Credential": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SharedWorkstationOverrideActivateV1Request"];
+            };
+        };
+        responses: {
+            /** @description Override activé */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationOverrideActivateV1Response"];
+                };
+            };
+            /** @description Refus activation (non SuperAdmin, PIN incorrect, pas de session) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_deactivateOverride: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Recyclique-Device-Id": string;
+                "X-Recyclique-Device-Credential": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SharedWorkstationOverrideDeactivateV1Request"];
+            };
+        };
+        responses: {
+            /** @description Override désactivé */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationOverrideDeactivateV1Response"];
+                };
+            };
+            /** @description Credential device invalide */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_verifyOperatorPin: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Recyclique-Device-Id": string;
+                "X-Recyclique-Device-Credential": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SharedWorkstationOperatorPinVerifyV1Request"];
+            };
+        };
+        responses: {
+            /** @description Session opérateur démarrée */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationOperatorPinVerifyV1Response"];
+                };
+            };
+            /** @description PIN invalide ou opérateur non éligible */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description Lockout PIN actif */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_getEffectiveModules: {
+        parameters: {
+            query?: {
+                device_id?: string;
+            };
+            header?: {
+                "X-Recyclique-Device-Id"?: string;
+                "X-Recyclique-Device-Credential"?: string;
+                "X-Recyclique-Context-Module-Key"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Modules effectifs calculés serveur */
+            200: {
+                headers: {
+                    /** @description no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationEffectiveModulesV1Response"];
+                };
+            };
+            /** @description Opérateur requis ou module refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description CONTEXT_STALE */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_probeModule: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Recyclique-Device-Id"?: string;
+                "X-Recyclique-Context-Module-Key"?: string;
+            };
+            path: {
+                module_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Module autorisé sur ce poste pour l'opérateur actif */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedWorkstationProbeModuleV1Response"];
+                };
+            };
+            /** @description SHARED_WORKSTATION_MODULE_FORBIDDEN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+            /** @description CONTEXT_STALE */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_getReceptionDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Résumé autorisé sans lignes */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aucun brouillon actif */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Opérateur ou module refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_sharedWorkstation_resumeReceptionDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    confirm: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Reprise confirmée */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Refus accès */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Brouillon introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description confirm requis */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    recyclique_sharedWorkstation_abandonReceptionDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    confirm: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Abandon confirmé */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Refus accès */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Brouillon introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description confirm requis */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    recyclique_registeredDevices_clearOperatorPinLockout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClearOperatorPinLockoutV1Request"];
+            };
+        };
+        responses: {
+            /** @description Lockout effacé */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Poste introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_registeredDevices_issueEnrollmentCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceEnrollmentCodeV1IssueRequest"];
+            };
+        };
+        responses: {
+            /** @description Code émis (affiché une seule fois) */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceEnrollmentCodeV1IssueResponse"];
+                };
+            };
+        };
+    };
+    recyclique_registeredDevices_markIdentityLost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Poste marqué identity_lost */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceV1Response"];
+                };
+            };
+        };
+    };
+    recyclique_registeredDevices_resolveConflict: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisteredDeviceConflictResolveV1Request"];
+            };
+        };
+        responses: {
+            /** @description Conflit résolu */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceConflictResolveV1Response"];
+                };
+            };
+        };
+    };
     recyclique_cashSessions_getCurrentOpenSession: {
         parameters: {
             query?: never;
@@ -6586,6 +8320,142 @@ export interface operations {
             };
         };
     };
+    recyclique_cashDenominations_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Référentiel complet */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashDenominationV1"][];
+                };
+            };
+            /** @description Non authentifié */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecycliqueApiError"];
+                };
+            };
+        };
+    };
+    recyclique_cashSessions_getDenominationCount: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description **Story 25.8** — Dernier `context.site_id` connu côté client (`ContextEnvelope`). Si l'en-tête est
+                 *     envoyé, il doit correspondre à la vérité serveur ; sinon **409** avec `code` **`CONTEXT_STALE`**
+                 *     (corps `RecycliqueApiError`).
+                 */
+                "X-Recyclique-Context-Site-Id"?: components["parameters"]["RecycliqueContextSiteIdHeader"];
+                /**
+                 * @description **Story 25.8** — Dernier `context.cash_session_id` connu côté client. Si présent, doit correspondre
+                 *     à l'enveloppe serveur courante ; sinon **409** `CONTEXT_STALE`.
+                 */
+                "X-Recyclique-Context-Cash-Session-Id"?: components["parameters"]["RecycliqueContextCashSessionIdHeader"];
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Grille et totaux calculés serveur */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DenominationCountResponseV1"];
+                };
+            };
+            /** @description Accès refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    recyclique_cashSessions_upsertDenominationCount: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description **Story 25.8** — Dernier `context.site_id` connu côté client (`ContextEnvelope`). Si l'en-tête est
+                 *     envoyé, il doit correspondre à la vérité serveur ; sinon **409** avec `code` **`CONTEXT_STALE`**
+                 *     (corps `RecycliqueApiError`).
+                 */
+                "X-Recyclique-Context-Site-Id"?: components["parameters"]["RecycliqueContextSiteIdHeader"];
+                /**
+                 * @description **Story 25.8** — Dernier `context.cash_session_id` connu côté client. Si présent, doit correspondre
+                 *     à l'enveloppe serveur courante ; sinon **409** `CONTEXT_STALE`.
+                 */
+                "X-Recyclique-Context-Cash-Session-Id"?: components["parameters"]["RecycliqueContextCashSessionIdHeader"];
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DenominationCountUpsertV1"];
+            };
+        };
+        responses: {
+            /** @description Grille enregistrée */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DenominationCountResponseV1"];
+                };
+            };
+            /** @description Session fermée ou validation */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Accès refusé */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session introuvable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     recyclique_cashSessions_closeSession: {
         parameters: {
             query?: never;
@@ -6628,7 +8498,8 @@ export interface operations {
             };
             /**
              * @description Erreur métier / validation fermeture. Codes métier possibles : `CASH_SESSION_CLOSE_HELD_PENDING`
-             *     (tickets en attente), écart sans commentaire, session déjà fermée, etc.
+             *     (tickets en attente), **Story 9.11** `COMPTAGE_REQUIRED`, `COMPTAGE_AMOUNT_MISMATCH`, écart sans commentaire,
+             *     session déjà fermée, etc.
              */
             400: {
                 headers: {

@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
+from recyclic_api.schemas.cash_denomination import DenominationCountSnapshotV1
+
 CorrectionPolicyV1 = Literal["append_only_v1"]
 """Politique unique retenue (story 22.6) : corrections post-clôture = lignes d'ajustement append-only ; pas d'UPDATE du snapshot figé."""
 
@@ -91,7 +93,8 @@ class CashSessionAccountingCloseSnapshotV1(BaseModel):
 
     # 1 = historique (remboursements scalaires seuls côté Paheko mono-ligne si dicts vides).
     # 2 = courant : ventilation remboursements par moyen + dicts journal (P2 Paheko).
-    schema_version: Literal[1, 2] = 2
+    # 3 = Story 9.11 : extension optionnelle denomination_count_v1 (Paheko T1–T3 inchangé).
+    schema_version: Literal[1, 2, 3] = 2
     correction_policy: CorrectionPolicyV1 = "append_only_v1"
 
     session_id: str
@@ -105,6 +108,10 @@ class CashSessionAccountingCloseSnapshotV1(BaseModel):
     closed_at_utc: Optional[str] = None
     totals: CashSessionJournalTotalsV1
     closing: CashSessionCloseSnapshotClosingV1
+    denomination_count_v1: Optional[DenominationCountSnapshotV1] = Field(
+        None,
+        description="Story 9.11 — détail comptage physique (module comptage actif).",
+    )
 
     def model_dump_for_storage(self) -> Dict[str, Any]:
         """Dump JSON-compatible (pour colonne JSON / outbox)."""

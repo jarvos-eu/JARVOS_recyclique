@@ -475,8 +475,60 @@ export type CloseCashSessionBody = {
 };
 
 export type CloseCashSessionSuccess =
-  | { kind: 'closed'; session: Record<string, unknown> }
+  | {
+      kind: 'closed';
+      session: Record<string, unknown>;
+      anomaly_close_sheet?: boolean;
+      close_sheet_pdf_url?: string | null;
+    }
   | { kind: 'deleted'; sessionId: string; message?: string };
+
+/** Story 9.11 — référentiel dénominations EUR (15 lignes). */
+export type CashDenominationV1 = {
+  code: string;
+  label_fr: string;
+  kind: 'coin' | 'note';
+  unit_value_cents: number;
+  display_order: number;
+  display_default: boolean;
+};
+
+export type DenominationCountLineInputV1 = {
+  code: string;
+  quantity: number;
+};
+
+export type DenominationCountBreakdownLineV1 = {
+  code: string;
+  quantity: number;
+  unit_value_cents: number;
+  line_total_cents: number;
+};
+
+/** Réponse GET/PUT denomination-count — totaux et dérivés **serveur** (Story 9.11). */
+export type DenominationCountResponseV1 = {
+  denominations: CashDenominationV1[];
+  breakdown: DenominationCountBreakdownLineV1[];
+  total_counted_cents: number;
+  theoretical_cash_cents: number;
+  variance_cents: number;
+  float_target_cents: number;
+  withdraw_cents: number;
+  recorded_at?: string | null;
+  has_count_recorded: boolean;
+};
+
+export type DenominationCountUpsertV1 = {
+  lines: DenominationCountLineInputV1[];
+};
+
+export type GetCashDenominationsResult =
+  | { ok: true; denominations: CashDenominationV1[] }
+  | CashSessionHttpError;
+
+export type DenominationCountResult =
+  | { ok: true; data: DenominationCountResponseV1 }
+  | CashSessionHttpError;
 
 export type CloseCashSessionResult = { ok: true; data: CloseCashSessionSuccess } | CashSessionHttpError;
 
@@ -551,10 +603,217 @@ export async function postCloseCashSession(
   }
 
   if (typeof json === 'object' && json !== null && 'id' in json) {
-    return { ok: true, data: { kind: 'closed', session: json as Record<string, unknown> } };
+    const body = json as Record<string, unknown>;
+    const anomaly =
+      body.anomaly_close_sheet === true || body.anomaly_close_sheet === 'true';
+    const pdfUrl =
+      typeof body.close_sheet_pdf_url === 'string' && body.close_sheet_pdf_url.trim()
+        ? body.close_sheet_pdf_url.trim()
+        : null;
+    return {
+      ok: true,
+      data: {
+        kind: 'closed',
+        session: body,
+        anomaly_close_sheet: anomaly,
+        close_sheet_pdf_url: pdfUrl,
+      },
+    };
   }
 
   return sessionHttpError(res.status, json, 'Réponse clôture invalide');
+}
+
+function parseDenominationCountResponse(json: unknown): DenominationCountResponseV1 | null {
+  if (typeof json !== 'object' || json === null) return null;
+  const o = json as Record<string, unknown>;
+  if (
+    !Array.isArray(o.denominations) ||
+    !Array.isArray(o.breakdown) ||
+    typeof o.total_counted_cents !== 'number' ||
+    typeof o.theoretical_cash_cents !== 'number' ||
+    typeof o.variance_cents !== 'number' ||
+    typeof o.float_target_cents !== 'number' ||
+    typeof o.withdraw_cents !== 'number' ||
+    typeof o.has_count_recorded !== 'boolean'
+  ) {
+    return null;
+  }
+  return json as DenominationCountResponseV1;
+}
+
+/**
+ * GET /v1/cash-denominations — `recyclique_cashSessions_listCashDenominations`.
+ */
+export async function getCashDenominations(
+  auth: Pick<AuthContextPort, 'getAccessToken'>,
+): Promise<GetCashDenominationsResult> {
+  const base = getLiveSnapshotBasePrefix();
+  const url = `${base}/v1/cash-denominations`;
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  const token = auth.getAccessToken?.();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, { method: 'GET', credentials: 'include', headers });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erreur réseau';
+    return sessionHttpError(0, null, msg, true);
+  }
+
+  const text = await res.text();
+  let json: unknown;
+  try {
+    json = text ? JSON.parse(text) : undefined;
+  } catch {
+    json = undefined;
+  }
+
+  if (!res.ok) {
+    return sessionHttpError(res.status, json, text || res.statusText);
+  }
+
+  if (!Array.isArray(json)) {
+    return sessionHttpError(res.status, json, 'Réponse référentiel dénominations invalide');
+  }
+
+  return { ok: true, denominations: json as CashDenominationV1[] };
+}
+
+/**
+ * GET /v1/cash-sessions/{session_id}/denomination-count — `recyclique_cashSessions_getDenominationCount`.
+ */
+export async function getDenominationCount(
+  sessionId: string,
+  auth: Pick<AuthContextPort, 'getAccessToken'>,
+): Promise<DenominationCountResult> {
+  const base = getLiveSnapshotBasePrefix();
+  const url = `${base}/v1/cash-sessions/${encodeURIComponent(sessionId)}/denomination-count`;
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  const token = auth.getAccessToken?.();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, { method: 'GET', credentials: 'include', headers });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erreur réseau';
+    return sessionHttpError(0, null, msg, true);
+  }
+
+  const text = await res.text();
+  let json: unknown;
+  try {
+    json = text ? JSON.parse(text) : undefined;
+  } catch {
+    json = undefined;
+  }
+
+  if (!res.ok) {
+    return sessionHttpError(res.status, json, text || res.statusText);
+  }
+
+  const data = parseDenominationCountResponse(json);
+  if (!data) {
+    return sessionHttpError(res.status, json, 'Réponse denomination-count invalide');
+  }
+
+  return { ok: true, data };
+}
+
+/**
+ * PUT /v1/cash-sessions/{session_id}/denomination-count — `recyclique_cashSessions_upsertDenominationCount`.
+ * Debounce côté UI (400–600 ms) ; flush explicite avant panel « Vérifier ».
+ */
+export async function putDenominationCount(
+  sessionId: string,
+  body: DenominationCountUpsertV1,
+  auth: Pick<AuthContextPort, 'getAccessToken'>,
+): Promise<DenominationCountResult> {
+  const base = getLiveSnapshotBasePrefix();
+  const url = `${base}/v1/cash-sessions/${encodeURIComponent(sessionId)}/denomination-count`;
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  };
+  const token = auth.getAccessToken?.();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: 'PUT',
+      credentials: 'include',
+      headers,
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Erreur réseau';
+    return sessionHttpError(0, null, msg, true);
+  }
+
+  const text = await res.text();
+  let json: unknown;
+  try {
+    json = text ? JSON.parse(text) : undefined;
+  } catch {
+    json = undefined;
+  }
+
+  if (!res.ok) {
+    return sessionHttpError(res.status, json, text || res.statusText);
+  }
+
+  const data = parseDenominationCountResponse(json);
+  if (!data) {
+    return sessionHttpError(res.status, json, 'Réponse PUT denomination-count invalide');
+  }
+
+  return { ok: true, data };
+}
+
+/** Calcule le total compté local (centimes) à partir des quantités saisies. */
+export function computeLocalCountedCents(
+  denominations: readonly CashDenominationV1[],
+  quantities: Readonly<Record<string, number>>,
+): number {
+  let total = 0;
+  for (const d of denominations) {
+    const qty = quantities[d.code] ?? 0;
+    if (qty > 0) total += qty * d.unit_value_cents;
+  }
+  return total;
+}
+
+/** Initialise les quantités (0 par défaut) depuis un breakdown serveur. */
+export function quantitiesFromBreakdown(
+  denominations: readonly CashDenominationV1[],
+  breakdown: readonly DenominationCountBreakdownLineV1[],
+): Record<string, number> {
+  const q: Record<string, number> = {};
+  for (const d of denominations) q[d.code] = 0;
+  for (const line of breakdown) {
+    if (line.code in q) q[line.code] = line.quantity;
+  }
+  return q;
+}
+
+/** Construit le corps PUT à partir des quantités locales. */
+export function buildDenominationUpsertLines(
+  denominations: readonly CashDenominationV1[],
+  quantities: Readonly<Record<string, number>>,
+): DenominationCountLineInputV1[] {
+  return denominations.map((d) => ({
+    code: d.code,
+    quantity: Math.max(0, Math.floor(quantities[d.code] ?? 0)),
+  }));
+}
+
+export const RARE_DENOMINATION_CODE = 'EUR_50000' as const;
+
+export function isRareDenomination(code: string): boolean {
+  return code === RARE_DENOMINATION_CODE;
 }
 
 export type ExceptionalRefundPayload = {

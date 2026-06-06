@@ -69,7 +69,13 @@ from recyclic_api.application.cash_session_close_presentation import (
 from recyclic_api.application.cash_session_closing import run_close_cash_session
 from recyclic_api.application.cash_session_opening import open_cash_session
 from recyclic_api.services.cash_session_response_enrichment import enrich_session_response
+from recyclic_api.services.cash_denomination_service import CashDenominationService
 from recyclic_api.services.cash_session_service import CashSessionService, CLOSE_VARIANCE_TOLERANCE
+from recyclic_api.schemas.cash_denomination import (
+    CashDenominationV1,
+    DenominationCountResponseV1,
+    DenominationCountUpsertV1,
+)
 from recyclic_api.services.cash_disbursement_service import CashDisbursementService
 from recyclic_api.services.cash_internal_transfer_service import (
     CashInternalTransferService,
@@ -85,6 +91,7 @@ from uuid import UUID
 from recyclic_api.models.cash_disbursement import CashDisbursementSubtype
 
 router = APIRouter()
+cash_denominations_router = APIRouter()
 
 # Erreurs métier caisse : statuts inchangés (Conflict → 400, Validation → 400, NotFound → 404).
 _CASH_DOMAIN_HTTP = {
@@ -1304,6 +1311,91 @@ async def update_session_step(
             status_code=500,
             detail="Erreur lors de la mise à jour de l'étape",
         )
+
+
+@cash_denominations_router.get(
+    "/cash-denominations",
+    response_model=list[CashDenominationV1],
+    summary="Référentiel dénominations EUR (Story 9.11)",
+    operation_id="recyclique_cashDenominations_list",
+    tags=["cash-sessions"],
+)
+async def list_cash_denominations(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+):
+    """Liste les 15 dénominations EUR stables (D-CPT-01)."""
+    _ = current_user
+    service = CashDenominationService(db)
+    try:
+        return service.list_denominations()
+    except ValidationError as e:
+        raise_domain_exception_as_http(e, **_CASH_DOMAIN_HTTP)
+
+
+@router.get(
+    "/{session_id}/denomination-count",
+    response_model=DenominationCountResponseV1,
+    summary="Lire le comptage par dénomination (Story 9.11)",
+    operation_id="recyclique_cashSessions_getDenominationCount",
+    tags=["cash-sessions"],
+)
+async def get_denomination_count(
+    request: Request,
+    session_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+):
+    _enforce_cash_context_binding(request, db, str(current_user.id))
+    service = CashSessionService(db)
+    denom_service = CashDenominationService(db)
+    try:
+        session = service.get_session_by_id_or_raise(session_id)
+        if (
+            current_user.role == UserRole.USER
+            and str(session.operator_id) != str(current_user.id)
+        ):
+            raise HTTPException(status_code=403, detail="Accès non autorisé à cette session")
+        return denom_service.get_denomination_count(session, current_user)
+    except NotFoundError as e:
+        raise_domain_exception_as_http(e, **_CASH_DOMAIN_HTTP)
+    except ConflictError as e:
+        raise_domain_exception_as_http(e, **_CASH_DOMAIN_HTTP)
+    except ValidationError as e:
+        raise_domain_exception_as_http(e, **_CASH_DOMAIN_HTTP)
+
+
+@router.put(
+    "/{session_id}/denomination-count",
+    response_model=DenominationCountResponseV1,
+    summary="Enregistrer le comptage par dénomination (Story 9.11)",
+    operation_id="recyclique_cashSessions_upsertDenominationCount",
+    tags=["cash-sessions"],
+)
+async def upsert_denomination_count(
+    request: Request,
+    session_id: str,
+    body: DenominationCountUpsertV1,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN])),
+):
+    _enforce_cash_context_binding(request, db, str(current_user.id))
+    service = CashSessionService(db)
+    denom_service = CashDenominationService(db)
+    try:
+        session = service.get_session_by_id_or_raise(session_id)
+        if (
+            current_user.role == UserRole.USER
+            and str(session.operator_id) != str(current_user.id)
+        ):
+            raise HTTPException(status_code=403, detail="Accès non autorisé à cette session")
+        return denom_service.upsert_denomination_count(session, current_user, body)
+    except NotFoundError as e:
+        raise_domain_exception_as_http(e, **_CASH_DOMAIN_HTTP)
+    except ConflictError as e:
+        raise_domain_exception_as_http(e, **_CASH_DOMAIN_HTTP)
+    except ValidationError as e:
+        raise_domain_exception_as_http(e, **_CASH_DOMAIN_HTTP)
 
 
 # Re-export pour compatibilité tests (monkeypatch ARCH-04) : la présentation post-close

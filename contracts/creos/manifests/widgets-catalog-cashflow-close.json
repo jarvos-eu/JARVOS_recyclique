@@ -1,0 +1,51 @@
+{
+  "version": "1",
+  "description": "Catalogue CREOS — clôture caisse (Story 6.7 + extension comptage 9.12).",
+  "widgets": [
+    {
+      "type": "cashflow-close-wizard",
+      "component": "cashflow-close-wizard",
+      "meta_props": {
+        "slice": "cashflow-close",
+        "story": "6.7",
+        "extension_story": "9.12",
+        "optional_module": "comptage-pieces-billets"
+      },
+      "data_contract": {
+        "source": "cash-sessions",
+        "operation_id": "recyclique_cashSessions_getCurrentOpenSession",
+        "endpoint_hint": "GET /v1/cash-sessions/current",
+        "refresh": "manual",
+        "critical": true,
+        "panel_operations": [
+          {
+            "panel_id": "recap",
+            "operation_id": "recyclique_cashSessions_getCurrentOpenSession",
+            "critical": true
+          },
+          {
+            "panel_id": "denomination-grid",
+            "operation_id": "recyclique_cashSessions_upsertDenominationCount",
+            "secondary_operation_id": "recyclique_cashSessions_listCashDenominations",
+            "critical": true
+          },
+          {
+            "panel_id": "verify",
+            "operation_id": "recyclique_cashSessions_getDenominationCount",
+            "critical": true
+          },
+          {
+            "panel_id": "review",
+            "operation_id": "recyclique_cashSessions_getDenominationCount",
+            "critical": true
+          },
+          {
+            "panel_id": "pin",
+            "operation_id": "recyclique_cashSessions_closeSession",
+            "critical": true
+          }
+        ]
+      }
+    }
+  ]
+}

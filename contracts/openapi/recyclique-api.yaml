@@ -2525,6 +2525,100 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/cash-denominations:
+    get:
+      operationId: recyclique_cashDenominations_list
+      tags:
+        - cash-sessions
+      summary: Référentiel dénominations EUR (Story 9.11)
+      description: |
+        Liste les **15** codes stables ``EUR_001`` … ``EUR_50000``. ``display_default: false`` uniquement pour ``EUR_50000`` (D-CPT-01).
+      security:
+        - bearerOrCookie: []
+      responses:
+        "200":
+          description: Référentiel complet
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CashDenominationV1"
+        "401":
+          description: Non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecycliqueApiError"
+  /v1/cash-sessions/{session_id}/denomination-count:
+    get:
+      operationId: recyclique_cashSessions_getDenominationCount
+      tags:
+        - cash-sessions
+      summary: Lire le comptage par dénomination (Story 9.11)
+      description: |
+        Retourne la grille, les totaux **serveur** (``total_counted_cents``, ``theoretical_cash_cents``, ``variance_cents``,
+        ``float_target_cents``, ``withdraw_cents``) et le référentiel embarqué.
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - $ref: "#/components/parameters/RecycliqueContextSiteIdHeader"
+        - $ref: "#/components/parameters/RecycliqueContextCashSessionIdHeader"
+        - name: session_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Grille et totaux calculés serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DenominationCountResponseV1"
+        "403":
+          description: Accès refusé
+        "404":
+          description: Session introuvable
+    put:
+      operationId: recyclique_cashSessions_upsertDenominationCount
+      tags:
+        - cash-sessions
+      summary: Enregistrer le comptage par dénomination (Story 9.11)
+      description: |
+        UPSERT des quantités par code pour une session **ouverte**. Codes absents du corps traités comme **0**.
+        Refus si session fermée.
+      security:
+        - bearerOrCookie: []
+      parameters:
+        - $ref: "#/components/parameters/RecycliqueContextSiteIdHeader"
+        - $ref: "#/components/parameters/RecycliqueContextCashSessionIdHeader"
+        - name: session_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DenominationCountUpsertV1"
+      responses:
+        "200":
+          description: Grille enregistrée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DenominationCountResponseV1"
+        "400":
+          description: Session fermée ou validation
+        "403":
+          description: Accès refusé
+        "404":
+          description: Session introuvable
   /v1/cash-sessions/{session_id}/close:
     post:
       operationId: recyclique_cashSessions_closeSession
@@ -2559,6 +2653,13 @@ paths:
         (`GET /v1/admin/settings/cash-close-variance-max`, défaut 2,00 €), réponse **422** avec `detail`
         explicite (ex. « Écart de caisse (+X.XX€) supérieur au seuil autorisé (Y.YY€)… »). Distinct de la
         tolérance commentaire obligatoire 0,05 € côté métier caisse.
+
+        **Story 9.11** — module ``comptage-pieces-billets`` actif (``enabled: true``, ``skip_allowed: false``,
+        ``require_denomination_grid: true``) : un ``PUT …/denomination-count`` valide est **requis** avant clôture.
+        Réponse **400** ``COMPTAGE_REQUIRED`` si grille absente ou total 0 avec théorique espèces > 0.
+        Le serveur **écrase** ``actual_amount`` par le total grille ; écart client → **400** ``COMPTAGE_AMOUNT_MISMATCH``.
+        Champ ``actual_amount`` **déprécié** comme vérité terrain quand le module est actif.
+        Réponse 200 enrichie : ``anomaly_close_sheet``, ``close_sheet_pdf_url`` (PDF généré en 9.12).
       security:
         - bearerOrCookie: []
       parameters:
@@ -2600,7 +2701,8 @@ paths:
         "400":
           description: |
             Erreur métier / validation fermeture. Codes métier possibles : `CASH_SESSION_CLOSE_HELD_PENDING`
-            (tickets en attente), écart sans commentaire, session déjà fermée, etc.
+            (tickets en attente), **Story 9.11** `COMPTAGE_REQUIRED`, `COMPTAGE_AMOUNT_MISMATCH`, écart sans commentaire,
+            session déjà fermée, etc.
           content:
             application/json:
               schema:
@@ -9097,7 +9199,7 @@ paths:
             type: string
             pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
             maxLength: 128
-          description: Cle **liste blanche** alignee registre serveur / CREOS (ex. `kpi-live-banner`).
+          description: Cle **liste blanche** alignee registre serveur / CREOS (ex. `kpi-live-banner`, `comptage-pieces-billets`).
       responses:
         "200":
           description: Document de configuration courant
@@ -9171,7 +9273,7 @@ paths:
             type: string
             pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
             maxLength: 128
-          description: Cle **liste blanche** alignee registre serveur / CREOS (ex. `kpi-live-banner`).
+          description: Cle **liste blanche** alignee registre serveur / CREOS (ex. `kpi-live-banner`, `comptage-pieces-billets`).
         - name: If-Match
           in: header
           required: false
@@ -10719,6 +10821,112 @@ components:
           nullable: true
           description: Code résolution mapping 8.3 (`mapping_missing`, `mapping_disabled`, …) si refus P2.
       additionalProperties: false
+    CashDenominationV1:
+      type: object
+      required:
+        - code
+        - label_fr
+        - kind
+        - unit_value_cents
+        - display_order
+        - display_default
+      properties:
+        code:
+          type: string
+          example: EUR_2000
+        label_fr:
+          type: string
+        kind:
+          type: string
+          enum:
+            - coin
+            - note
+        unit_value_cents:
+          type: integer
+          minimum: 1
+        display_order:
+          type: integer
+        display_default:
+          type: boolean
+      additionalProperties: false
+    DenominationCountLineInputV1:
+      type: object
+      required:
+        - code
+        - quantity
+      properties:
+        code:
+          type: string
+        quantity:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+    DenominationCountUpsertV1:
+      type: object
+      required:
+        - lines
+      properties:
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/DenominationCountLineInputV1"
+      additionalProperties: false
+    DenominationCountBreakdownLineV1:
+      type: object
+      required:
+        - code
+        - quantity
+        - unit_value_cents
+        - line_total_cents
+      properties:
+        code:
+          type: string
+        quantity:
+          type: integer
+        unit_value_cents:
+          type: integer
+        line_total_cents:
+          type: integer
+      additionalProperties: false
+    DenominationCountResponseV1:
+      type: object
+      required:
+        - denominations
+        - breakdown
+        - total_counted_cents
+        - theoretical_cash_cents
+        - variance_cents
+        - float_target_cents
+        - withdraw_cents
+        - has_count_recorded
+      properties:
+        denominations:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashDenominationV1"
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/DenominationCountBreakdownLineV1"
+        total_counted_cents:
+          type: integer
+        theoretical_cash_cents:
+          type: integer
+        variance_cents:
+          type: integer
+        float_target_cents:
+          type: integer
+          description: Fond cible à laisser dans le tiroir (centimes).
+        withdraw_cents:
+          type: integer
+          description: Montant à retirer après clôture (centimes).
+        recorded_at:
+          type: string
+          format: date-time
+          nullable: true
+        has_count_recorded:
+          type: boolean
+      additionalProperties: false
     CashSessionCloseBody:
       type: object
       required:
@@ -10727,6 +10935,9 @@ components:
         actual_amount:
           type: number
           minimum: 0
+          description: |
+            Montant physique compté. **Déprécié** comme vérité terrain si module comptage actif (Story 9.11) —
+            le serveur utilise le total grille.
         variance_comment:
           type: string
           nullable: true
@@ -11593,6 +11804,16 @@ components:
           description: |
             Montant théorique caisse aligné sur ``get_closing_preview`` / POST ``/close`` : fond initial + total des ventes + dons.
             Présent pour les sessions ouvertes ; null si session fermée.
+        anomaly_close_sheet:
+          type: boolean
+          nullable: true
+          description: |
+            Story 9.11 — true si feuille PDF anomalie requise (écart, seuil, coupure rare EUR_50000).
+        close_sheet_pdf_url:
+          type: string
+          nullable: true
+          description: |
+            Story 9.11 — URL documentée pour la feuille PDF anomalie ; absent si ``anomaly_close_sheet`` est false.
       additionalProperties: true
     CashSessionDetailResponseV1:
       allOf:

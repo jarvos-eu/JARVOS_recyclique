@@ -944,7 +944,7 @@ def build_cash_session_close_batch_from_enriched_payload(
     snap = enriched_payload.get("accounting_close_snapshot_frozen")
     if not isinstance(snap, dict):
         return None, "snapshot_missing", "accounting_close_snapshot_frozen absent — batch 22.7 impossible."
-    if snap.get("schema_version") not in (1, 2):
+    if snap.get("schema_version") not in (1, 2, 3):
         return None, "snapshot_version", "schema_version snapshot non supportée pour le builder 22.7."
 
     plan, perr, pmsg = build_planned_sub_writes(

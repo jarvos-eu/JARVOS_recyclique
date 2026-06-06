@@ -273,6 +273,7 @@ from recyclic_api.models.cash_disbursement import CashDisbursement
 from recyclic_api.models.cash_internal_transfer import CashInternalTransfer
 from recyclic_api.models.material_exchange import MaterialExchange
 from recyclic_api.models.sale_item import SaleItem
+from recyclic_api.models.cash_denomination import CashDenomination, CashDenominationCount
 from recyclic_api.models.cash_session import CashSession
 from recyclic_api.models.paheko_outbox import PahekoOutboxItem
 from recyclic_api.models.paheko_outbox_sync_transition import PahekoOutboxSyncTransition
@@ -978,6 +979,8 @@ def create_tables_if_not_exist():
                     GlobalAccountingSettings.__table__,
                     AccountingConfigRevision.__table__,
                     AccountingPeriodAuthoritySnapshot.__table__,
+                    CashDenomination.__table__,
+                    CashDenominationCount.__table__,
                     CashSession.__table__,
                     PahekoOutboxItem.__table__,
                     PahekoOutboxSyncTransition.__table__,

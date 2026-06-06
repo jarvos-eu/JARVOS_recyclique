@@ -8,14 +8,16 @@
       "slot_id": "header",
       "widget_type": "demo.text.block",
       "widget_props": {
-        "title": "Clôture locale de caisse (Story 6.7)",
-        "body": "Récapitulatif et totaux issus du serveur (GET session courante), montant compté, commentaire d’écart si besoin, PIN step-up puis POST close. Aucune simulation Paheko ni état de sync inventé — relais textuel vers les flux synchronisation (Epic 8)."
+        "title": "Clôture locale de caisse (Story 6.7 / comptage 9.12)",
+        "body": "Récapitulatif serveur (GET session courante). Si le module optionnel comptage-pieces-billets est activé : grille pièces/billets, vérification, relecture obligatoire, puis PIN et POST close. Sinon : montant compté manuel (legacy 6.7). Aucune simulation Paheko — relais Epic 8."
       }
     },
     {
       "slot_id": "main",
       "widget_type": "cashflow-close-wizard",
-      "widget_props": {}
+      "widget_props": {
+        "optional_module_key": "comptage-pieces-billets"
+      }
     }
   ]
 }

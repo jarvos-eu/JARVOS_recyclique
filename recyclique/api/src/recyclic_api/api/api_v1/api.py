@@ -5,6 +5,7 @@ from .endpoints import (
     sites_router as sites,
     deposits_router as deposits,
     sales_router as sales,
+    cash_denominations_router,
     cash_sessions_router as cash_sessions,
     cash_registers as cash_registers,
     registered_devices as registered_devices,
@@ -46,6 +47,7 @@ api_router.include_router(sites, prefix="/sites", tags=["sites"])
 api_router.include_router(module_config, prefix="/sites", tags=["ModuleConfig"])
 api_router.include_router(deposits, prefix="/deposits", tags=["deposits"])
 api_router.include_router(sales, prefix="/sales", tags=["sales"])
+api_router.include_router(cash_denominations_router, tags=["cash-sessions"])
 api_router.include_router(cash_sessions, prefix="/cash-sessions", tags=["cash-sessions"])
 api_router.include_router(cash_registers, prefix="/cash-registers", tags=["cash-registers"])
 api_router.include_router(

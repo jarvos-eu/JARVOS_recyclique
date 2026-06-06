@@ -13,6 +13,7 @@ from .cash_internal_transfer import CashInternalTransfer, CashInternalTransferTy
 from .sale_item import SaleItem
 from .payment_method import PaymentMethodDefinition, PaymentMethodKind
 from .payment_transaction import PaymentTransaction
+from .cash_denomination import CashDenomination, CashDenominationCount
 from .cash_session import CashSession, CashSessionStatus, CashSessionStep
 from .cash_register import CashRegister
 from .registered_device import RegisteredDevice
@@ -72,6 +73,8 @@ __all__ = [
     "PaymentMethodDefinition",
     "PaymentMethodKind",
     "PaymentTransaction",
+    "CashDenomination",
+    "CashDenominationCount",
     "CashSession",
     "CashSessionStatus",
     "CashSessionStep",

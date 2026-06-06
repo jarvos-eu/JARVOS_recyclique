@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://references.jarvos.recyclique/config-modules-site-id/schemas/comptage-pieces-billets.v1.json",
+  "title": "Module comptage-pieces-billets payload v1",
+  "description": "Charge utile pour module_key=comptage-pieces-billets, schema_version=1.0.0. Activation et préférences UI du comptage détaillé à la clôture caisse — pas de montants ni lignes dénomination dans ce JSON.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["enabled", "skip_allowed", "require_denomination_grid", "show_images"],
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Module actif pour le site — master switch (étape comptage dans le wizard clôture)."
+    },
+    "skip_allowed": {
+      "type": "boolean",
+      "description": "Autoriser la clôture sans comptage détaillé (audit si utilisé)."
+    },
+    "require_denomination_grid": {
+      "type": "boolean",
+      "description": "Forcer la grille complète (15 lignes, quantités 0 explicites)."
+    },
+    "show_images": {
+      "type": "boolean",
+      "description": "Afficher les pictos stylisés dans le wizard clôture (D-CPT-06)."
+    }
+  }
+}

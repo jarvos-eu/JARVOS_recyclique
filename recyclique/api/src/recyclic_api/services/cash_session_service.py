@@ -869,6 +869,7 @@ class CashSessionService:
         variance_comment: str = None,
         preview: Optional[Dict[str, float]] = None,
         sync_correlation_id: Optional[str] = None,
+        denomination_count_v1: Optional[Dict[str, Any]] = None,
     ) -> Optional[CashSession]:
         """B44-P3: Ferme une session de caisse avec contrôle des montants.
         
@@ -937,6 +938,7 @@ class CashSessionService:
             theoretical_cash_amount=float(preview["theoretical_amount"]),
             actual_cash_amount=float(actual_amount),
             cash_variance=float(preview["variance"]),
+            denomination_count_v1=denomination_count_v1,
         )
         session.accounting_close_snapshot = snap.model_dump_for_storage()
 

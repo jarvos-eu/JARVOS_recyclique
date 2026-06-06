@@ -2150,6 +2150,71 @@ So that the product gains pilotage simple sans transformer cette story en refont
 
 **Pilotage YAML :** cle **`9-6-livrer-la-config-admin-simple-pour-modules-et-reglages-simples`** en **`done`** au 2026-05-26 (`_bmad-output/implementation-artifacts/sprint-status.yaml`, `last_updated` racine **2026-05-26**). Story file [`9-6-config-admin-simple-modules.md`](../implementation-artifacts/9-6-config-admin-simple-modules.md) : Story Runner BMAD 2026-05-26 — CR2 **APPROVE** (`cr_loop=1`) ; gates pytest **22 passed**, Vitest **47 passed**. Livrables : Peintre `/admin/modules`, API `module-config`, merge DEC-03 live-snapshot, **L-08** clos, route `bandeau-live-slice` **deprecated**. Prochaine candidate Epic 9 : **9.7** (`backlog`).
 
+### Story 9.10: Liaison Paheko — clôture caisse MVP v1 (2.0.1)
+
+As a compta / sync team,
+I want cash session close to produce a complete Paheko batch (T1 sales+dons, T2 refunds, T3 cash variance 658/758) with a site-configurable variance threshold,
+So that terrain and Paheko align on business decisions without the denomination counting module (D5) in v1.
+
+**Pilotage YAML :** cle **`9-10-liaison-paheko-cloture-caisse-v1`** en **`done`** (2026-05-27). Story file [`9-10-liaison-paheko-cloture-caisse-v1.md`](../implementation-artifacts/9-10-liaison-paheko-cloture-caisse-v1.md). Hors scope v1 : module comptage pièces/billets (D5) → stories **9.11–9.13**.
+
+### Story 9.11: Comptage pièces/billets — contrats, backend et persistance
+
+As a terrain / accounting team,
+I want physical coin and bill counting persisted server-side with authoritative totals and snapshot enrichment,
+So that session close can require a denomination grid when the module is active without changing the Paheko 9.10 batch chain.
+
+**Acceptance Criteria:**
+
+**Given** the pilot site enables `comptage-pieces-billets` with `skip_allowed: false`
+**When** an operator closes a session without a valid denomination count
+**Then** the API returns **400** `COMPTAGE_REQUIRED` and the session stays open
+**And** when a count exists, the grid total is the sole counted truth feeding `actual_amount` and `closing.cash_variance`
+
+**Given** the module is disabled for a site
+**When** closure uses the legacy global amount flow
+**Then** behaviour remains equivalent to stories **6.7** and **9.10** without requiring denomination APIs
+
+**Pilotage YAML :** cle **`9-11-comptage-pieces-billets-contrats-backend-persistance`** — story file [`9-11-comptage-pieces-billets-contrats-backend-persistance.md`](../implementation-artifacts/9-11-comptage-pieces-billets-contrats-backend-persistance.md) ; HITL [`2026-06-06_01_decisions-hitl-comptage-pieces-billets-pilote.md`](../references/artefacts/2026-06-06_01_decisions-hitl-comptage-pieces-billets-pilote.md).
+
+### Story 9.12: Comptage pièces/billets — wizard clôture, relecture et UX terrain
+
+As a caisse volunteer,
+I want to count coins and bills in the close wizard with a mandatory review step and optional stylized images,
+So that closing is fast, visual, and aligned with how we actually count the drawer.
+
+**Acceptance Criteria:**
+
+**Given** the module is active for the site
+**When** the operator starts session close
+**Then** the `cashflow-close` wizard inserts a denomination grid before PIN confirmation, removes manual global amount entry, and always shows a review screen before close
+**And** a closure PDF is generated only on documented anomalies (variance, threshold, rare note, etc.)
+
+**Given** `show_images` is true in module config
+**When** the grid is displayed
+**Then** stylized denomination pictograms are shown (no photographic banknote reproduction)
+
+**Pilotage YAML :** cle **`9-12-comptage-pieces-billets-wizard-ux-relecture`** — depends on **9.11** ; story file [`9-12-comptage-pieces-billets-wizard-ux-relecture.md`](../implementation-artifacts/9-12-comptage-pieces-billets-wizard-ux-relecture.md).
+
+### Story 9.13: Comptage pièces/billets — activation site, schéma module-config et recette
+
+As a super-admin,
+I want to activate the denomination counting module per site with a narrow JSON schema and pilot defaults for La Clique qui Recycle,
+So that the optional module follows the 9.6 admin pattern and legacy parity holds when disabled.
+
+**Acceptance Criteria:**
+
+**Given** schema `comptage-pieces-billets.v1.json` is published
+**When** an authorized admin patches module config via `/admin/modules`
+**Then** only `enabled`, `skip_allowed`, `require_denomination_grid`, and `show_images` are accepted
+**And** pilot site defaults are `enabled: true`, `skip_allowed: false`, `require_denomination_grid: true`, `show_images: true`
+
+**Given** Q-HITL-09 / Q-HITL-11 recette
+**When** module is off vs on
+**Then** legacy close parity vs full grid flow is demonstrated in tests
+
+**Pilotage YAML :** cle **`9-13-comptage-pieces-billets-activation-schema-recette`** — depends on **9.11** and **9.12** ; story file [`9-13-comptage-pieces-billets-activation-schema-recette.md`](../implementation-artifacts/9-13-comptage-pieces-billets-activation-schema-recette.md).
+
 ### Story 9.7: Livrer les ACL minimales de fonctionnalites sensibles
 
 As a super-admin or responsible administrator,

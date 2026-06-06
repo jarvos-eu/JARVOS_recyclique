@@ -25,6 +25,9 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
+| `2026-06-06_01_decisions-hitl-comptage-pieces-billets-pilote.md` | **HITL PO** — décisions figées module `comptage-pieces-billets` (pilote La Clique) ; entrée stories **9.11–9.13** Epic 9 v2.0.2 ; D-CPT-01…11 (grille, fond, PDF anomalie, pictos, poids V2, Paheko). |
+| `2026-06-06_03_epic9-comptage-story-runner-handoff.md` | **Handoff Epic Runner** — chaîne autonome **9.11→9.12→9.13** **PASS** ; gates, fichiers touchés, follow-up CR, recette terrain Q-HITL-09/11 manuelle. |
+| `2026-06-06_02_qa2-loop-stories-9-11-9-13-comptage-pieces-billets.md` | **QA2 boucle** stories 9.11–9.13 — pass-1 NO-GO 82 % ; correctifs P0/P1 ; pass-2 **GO 96 %**. |
 | `2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md` | **Checklist chantier parite v2 beta** — trace complete pour reprise : remontees terrain + 1.4.4 vs code/UI v2 (mai 2026), priorites P0-beta, protocole HITL/C2b, backlog candidat correct course (BC-01..12) ; a cocher avant premiere beta benevoles. |
 | `2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md` | **Runbook orchestration Epic 27** — prompt/contrat pour orchestrateur global : Epic Runner unique, Story Runner sequentiel, politique HITL en cascade parent→Epic→Strophe, gates, YAML single-writer, modeles inherit, conditions de stop. |
 | `2026-05-29_03_brief-pm-epic-stories-postes-partages-pin.md` | **Brief PM pour epic/stories postes partages + PIN** — pack de transmission vers nouveau contexte BMAD : fichiers a lire, decisions gelees, hors perimetre, decoupage stories recommande, gates QA, strategie Epic Runner / Story Runner et modeles. |
