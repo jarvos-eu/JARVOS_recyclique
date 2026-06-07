@@ -7,7 +7,7 @@ from typing import Any, Union
 
 from sqlalchemy.orm import Session
 
-from recyclic_api.core.auth import CachedUser
+from recyclic_api.core.auth import CachedUser, get_user_permissions
 from recyclic_api.core.exceptions import AuthorizationError, ConflictError, NotFoundError, ValidationError
 from recyclic_api.models.site import Site
 from recyclic_api.models.site_module_config import SiteModuleConfig
@@ -131,15 +131,53 @@ class ModuleConfigService:
         doc, _ = self.default_document(module_key)
         return dict(doc.payload)
 
-    def get_site_module_config(
+    def assert_operational_module_config_read(
         self,
         *,
         site_id: uuid.UUID,
         module_key: str,
         current_user: Union[User, CachedUser],
+    ) -> Site:
+        """Lecture terrain (ex. wizard clôture) — permission module + site, sans rôle admin."""
+        from recyclic_api.modules.module_config.access_registry import get_module_access_entry
+
+        self.assert_module_key(module_key)
+        entry = get_module_access_entry(module_key)
+        if entry is None:
+            raise NotFoundError("Module inconnu")
+
+        site = self.db.get(Site, site_id)
+        if site is None:
+            raise NotFoundError("Site introuvable")
+
+        user = self._resolve_user(current_user)
+
+        if user.role == UserRole.SUPER_ADMIN:
+            return site
+        if user.role == UserRole.ADMIN:
+            if user.site_id is None:
+                raise ValidationError("Aucun site affecté — accès module-config impossible.")
+            if user.site_id != site_id:
+                raise AuthorizationError("Accès refusé pour ce site.")
+            return site
+
+        perms = set(get_user_permissions(user, self.db))
+        for key in entry.required_permission_keys:
+            if key not in perms:
+                raise AuthorizationError(
+                    "Permission insuffisante pour lire la configuration de ce module."
+                )
+        if user.site_id is None or user.site_id != site_id:
+            raise AuthorizationError("Accès refusé pour ce site.")
+        return site
+
+    def load_site_module_config_document(
+        self,
+        *,
+        site_id: uuid.UUID,
+        module_key: str,
     ) -> tuple[ModuleConfigDocument, int]:
         self.assert_module_key(module_key)
-        self.assert_site_access(site_id=site_id, current_user=current_user)
 
         row = (
             self.db.query(SiteModuleConfig)
@@ -164,6 +202,16 @@ class ModuleConfigService:
             version=row.version,
         )
         return doc, int(row.version)
+
+    def get_site_module_config(
+        self,
+        *,
+        site_id: uuid.UUID,
+        module_key: str,
+        current_user: Union[User, CachedUser],
+    ) -> tuple[ModuleConfigDocument, int]:
+        self.assert_site_access(site_id=site_id, current_user=current_user)
+        return self.load_site_module_config_document(site_id=site_id, module_key=module_key)
 
     def resolve_bandeau_live_slice_enabled(self, site: Site | None) -> bool:
         """

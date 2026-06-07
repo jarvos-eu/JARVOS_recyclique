@@ -142,7 +142,7 @@ function adminUsersFetchMock(opts?: { readonly meRole?: string }): typeof fetch 
       init?.method ??
       (typeof Request !== 'undefined' && input instanceof Request ? input.method : 'GET')
     ).toUpperCase();
-    if (url.includes('/v1/users/me')) return okJson({ role: meRole });
+    if (url.includes('/v1/users/me')) return okJson({ id: userRow.id, role: meRole });
     if (url.includes('/v1/admin/users/statuses')) return okJson(statusesBundle);
     if (url.includes('/v1/admin/groups')) return okJson([groupRow]);
     if (url.includes('/history')) return okJson(historyPage);
@@ -330,6 +330,19 @@ describe('AdminUsersWidget', () => {
     });
     const submit = within(dlg).getByTestId('admin-users-create-submit') as HTMLButtonElement;
     expect(submit.disabled || submit.getAttribute('data-disabled') === 'true').toBe(true);
+  });
+
+  it('propose Ouvrir mon profil après reset-pin sur le compte courant', async () => {
+    const fetchMock = adminUsersFetchMock();
+    vi.stubGlobal('fetch', fetchMock);
+    render(wrap(<AdminUsersWidget widgetProps={{}} />));
+    await waitFor(() => screen.getByTestId(`admin-users-row-${userRow.id}`));
+    fireEvent.click(screen.getByTestId(`admin-users-row-${userRow.id}`));
+    await waitFor(() => screen.getByTestId('admin-users-reset-pin-open'));
+    fireEvent.click(screen.getByTestId('admin-users-reset-pin-open'));
+    await waitFor(() => screen.getByTestId('admin-users-reset-pin-confirm'));
+    fireEvent.click(screen.getByTestId('admin-users-reset-pin-confirm'));
+    await waitFor(() => screen.getByTestId('admin-users-open-self-profile'));
   });
 
   it('déclenche POST reset-pin après confirmation', async () => {

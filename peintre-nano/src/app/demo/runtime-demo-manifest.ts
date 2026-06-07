@@ -74,6 +74,7 @@ import pageTransverseConsultationArticle from '../../../../contracts/creos/manif
 import pageTransverseConsultationDon from '../../../../contracts/creos/manifests/page-transverse-consultation-don.json';
 import pageTransverseDashboard from '../../../../contracts/creos/manifests/page-transverse-dashboard.json';
 import pageTransverseDashboardBenevole from '../../../../contracts/creos/manifests/page-transverse-dashboard-benevole.json';
+import pageTransverseProfile from '../../../../contracts/creos/manifests/page-transverse-profile.json';
 import pageTransverseListingArticles from '../../../../contracts/creos/manifests/page-transverse-listing-articles.json';
 import pageTransverseListingDons from '../../../../contracts/creos/manifests/page-transverse-listing-dons.json';
 import pageCashflowNominal from '../../../../contracts/creos/manifests/page-cashflow-nominal.json';
@@ -168,6 +169,7 @@ export const runtimeServedManifestLoadResult: LoadManifestBundleResult = loadMan
     JSON.stringify(pageBandeauLiveSandboxWithLiveSource()),
     JSON.stringify(pageTransverseDashboard),
     JSON.stringify(pageTransverseDashboardBenevole),
+    JSON.stringify(pageTransverseProfile),
     JSON.stringify(pageTransverseAdminPlaceholder),
     JSON.stringify(pageTransverseAdminAccessOverview),
     JSON.stringify(pageTransverseAdminSiteOverview),
@@ -218,6 +220,7 @@ export const runtimeServedManifestLoadResult: LoadManifestBundleResult = loadMan
           'contracts/creos/manifests/page-bandeau-live-sandbox.json (use_live_source)',
           'contracts/creos/manifests/page-transverse-dashboard.json',
           'contracts/creos/manifests/page-transverse-dashboard-benevole.json',
+          'contracts/creos/manifests/page-transverse-profile.json',
           'contracts/creos/manifests/page-transverse-admin-placeholder.json',
           'contracts/creos/manifests/page-transverse-admin-access-overview.json',
           'contracts/creos/manifests/page-transverse-admin-site-overview.json',

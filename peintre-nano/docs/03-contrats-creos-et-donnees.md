@@ -201,7 +201,7 @@ En observation sur le legacy (`http://localhost:4445/`), sans session, une redir
 **Décisions / écarts** :
 
 - **Tableau de bord** : legacy ancre le lien transverse sur **`/`** ; Peintre reste sur **`/dashboard`** (déjà documenté § routage 11.2).
-- **Mon profil** : route **`/profil`** non portée par le `NavigationManifest` servi — **gap** (hors Story 14.1 si non manifesté).
+- **Mon profil** : route **`/profil`** manifestée depuis **Story 28-2** (`transverse-profile`, `page-transverse-profile.json`, widget `demo.legacy.user.profile`) — **gap clos** (avant 28-2 : non portée par le manifeste servi, hors Story 14.1).
 - **Preuves Chrome DevTools MCP** : à réitérer dès que l’instance MCP n’est pas en conflit (`user-chrome-devtools` — session orchestrateur 2026-04-12 : erreur *browser already running*).
 
 ### Story 14.5 — groupes admin (`/admin/groups`)

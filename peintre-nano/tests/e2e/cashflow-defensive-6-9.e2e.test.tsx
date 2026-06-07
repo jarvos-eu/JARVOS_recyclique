@@ -6,6 +6,7 @@ import { createDefaultDemoEnvelope } from '../../src/app/auth/default-demo-auth-
 import { createMockAuthAdapter } from '../../src/app/auth/mock-auth-adapter';
 import { RootProviders } from '../../src/app/providers/RootProviders';
 import { CashflowNominalWizard } from '../../src/domains/cashflow/CashflowNominalWizard';
+import { resetCoalescedGetCurrentOpenCashSessionForTests } from '../../src/domains/cashflow/caisse-current-session-coalesce';
 import { resetCashflowDraft } from '../../src/domains/cashflow/cashflow-draft-store';
 import { resetCashflowOperationalSyncNoticeCacheForTests } from '../../src/domains/cashflow/cashflow-operational-sync-notice';
 import '../../src/registry';
@@ -36,6 +37,7 @@ beforeAll(() => {
 
 describe('E2E — caisse défensive / sync / erreurs (Story 6.9)', () => {
   beforeEach(() => {
+    resetCoalescedGetCurrentOpenCashSessionForTests();
     resetCashflowOperationalSyncNoticeCacheForTests();
     vi.stubGlobal(
       'ResizeObserver',
@@ -53,6 +55,7 @@ describe('E2E — caisse défensive / sync / erreurs (Story 6.9)', () => {
     vi.restoreAllMocks();
     cleanup();
     resetCashflowDraft();
+    resetCoalescedGetCurrentOpenCashSessionForTests();
     resetCashflowOperationalSyncNoticeCacheForTests();
   });
 
@@ -140,9 +143,18 @@ describe('E2E — caisse défensive / sync / erreurs (Story 6.9)', () => {
   });
 
   it('POST vente avec retryable : message explicite + pas de ticket succès', async () => {
+    const sessionId = '00000000-0000-4000-8000-000000000001';
     const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = requestUrl(input);
       const method = (init?.method ?? 'GET').toUpperCase();
+      if (method === 'GET' && url.includes('/v1/cash-sessions/current')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          text: async () =>
+            JSON.stringify({ id: sessionId, status: 'open', site_id: 'site-demo' }),
+        });
+      }
       if (method === 'GET' && url.includes('/v1/sales/payment-method-options')) {
         return Promise.resolve({
           ok: true,
@@ -184,9 +196,8 @@ describe('E2E — caisse défensive / sync / erreurs (Story 6.9)', () => {
 
     const auth = createMockAuthAdapter({
       session: { authenticated: true, userId: 'e2e-69-post-retry' },
-      envelope: createDefaultDemoEnvelope({
-        cashSessionId: '00000000-0000-4000-8000-000000000001',
-      }),
+      /** Pas de cashSessionId enveloppe : évite purge 28.1 (fantôme) quand GET courant est mocké ouvert. */
+      envelope: createDefaultDemoEnvelope(),
     });
 
     render(
@@ -202,10 +213,14 @@ describe('E2E — caisse défensive / sync / erreurs (Story 6.9)', () => {
     fireEvent.click(screen.getByTestId('cashflow-step-next'));
 
     fireEvent.change(screen.getByRole('textbox', { name: /UUID session caisse/i }), {
-      target: { value: '00000000-0000-4000-8000-000000000001' },
+      target: { value: sessionId },
     });
 
     fireEvent.click(screen.getByRole('tab', { name: /Paiement|Règlement/i }));
+
+    await waitFor(() => {
+      expect((screen.getByTestId('cashflow-submit-sale') as HTMLButtonElement).disabled).toBe(false);
+    });
     fireEvent.click(screen.getByTestId('cashflow-submit-sale'));
 
     await waitFor(() => {

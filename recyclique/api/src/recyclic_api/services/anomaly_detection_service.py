@@ -339,8 +339,12 @@ class AnomalyDetectionService:
                 ]
             })
 
-        # Recommandations de maintenance préventive (indépendantes des anomalies)
-        recommendations.extend(self._generate_preventive_maintenance_recommendations())
+        has_detected_anomalies = any(
+            isinstance(anomaly_list, list) and len(anomaly_list) > 0
+            for anomaly_list in anomalies.values()
+        )
+        if has_detected_anomalies:
+            recommendations.extend(self._generate_preventive_maintenance_recommendations())
 
         return recommendations
 

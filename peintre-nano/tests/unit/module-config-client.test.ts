@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildKpiLiveBannerModuleDocument,
+  formatIfMatchFromVersion,
   parseEtagFromResponse,
   parseEtagVersion,
   parseKpiLiveBannerPayload,
   parseModuleConfigDocument,
+  resolveModuleConfigEtag,
 } from '../../src/api/module-config-client';
 
 describe('module-config-client', () => {
@@ -39,5 +41,12 @@ describe('module-config-client', () => {
     });
     expect(doc.schema_version).toBe('1.0.0');
     expect(doc.payload.refresh_interval_seconds).toBe(60);
+  });
+
+  it('repli If-Match depuis version document quand ETag HTTP absent (28-4)', () => {
+    expect(formatIfMatchFromVersion(0)).toBe('W/"0"');
+    expect(formatIfMatchFromVersion(3)).toBe('W/"3"');
+    expect(resolveModuleConfigEtag(null, 0)).toBe('W/"0"');
+    expect(resolveModuleConfigEtag('W/"2"', 0)).toBe('W/"2"');
   });
 });

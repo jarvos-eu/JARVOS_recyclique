@@ -314,29 +314,19 @@ describe('E2E — lignes réception Story 7.3 (PUT / DELETE / PATCH mockés)', (
         ),
       ).toBe(true);
     });
-    // refreshTicket (GET détail) après close — sinon ticket encore « ouvert » côté état
+    // Story 28.3 : post-clôture nominal — cockpit démonté, bandeau + nouveau ticket (plus de PATCH admin inline)
     await waitFor(() => {
-      expect(screen.getByTestId('reception-admin-patch-weight')).toBeTruthy();
+      expect(screen.getByTestId('reception-ticket-closed-summary')).toBeTruthy();
     });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('reception-admin-patch-weight')).toBeTruthy();
-    });
-    fireEvent.click(screen.getByTestId('reception-admin-patch-apply'));
-    await waitFor(() => {
-      expect(
-        fetchMock.mock.calls.some(
-          ([u, i]) =>
-            requestUrl(u).includes(`/lignes/${LIGNE_1}/weight`) && (i as RequestInit).method === 'PATCH',
-        ),
-      ).toBe(true);
-    });
+    expect(screen.queryByTestId('reception-cockpit-layout')).toBeNull();
+    expect(screen.queryByTestId('reception-admin-patch-weight')).toBeNull();
+    expect(screen.getByTestId('reception-create-ticket')).toBeTruthy();
   },
     20_000,
   );
 
   it(
-    'PATCH poids 403 : alerte reception-api-error (cohérence garde-fous 7.2 / AC5)',
+    'post-clôture 28.3 : pas de saisie active ni PATCH admin inline sur le flux nominal',
     async () => {
       const lignes: Array<{
         id: string;
@@ -514,19 +504,11 @@ describe('E2E — lignes réception Story 7.3 (PUT / DELETE / PATCH mockés)', (
 
       fireEvent.click(screen.getByTestId('reception-close-ticket'));
       await waitFor(() => {
-        expect(screen.getByTestId('reception-admin-patch-weight')).toBeTruthy();
+        expect(screen.getByTestId('reception-ticket-closed-summary')).toBeTruthy();
       });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('reception-admin-patch-apply')).toBeTruthy();
-      });
-      fireEvent.click(screen.getByTestId('reception-admin-patch-apply'));
-
-      await waitFor(() => {
-        const alertEl = screen.getByTestId('reception-api-error');
-        expect(alertEl).toBeTruthy();
-        expect(within(alertEl).getByTestId('reception-api-error-http-status').textContent).toMatch(/403/);
-      });
+      expect(screen.queryByTestId('reception-admin-patch-weight')).toBeNull();
+      expect(screen.queryByTestId('reception-input-poids-kg')).toBeNull();
+      expect(screen.getByTestId('reception-create-ticket')).toBeTruthy();
     },
     20_000,
   );

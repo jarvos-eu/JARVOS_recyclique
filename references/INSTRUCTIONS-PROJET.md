@@ -11,6 +11,7 @@
 |---------|-------|
 | `recherche/` | Prompts et reponses de recherche externe (Perplexity, Claude.ai, GPT, etc.) |
 | `artefacts/` | Artefacts temporaires de handoff entre agents |
+| `revision/` | Registre vivant des revisions terrain HITL (un fichier par domaine, suivi a cocher) |
 | `idees-kanban/` | Kanban d'idees (un fichier par idee) — gere par le skill **idees-kanban** |
 | `ancien-repo/` | Guide et clone local du repo Recyclique 1.4.4 (`repo/` gitignore) + doc brownfield |
 | `config-modules-site-id/` | Configuration modules persistée serveur (JSON / site_id, CREOS, ADR, OpenAPI brouillon, schémas JSON par module) ; livrable QA aligné |
@@ -41,6 +42,23 @@ YYYY-MM-DD_NN_titre-court.md
 
 NN = ordre d'execution (01, 02, …), optionnel. Exemples : `2026-02-24_01_mission-…`, `2026-02-24_brief-pour-architecte.md`.
 Emplacement : `references/artefacts/`. Mettre a jour `references/artefacts/index.md` a chaque ajout.
+
+### Revisions terrain (HITL live)
+
+Registre **vivant** — pas un handoff ponctuel :
+
+```
+references/revision/
+  index.md              # Vue globale, tableau P0, liens domaines
+  CONVENTIONS.md        # IDs REV-<DOMAINE>-NN, types, checkboxes
+  journal.md            # Log des ajouts
+  domaines/<slug>.md    # ex. caisse.md, reception.md
+```
+
+- IDs : `REV-CAISSE-06`, `REV-RECEPTION-01`, etc.
+- Types par item : `metier`, `UI/UX`, `tech`, `parite-legacy`, `cadrage-produit`
+- Suivi : cases `Investigue` / `Corrige` / `Valide HITL` (voir `CONVENTIONS.md`)
+- Mettre a jour `references/revision/index.md` et `journal.md` a chaque nouvel item ou domaine
 
 ### Fichiers de recherche
 

@@ -21,6 +21,7 @@ from recyclic_api.services.cash_denomination_service import (
     is_comptage_module_required,
     resolve_comptage_module_payload,
 )
+from tests.caisse_sale_eligibility import grant_user_caisse_sale_eligibility
 
 _V1 = settings.API_V1_STR.rstrip("/")
 _MODULE_KEY = MODULE_KEY_COMPTAGE_PIECES_BILLETS
@@ -103,6 +104,58 @@ def test_get_unknown_module_key_still_404(client: TestClient, db_session: Sessio
         headers={"Authorization": f"Bearer {token}"},
     )
     assert r.status_code == 404
+
+
+def test_get_comptage_operational_read_user_with_caisse_access_200(
+    client: TestClient, db_session: Session
+):
+    site = Site(id=uuid.uuid4(), name="Site caisse op", is_active=True)
+    db_session.add(site)
+    db_session.commit()
+
+    uid = uuid.uuid4()
+    operator = User(
+        id=uid,
+        username=f"op_cpt_{uid.hex[:8]}@test.com",
+        hashed_password=hash_password("pw"),
+        role=UserRole.USER,
+        status=UserStatus.ACTIVE,
+        legacy_external_contact_id=f"leg_{uid.hex[:12]}",
+        site_id=site.id,
+    )
+    db_session.add(operator)
+    db_session.commit()
+    grant_user_caisse_sale_eligibility(db_session, operator, site.id)
+    token = create_access_token(data={"sub": str(operator.id)})
+
+    r = client.get(_url(site.id), headers={"Authorization": f"Bearer {token}"})
+    assert r.status_code == 200, r.text
+    assert r.json()["payload"] == _DEFAULT_PAYLOAD
+
+
+def test_get_comptage_operational_read_user_without_caisse_access_403(
+    client: TestClient, db_session: Session
+):
+    site = Site(id=uuid.uuid4(), name="Site caisse denied", is_active=True)
+    db_session.add(site)
+    db_session.commit()
+
+    uid = uuid.uuid4()
+    operator = User(
+        id=uid,
+        username=f"op_denied_{uid.hex[:8]}@test.com",
+        hashed_password=hash_password("pw"),
+        role=UserRole.USER,
+        status=UserStatus.ACTIVE,
+        legacy_external_contact_id=f"leg_{uid.hex[:12]}",
+        site_id=site.id,
+    )
+    db_session.add(operator)
+    db_session.commit()
+    token = create_access_token(data={"sub": str(operator.id)})
+
+    r = client.get(_url(site.id), headers={"Authorization": f"Bearer {token}"})
+    assert r.status_code == 403
 
 
 def test_get_wrong_site_idor_403(client: TestClient, db_session: Session):

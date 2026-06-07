@@ -9,8 +9,9 @@ import {
   Text,
   TextInput,
   Title,
+  Tooltip,
 } from '@mantine/core';
-import { RefreshCw } from 'lucide-react';
+import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import {
   createSiteForAdmin,
@@ -20,6 +21,7 @@ import {
   type SiteAdminRowDto,
 } from '../../api/admin-sites-client';
 import { recycliqueClientFailureFromSalesHttp } from '../../api/recyclique-api-error';
+import { spaNavigateTo } from '../../app/demo/spa-navigate';
 import { useAuthPort } from '../../app/auth/AuthRuntimeProvider';
 import type { RegisteredWidgetProps } from '../../registry/widget-registry';
 import { CashflowClientErrorAlert } from '../cashflow/CashflowClientErrorAlert';
@@ -45,6 +47,10 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
   const [createName, setCreateName] = useState('');
   const [createCity, setCreateCity] = useState('');
   const [createBusy, setCreateBusy] = useState(false);
+  const [editTarget, setEditTarget] = useState<SiteAdminRowDto | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editBusy, setEditBusy] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SiteAdminRowDto | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [toggleBusyId, setToggleBusyId] = useState<string | null>(null);
@@ -66,6 +72,12 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const openEdit = (site: SiteAdminRowDto) => {
+    setEditTarget(site);
+    setEditName(site.name);
+    setEditCity(site.city ?? '');
+  };
 
   const onToggleActive = async (site: SiteAdminRowDto, next: boolean) => {
     setToggleBusyId(site.id);
@@ -100,6 +112,38 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
     await load();
   };
 
+  const onEdit = async () => {
+    if (!editTarget) return;
+    const name = editName.trim();
+    if (!name) return;
+    setEditBusy(true);
+    setError(null);
+    const res = await updateSiteForAdmin(auth, editTarget.id, {
+      name,
+      city: editCity.trim() || null,
+    });
+    setEditBusy(false);
+    if (!res.ok) {
+      setError({ kind: 'api', failure: recycliqueClientFailureFromSalesHttp(res) });
+      return;
+    }
+    setEditTarget(null);
+    setEditName('');
+    setEditCity('');
+    setRows((prev) => prev.map((r) => (r.id === editTarget.id ? res.site : r)));
+  };
+
+  const closeEditModal = () => {
+    setEditTarget(null);
+    setEditName('');
+    setEditCity('');
+  };
+
+  const reloadList = () => {
+    closeEditModal();
+    void load();
+  };
+
   const onConfirmDelete = async () => {
     if (!deleteTarget) return;
     setDeleteBusy(true);
@@ -116,18 +160,37 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
 
   return (
     <Stack gap="md" data-testid="widget-admin-sites">
+      <Button
+        variant="subtle"
+        leftSection={<ArrowLeft size={16} aria-hidden />}
+        onClick={() => spaNavigateTo('/admin/sites-and-registers')}
+        data-testid="admin-sites-back-to-hub"
+        w="fit-content"
+      >
+        Retour sites et caisses
+      </Button>
+
       <Group justify="space-between" align="flex-start" wrap="wrap">
         <div>
           <Title order={1}>Sites</Title>
           <Text size="sm" c="dimmed" mt={4}>
-            Lieux d’activité : nom, ville et état actif/inactif.
+            Lieux d'activité : nom, ville et état actif/inactif.
           </Text>
         </div>
         <Group gap="sm">
-          <Button variant="default" leftSection={<RefreshCw size={16} />} onClick={() => void load()} loading={busy}>
-            Actualiser
-          </Button>
-          <Button onClick={() => setCreateOpen(true)} disabled={busy}>
+          <Tooltip label="Recharge la liste depuis le serveur" withArrow>
+            <Button
+              variant="default"
+              leftSection={<RefreshCw size={16} />}
+              onClick={reloadList}
+              loading={busy}
+              disabled={editBusy || createBusy}
+              data-testid="admin-sites-reload-list"
+            >
+              Recharger la liste
+            </Button>
+          </Tooltip>
+          <Button onClick={() => setCreateOpen(true)} disabled={editBusy || editTarget !== null}>
             Nouveau site
           </Button>
         </Group>
@@ -175,7 +238,7 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
                   <Switch
                     checked={s.is_active}
                     onChange={(e) => void onToggleActive(s, e.currentTarget.checked)}
-                    disabled={toggleBusyId === s.id || busy}
+                    disabled={toggleBusyId === s.id || busy || editTarget?.id === s.id}
                     aria-label={`Site ${s.name} actif`}
                   />
                 </Table.Td>
@@ -183,9 +246,26 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
                   <Text size="sm">{formatDate(s.created_at)}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Button size="xs" variant="light" color="red" onClick={() => setDeleteTarget(s)}>
-                    Supprimer
-                  </Button>
+                  <Group gap="xs" wrap="nowrap">
+                    <Button
+                      size="xs"
+                      variant="light"
+                      onClick={() => openEdit(s)}
+                      disabled={toggleBusyId === s.id || busy || editBusy}
+                      data-testid={`admin-sites-edit-${s.id}`}
+                    >
+                      Modifier
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="light"
+                      color="red"
+                      onClick={() => setDeleteTarget(s)}
+                      disabled={toggleBusyId === s.id || busy || editTarget?.id === s.id}
+                    >
+                      Supprimer
+                    </Button>
+                  </Group>
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -209,6 +289,35 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
       </Modal>
 
       <Modal
+        opened={editTarget !== null}
+        onClose={() => {
+          if (!editBusy) closeEditModal();
+        }}
+        closeOnClickOutside={!editBusy}
+        closeOnEscape={!editBusy}
+        title="Modifier le site"
+        data-testid="admin-sites-edit-modal"
+      >
+        <Stack gap="sm">
+          <TextInput label="Nom" required value={editName} onChange={(e) => setEditName(e.currentTarget.value)} />
+          <TextInput label="Ville (optionnel)" value={editCity} onChange={(e) => setEditCity(e.currentTarget.value)} />
+          <Group justify="flex-end" mt="md">
+            <Button variant="default" onClick={closeEditModal} disabled={editBusy}>
+              Annuler
+            </Button>
+            <Button
+              onClick={() => void onEdit()}
+              loading={editBusy}
+              disabled={!editName.trim()}
+              data-testid="admin-sites-edit-submit"
+            >
+              Enregistrer
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      <Modal
         opened={deleteTarget !== null}
         onClose={() => setDeleteTarget(null)}
         title="Supprimer le site ?"
@@ -217,7 +326,7 @@ export function AdminSitesWidget(_: RegisteredWidgetProps): ReactNode {
           <Stack gap="sm">
             <Text size="sm">
               Le site « {deleteTarget.name} » sera supprimé définitivement si aucune donnée liée ne bloque
-              l’opération.
+              l'opération.
             </Text>
             <Group justify="flex-end" mt="md">
               <Button variant="default" onClick={() => setDeleteTarget(null)}>

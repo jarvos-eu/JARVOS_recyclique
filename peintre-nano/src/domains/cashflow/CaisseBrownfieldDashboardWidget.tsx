@@ -15,7 +15,7 @@ import {
   Title,
 } from '@mantine/core';
 import { Calendar, PlayCircle, Wallet } from 'lucide-react';
-import { useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { postOpenCashSession, resolveCashSessionOpeningIds } from '../../api/cash-session-client';
 import { recycliqueClientFailureFromSalesHttp, type RecycliqueClientFailure } from '../../api/recyclique-api-error';
 import {
@@ -30,6 +30,11 @@ import {
   setCashSessionIdInput,
   useCashflowDraft,
 } from './cashflow-draft-store';
+import {
+  firstDeferredRegisterId,
+  firstVirtualRegisterId,
+  formatCashSessionOpenedAt,
+} from './cashflow-register-variants';
 import { CaisseSessionCloseSurface } from './CaisseSessionCloseSurface';
 import { useCashRegistersStatus } from './use-cash-registers-status';
 import { useCaisseServerCurrentSession } from './use-caisse-server-current-session';
@@ -129,11 +134,13 @@ function parseRegisterCardsFromProps(
 function HubRegisterCard({
   reg,
   isOpen,
+  sessionOpenedAtLabel,
   onOpen,
   onResume,
 }: {
   readonly reg: RegisterCardSpec;
   readonly isOpen: boolean;
+  readonly sessionOpenedAtLabel?: string | null;
   readonly onOpen: (id: string) => void;
   readonly onResume: (id: string) => void;
 }) {
@@ -151,6 +158,11 @@ function HubRegisterCard({
         </div>
         <Badge color={isOpen ? 'green' : 'gray'}>{isOpen ? 'Ouverte' : 'Fermée'}</Badge>
       </Group>
+      {isOpen && sessionOpenedAtLabel ? (
+        <Text size="xs" c="dimmed" mb="sm" data-testid="caisse-hub-session-opened-at">
+          Session ouverte le {sessionOpenedAtLabel}
+        </Text>
+      ) : null}
       <Group justify="flex-end">
         {isOpen ? (
           <Button color="green" onClick={() => onResume(reg.id)} disabled={!reg.id}>
@@ -285,11 +297,23 @@ export function CaisseBrownfieldDashboardWidget(_props: RegisteredWidgetProps): 
     resolvedPosteId ||
     (serverSessionLoading ? 'Résolution poste serveur…' : '— (non résolu par le serveur)');
 
+  const serverSessionOpen = serverSession?.status === 'open';
   const envSessionId = envelope.cashSessionId?.trim() ?? '';
   const serverSessionId = serverSession?.id?.trim() ?? '';
   const draftSessionId = draft.cashSessionIdInput?.trim() ?? '';
-  const resolvedSessionId =
-    envSessionId || serverSessionId || openedSessionId.trim() || draftSessionId;
+  /** Story 28.1 — pas de session fantôme : l’enveloppe / brouillon ne comptent que si GET courant confirme `open`. */
+  const resolvedSessionId = serverSessionOpen
+    ? serverSessionId || openedSessionId.trim() || envSessionId || draftSessionId
+    : '';
+
+  /** Story 28.1 it.2 — purger le state local post-clôture / GET non ouvert (évite contournement enveloppe fantôme). */
+  useEffect(() => {
+    if (serverSessionLoading) return;
+    if (serverSession?.status !== 'open') {
+      if (openedSessionId) setOpenedSessionId('');
+      if (openedRegisterId) setOpenedRegisterId('');
+    }
+  }, [serverSession?.status, serverSessionLoading, openedSessionId, openedRegisterId]);
   const sessionLabel =
     serverSessionLoading && !resolvedSessionId
       ? 'Résolution session serveur…'
@@ -310,7 +334,15 @@ export function CaisseBrownfieldDashboardWidget(_props: RegisteredWidgetProps): 
 
   const canGoToSale = resolvedSessionId.length > 0;
   const openingBlockedReason = useMemo(() => {
-    if (resolvedSessionId) {
+    const targetRegisterId = registerIdValue.trim();
+    const openOnTargetRegister =
+      serverSession?.status === 'open' &&
+      Boolean(targetRegisterId) &&
+      serverSession.register_id?.trim() === targetRegisterId;
+    if (openOnTargetRegister) {
+      return 'Une session est déjà ouverte pour ce poste de caisse.';
+    }
+    if (resolvedSessionId && !targetRegisterId) {
       return 'Une session est déjà ouverte pour cette opératrice.';
     }
     if (!authSession.authenticated) {
@@ -354,6 +386,8 @@ export function CaisseBrownfieldDashboardWidget(_props: RegisteredWidgetProps): 
     openingMode,
     registerIdValue,
     resolvedSessionId,
+    serverSession?.register_id,
+    serverSession?.status,
     urlBranch,
   ]);
 
@@ -461,10 +495,14 @@ export function CaisseBrownfieldDashboardWidget(_props: RegisteredWidgetProps): 
     wprops.showDeferredSpecialCard !== false &&
     wprops.show_deferred_special_card !== false;
 
-  const firstRegisterIdForVariants = useMemo(() => {
-    const first = hubRegisterCards.find((c) => c.id.trim())?.id?.trim();
-    return first ?? resolvedPosteId.trim() ?? registerIdInput.trim();
-  }, [hubRegisterCards, resolvedPosteId, registerIdInput]);
+  const virtualRegisterIdForHub = useMemo(
+    () => firstVirtualRegisterId(apiRegisterRows),
+    [apiRegisterRows],
+  );
+  const deferredRegisterIdForHub = useMemo(
+    () => firstDeferredRegisterId(apiRegisterRows),
+    [apiRegisterRows],
+  );
 
   /** Legacy `CashRegisterDashboard` : `basePath` = `/cash-register` (hub `/caisse`) ou `/cash-register/virtual` (hub virtuel). */
   const cashRegisterHubBasePath = widgetString(wp, 'cash_register_hub_base_path', '/cash-register');
@@ -482,44 +520,49 @@ export function CaisseBrownfieldDashboardWidget(_props: RegisteredWidgetProps): 
   const handleHubResumeRegister = useCallback(
     (id: string) => {
       setRegisterIdInput(id);
+      const sid = serverSession?.id?.trim();
+      if (sid && serverSession?.status === 'open') {
+        setCashSessionIdInput(sid);
+      }
       spaNavigateTo(`${cashRegisterHubBasePath}/sale`);
     },
-    [cashRegisterHubBasePath],
+    [cashRegisterHubBasePath, serverSession?.id, serverSession?.status],
   );
 
   const handleVirtualSimuler = useCallback(() => {
+    const virtualRegisterId = virtualRegisterIdForHub;
+    if (!virtualRegisterId) return;
     setCashflowOperatingMode('virtual');
-    if (firstRegisterIdForVariants) {
-      setRegisterIdInput(firstRegisterIdForVariants);
-      spaNavigateTo(
-        `/cash-register/virtual/session/open?register_id=${encodeURIComponent(firstRegisterIdForVariants)}`,
-      );
-    } else {
-      spaNavigateTo('/cash-register/virtual/session/open');
-    }
-  }, [firstRegisterIdForVariants]);
+    setRegisterIdInput(virtualRegisterId);
+    spaNavigateTo(
+      `/cash-register/virtual/session/open?register_id=${encodeURIComponent(virtualRegisterId)}`,
+    );
+  }, [virtualRegisterIdForHub]);
 
   const handleDeferredAcceder = useCallback(() => {
     setCashflowOperatingMode('deferred');
-    if (firstRegisterIdForVariants) {
-      setRegisterIdInput(firstRegisterIdForVariants);
+    const deferredRegisterId = deferredRegisterIdForHub;
+    if (deferredRegisterId) {
+      setRegisterIdInput(deferredRegisterId);
       spaNavigateTo(
-        `/cash-register/deferred/session/open?register_id=${encodeURIComponent(firstRegisterIdForVariants)}`,
+        `/cash-register/deferred/session/open?register_id=${encodeURIComponent(deferredRegisterId)}`,
       );
     } else {
       spaNavigateTo('/cash-register/deferred/session/open');
     }
-  }, [firstRegisterIdForVariants]);
+  }, [deferredRegisterIdForHub]);
 
+  /** Ouverte = session GET /current de l’opérateur connecté sur ce poste (pas le statut site global). */
   const isRegisterCardOpen = useCallback(
     (regId: string) => {
       if (!regId.trim()) return false;
-      const sid = serverSession?.register_id?.trim();
-      if (sid && sid === regId.trim()) return true;
-      const row = apiRegisterRows.find((r) => r.id.trim() === regId.trim());
-      return Boolean(row?.is_open);
+      if (serverSessionLoading) return false;
+      return (
+        serverSession?.status === 'open' &&
+        serverSession.register_id?.trim() === regId.trim()
+      );
     },
-    [serverSession?.register_id, apiRegisterRows],
+    [serverSession?.status, serverSession?.register_id, serverSessionLoading],
   );
 
   if (isCaisseHubCompact) {
@@ -620,6 +663,12 @@ export function CaisseBrownfieldDashboardWidget(_props: RegisteredWidgetProps): 
                 key={reg.id || reg.name}
                 reg={reg}
                 isOpen={isRegisterCardOpen(reg.id)}
+                sessionOpenedAtLabel={
+                  isRegisterCardOpen(reg.id) &&
+                  serverSession?.register_id?.trim() === reg.id.trim()
+                    ? formatCashSessionOpenedAt(serverSession.opened_at)
+                    : null
+                }
                 onOpen={handleHubOpenRegister}
                 onResume={handleHubResumeRegister}
               />
@@ -659,7 +708,9 @@ export function CaisseBrownfieldDashboardWidget(_props: RegisteredWidgetProps): 
                     color="blue"
                     variant="light"
                     leftSection={<PlayCircle size={16} />}
+                    disabled={!virtualRegisterIdForHub}
                     onClick={handleVirtualSimuler}
+                    data-testid="caisse-hub-virtual-simuler"
                   >
                     Simuler
                   </Button>

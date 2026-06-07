@@ -4323,3 +4323,185 @@ So that I can intervene without silently bypassing workstation constraints.
 **Story Runner notes:** override is a server state with audit, not a frontend convenience.
 
 **Risks / HITL:** exact UX for strong confirmation / revalidation.
+
+## Epic 28: Stabiliser la beta terrain depuis le registre `references/revision/`
+
+**Goal:** Transformer le registre vivant `references/revision/` en vague BMAD exécutable afin de fermer les blocages terrain beta sans réécrire artificiellement les epics déjà `done`, en gardant une séparation nette entre correctif code, validation QA et validation HITL.
+
+**Source de vérité terrain:** `references/revision/index.md` et les fichiers `domaines/*.md` associés. Chaque story de cet epic doit citer explicitement les IDs `REV-*` qu’elle traite.
+
+**Périmètre:** déblocage terrain caisse P0/P1, rétablissement du flux `Mon profil` / PIN / sortie PWA minimale, remise en état du hub et cockpit réception, débruitage des surfaces admin pilotes, restauration de l’édition et de la navigation `sites` / `postes`. Cet epic porte des correctifs et des arbitrages de stabilisation beta, pas une refonte produit large.
+
+**Hors périmètre:** réécriture du domaine caisse, requalification comptable Epic 22/23, nouveaux modules Epic 9, extension massive des rôles ou zones métier, fermeture définitive des P2 de vision long terme, parallélisation de plusieurs stories de dev sur le même dépôt, validation HITL automatique.
+
+**Definition of Done globale:** les stories 28.1–28.5 sont `done`, les gates backend/front passent pour chaque tranche, QA et code review ne signalent plus de P0/P1 ouverts dans le scope de la story, les colonnes `Investigé` / `Corrigé` du registre `references/revision/` sont mises à jour sur les items couverts, et les retests HITL restants sont explicitement listés avant d’enchaîner `Epic 10.7` puis `10.8`.
+
+**Ordre Epic Runner:** `28.1 -> 28.2 -> 28.3 -> 28.4 -> 28.5`. Une seule story active à la fois ; pas de Story Runner parallèle sur le même dépôt ; après correctif QA/CR, repasser par `DS -> gates -> QA -> CR`. Si une story révèle un arbitrage produit large ou un conflit documentaire majeur, renvoyer `NEEDS_HITL` plutôt que fusionner les stories.
+
+**Gates transverses:** lint + build front (Peintre) si surfaces UI touchées ; pytest ciblé sur les flux backend modifiés ; contrats via `contracts/openapi/recyclique-api.yaml` si endpoints modifiés ; pas de validation HITL automatique ; chaque story porte des gates explicites ou `gates_skipped_with_hitl: true` limité à un blocage d'environnement documenté.
+
+**Couverture registre `REV-*` (annexe normative) :**
+
+| Catégorie | IDs | Story / statut |
+|-----------|-----|----------------|
+| **Couverts Epic 28** | `REV-CAISSE-01`…`13` (P0 prioritaires) | 28.1 (+ P1 caisse résiduels même story si bornés) |
+| | `REV-TRANSVERSE-01`, `REV-ADMIN-01`, `REV-RECEPTION-02` | 28.2 |
+| | `REV-RECEPTION-01`, `03`, `05`, `06` | 28.3 |
+| | `REV-ADMIN-02`, `03`, `05`, `REV-TRANSVERSE-04`, `05` | 28.4 |
+| | `REV-ADMIN-06`, `07`, `08` | 28.5 |
+| **Différés (hors slice beta immédiate)** | `REV-TRANSVERSE-02`, `03` (barre titre PWA, plier/déplier) | Polish PWA — post-28.2 ou epic ultérieur |
+| | `REV-ADMIN-04` (dashboard Activité & Logs, super-admin repliable) | Admin polish — post-28.4 ou epic ultérieur |
+| | `REV-ADMIN-09`, `10` (archiver vs supprimer, zones) | Sauf clarification minimale strictement requise par 28.5 |
+| **Hors epic 28** | `REV-CAISSE-14`…`23` (import audit parité) | Backlog parité / epics existants — pas stabilisation terrain live |
+| | `REV-RECEPTION-07`, `08` (import audit) | Idem |
+
+### Story 28.1: Stabiliser la caisse terrain P0 sur session, finalisation et clôture
+
+**Cle pilotage YAML :** `28-1-stabiliser-la-caisse-terrain-p0-session-finalisation-et-cloture`.
+
+As a cashier or terrain tester,
+I want the real cash register path to resume, finalize and close sessions credibly,
+So that the v2 caisse is no longer blocked on the core sale-to-close workflow during beta.
+
+**Acceptance Criteria:**
+
+**Given** the revision register identifies blocking caisse items `REV-CAISSE-01`, `02`, `05`, `06`, `10` and `12`
+**When** this story is delivered
+**Then** the bounded real-cash path no longer traps the user in a resume / finalize / close loop
+**And** the system either closes the session effectively or returns an explicit blocking reason tied to the actual state
+**And** held-sale handling is not silently confused with nominal encaissement
+**And** the virtual-cash path does not fail because of the nominal workstation session when the retained beta behavior should keep them separated
+
+**Given** Epic 6 remains the caisse business authority and Epic 13 the last UI parity baseline
+**When** the story is reviewed
+**Then** the fix stays anchored to backend authority, manifests and reviewable UI state
+**And** no new caisse business model is invented in frontend code
+**And** any residual deviation versus legacy is written as an explicit gap or defer decision in `references/revision/`
+
+**Dependencies:** Epics 6, 13, 22, 23 and the existing close / held-sale backend chain.
+
+**Expected gates/tests:** targeted pytest on close / held / session flows, focused front tests on finalize / close surface if touched, and an explicit regression test for the real-vs-virtual conflict.
+
+**Story Runner notes:** this story is the top priority of the epic. Do not absorb refund UX or keyboard parity unless directly required to unblock the P0 path.
+
+**Risks / HITL:** exact retained behavior for silent resume, legacy-equivalent wording of CTA, and remaining distinction between training / virtual and production workstation modes.
+
+### Story 28.2: Retablir `Mon profil`, PIN self-service et la sortie PWA minimale
+
+**Cle pilotage YAML :** `28-2-retablir-mon-profil-pin-self-service-et-sortie-pwa-minimale`.
+
+As a field operator on a shared or installed workstation,
+I want to reach my profile, manage my PIN and leave blocked PWA surfaces safely,
+So that the v2 no longer traps me administratively or operationally before I can work.
+
+**Acceptance Criteria:**
+
+**Given** the revision register identifies `REV-TRANSVERSE-01`, `REV-ADMIN-01` and `REV-RECEPTION-02`
+**When** this story is delivered
+**Then** the live shell user menu exposes a credible `Mon profil` path in the v2 runtime
+**And** the self-service profile surface lets the user complete the retained PIN-management behavior needed by the beta
+**And** a reception PWA user can always leave the inactive reception surface through a bounded return path instead of closing the whole app
+**And** the fix does not bypass Epic 27 security rules or invent client-side authority around operator activity
+
+**Given** Epic 21 carries the `users` family and Epic 27 the shared-workstation / PWA groundwork
+**When** the story is reviewed
+**Then** the implementation reuses existing contracts and APIs where they already exist
+**And** any truly missing authority is documented rather than hidden in local-only UI state
+
+**Dependencies:** Epics 21 and 27, plus the existing profile / PIN API behavior.
+
+**Expected gates/tests:** front tests for shell menu + profile route, backend/API tests if profile or PIN contracts are touched, and a focused PWA navigation regression test for reception hub inactive state.
+
+**Story Runner notes:** keep the slice bounded to profile / PIN / return navigation. Do not absorb full shared-workstation lifecycle or advanced timeout/handoff logic.
+
+**Risks / HITL:** exact route naming (`/profil` vs manifest slug), final wording around PIN reset vs creation, and minimum visible nav chrome in installed PWA.
+
+### Story 28.3: Rendre la reception terrain exploitable en hub et poste
+
+**Cle pilotage YAML :** `28-3-rendre-la-reception-terrain-exploitable-en-hub-et-poste`.
+
+As a reception operator,
+I want the reception hub and the open-post cockpit to feel usable again,
+So that the beta can support real intake work instead of a partial demo path.
+
+**Acceptance Criteria:**
+
+**Given** the revision register identifies `REV-RECEPTION-01`, `03`, `05` and `06`
+**When** this story is delivered
+**Then** the reception entry surface exposes a credible bounded hub state instead of a near-empty dead end
+**And** the open-post cockpit restores a readable, bounded operator layout for the retained flow
+**And** ticket closure leaves the user in an explicit post-close state instead of an ambiguous frozen cockpit
+**And** shortcut visibility remains understandable for the retained terrain workflow without promising full legacy parity outside the retained scope
+
+**Given** Epics 7, 12 and 19 provide the reception foundations
+**When** the story is reviewed
+**Then** the retained reception path stays contract-driven and bounded
+**And** deferred reception admin/export/product branches remain out of scope
+
+**Dependencies:** Epics 7, 12, 19 and the existing reception widgets / manifests.
+
+**Expected gates/tests:** focused front tests on hub rendering and close-state transitions, plus any targeted backend tests if close/reopen semantics are touched.
+
+**Story Runner notes:** priority is operator exploitability, not pixel-perfect legacy copy. Keep the story aligned with the real terrain-critical path.
+
+**Risks / HITL:** whether resize returns via `react-resizable-panels` or a lighter bounded solution, and exact post-close reception behavior expected by Strophe.
+
+### Story 28.4: Debruiter les surfaces admin pilotes pour un usage humain
+
+**Cle pilotage YAML :** `28-4-debruiter-les-surfaces-admin-pilotes-pour-un-usage-humain`.
+
+As a super-admin or pilot user,
+I want the main pilot admin surfaces to speak human language instead of implementation jargon,
+So that the beta can be used and reviewed without developer-only literacy.
+
+**Acceptance Criteria:**
+
+**Given** the revision register identifies `REV-ADMIN-02`, `03`, `05`, `REV-TRANSVERSE-04` and `05`
+**When** this story is delivered
+**Then** the retained admin pilot surfaces no longer expose raw UUIDs, internal jargon, or confusing implementation noise as the primary operator-facing text
+**And** the modules administration surface surfaces actionable errors in clear French when configuration loading or saving fails
+**And** system-health recommendations distinguish clearly between operator action, technical-team action, and purely informative guidance
+**And** sensitive technical details remain available only as bounded secondary detail, tooltip or expert context
+
+**Given** Epic 9 already delivered the simple-admin foundation and Epics 14/17/19 already delivered related admin surfaces
+**When** the story is reviewed
+**Then** the implementation remains an exploitability cleanup layer rather than a new governance console
+**And** no hidden authority or expert workflow is shifted into generic copy changes
+
+**Dependencies:** Epics 9, 14, 17 and 19.
+
+**Expected gates/tests:** focused front tests on visible copy, error-state rendering and resolved display names where feasible; targeted backend tests only if save error semantics are changed.
+
+**Story Runner notes:** do not sprawl into full content strategy. Fix the surfaces named by the revision register and the clearest transverse patterns first.
+
+**Risks / HITL:** exact tone of “langage planché”, thresholds for hiding vs keeping technical info, and whether `REV-ADMIN-03` is a pure UX message issue or a deeper backend defect.
+
+### Story 28.5: Retablir l’edition et la navigation `sites` / `postes` pour la beta
+
+**Cle pilotage YAML :** `28-5-retablir-ledition-et-la-navigation-sites-postes-pour-la-beta`.
+
+As an admin user managing physical operating contexts,
+I want to edit sites and cash-register posts and return to their hub directly,
+So that the beta supports the minimum day-to-day administration expected from the legacy reference.
+
+**Acceptance Criteria:**
+
+**Given** the revision register identifies `REV-ADMIN-06`, `07` and `08`
+**When** this story is delivered
+**Then** the retained `sites` and `cash-registers` surfaces expose bounded edit flows for the fields explicitly retained in beta scope
+**And** the user can return directly to the `sites & caisses` hub without an unnecessary detour through the main admin dashboard
+**And** the pages explain or simplify refresh behavior instead of leaving it ambiguous
+**And** the story remains bounded to edit/navigation exploitability rather than broader future “zones” modeling
+
+**Given** Epic 17 provided the first shared admin shell for `sites` and `cash-registers`
+**When** the story is reviewed
+**Then** the retained edit flows reuse the same stable admin patterns and backend authority
+**And** broader product questions such as archive-vs-delete or future zones stay deferred unless explicitly required to keep the retained edit flow coherent
+
+**Dependencies:** Epic 17 and the existing admin list/detail/form primitives.
+
+**Expected gates/tests:** targeted admin API tests if update endpoints expand, focused front tests for edit modals and return navigation.
+
+**Story Runner notes:** do not absorb `REV-ADMIN-09` / `10` unless a minimal product clarification is strictly necessary for the bounded beta flow.
+
+**Risks / HITL:** exact retained edit fields, final return-navigation wording, and whether “archiver vs supprimer” must stay outside the dev slice.

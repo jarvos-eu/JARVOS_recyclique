@@ -26,6 +26,18 @@
       }
     },
     {
+      "id": "transverse-profile",
+      "route_key": "transverse-profile",
+      "path": "/profil",
+      "page_key": "transverse-profile",
+      "shortcut_id": "go-transverse-profile",
+      "label_key": "nav.transverse.profile",
+      "visibility": {
+        "permission_any": ["transverse.dashboard.view"],
+        "contexts_any": ["site"]
+      }
+    },
+    {
       "id": "cashflow-nominal",
       "route_key": "cashflow-nominal",
       "path": "/caisse",

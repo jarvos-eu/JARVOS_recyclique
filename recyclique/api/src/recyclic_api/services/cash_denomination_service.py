@@ -264,7 +264,8 @@ class CashDenominationService:
         Si module requis : valide la grille et retourne le montant serveur (€).
         Lève ValidationError avec message structuré si échec.
         """
-        if not is_comptage_module_required(self.db, session.site_id):
+        site_id = getattr(session, "site_id", None)
+        if site_id is None or not is_comptage_module_required(self.db, site_id):
             return client_actual_amount, None
 
         grid = self.build_response_for_session(session)
@@ -304,7 +305,8 @@ class CashDenominationService:
         return server_amount, grid
 
     def build_snapshot_block(self, session: CashSession) -> Optional[Dict[str, Any]]:
-        if not is_comptage_module_enabled(self.db, session.site_id):
+        site_id = getattr(session, "site_id", None)
+        if site_id is None or not is_comptage_module_enabled(self.db, site_id):
             return None
         if not self._has_count_recorded(session.id):
             return None
@@ -328,12 +330,13 @@ class CashDenominationService:
         grid: Optional[DenominationCountResponseV1] = None,
     ) -> Tuple[bool, Optional[str]]:
         """Signaux PDF anomalie (génération PDF = story 9.12)."""
-        if not is_comptage_module_enabled(self.db, session.site_id):
+        site_id = getattr(session, "site_id", None)
+        if site_id is None or not is_comptage_module_enabled(self.db, site_id):
             return False, None
 
         grid = grid or self.build_response_for_session(session)
         variance_eur = abs(variance_cents) / 100.0
-        block_max = get_close_variance_max_eur(self.db, session.site_id)
+        block_max = get_close_variance_max_eur(self.db, site_id)
         rare_qty = next(
             (line.quantity for line in grid.breakdown if line.code == "EUR_50000"),
             0,

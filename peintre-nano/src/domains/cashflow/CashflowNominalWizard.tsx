@@ -1,12 +1,11 @@
 import { Alert, Badge, Button, Group, NumberInput, Text, TextInput, Tooltip } from '@mantine/core';
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { type RecycliqueClientFailure, recycliqueClientFailureFromSalesHttp } from '../../api/recyclique-api-error';
 import { type CategoryListItem } from '../../api/dashboard-legacy-stats-client';
-import type { CashSessionCurrentV1 } from '../../api/cash-session-client';
+import { isUuidLikeString, type CashSessionCurrentV1 } from '../../api/cash-session-client';
 import {
   getHeldSalesForSession,
   getSale,
-  isPlausibleCashSessionUuid,
   postAbandonHeldSale,
   postCreateSale,
   postFinalizeHeldSale,
@@ -38,6 +37,7 @@ import {
   bumpHeldTicketsListRefresh,
   attachCashflowDraftSessionPersistence,
   clearCashflowDraftSubmitError,
+  resetCashflowDraft,
   getCashflowDraftSnapshot,
   linesSubtotal,
   setAfterSuccessfulHold,
@@ -53,6 +53,11 @@ import {
   type CashflowOperatingMode,
 } from './cashflow-draft-store';
 import { buildBusinessTagPayload } from './cashflow-business-tag-payload';
+import {
+  evaluateCashflowFinalizeEligibility,
+  resolveCashflowSaleSessionId,
+} from './cashflow-finalize-eligibility';
+import { formatCashSessionOpenedAt } from './cashflow-register-variants';
 import { useCaisseServerCurrentSession } from './use-caisse-server-current-session';
 import { CashflowClientErrorAlert } from './CashflowClientErrorAlert';
 import { CashflowSocialDonWizard } from './CashflowSocialDonWizard';
@@ -250,16 +255,17 @@ function useCashflowEntryBlock(): EntryBlock {
 }
 
 /**
- * Session utilisée pour lister les tickets « held » : priorité à l’enveloppe (vérité serveur),
- * sinon saisie brouillon **uniquement** si UUID complet — évite une rafale de GET /held en 400 pendant la frappe.
+ * Session pour GET /held : autorité GET /v1/cash-sessions/current (`status === 'open'`),
+ * puis repli sur la saisie brouillon (collage terrain / saisie progressive UUID).
  */
-function resolveCashSessionIdForHeldList(envelopeCashSessionId: string | null | undefined, draftInput: string): string {
-  const fromEnv = (envelopeCashSessionId ?? '').trim();
-  if (fromEnv.length > 0) {
-    return fromEnv;
-  }
-  const fromDraft = draftInput.trim();
-  return isPlausibleCashSessionUuid(fromDraft) ? fromDraft : '';
+function resolveCashSessionIdForHeldList(
+  serverSession: Pick<CashSessionCurrentV1, 'id' | 'status'> | null,
+  draftSessionInput: string,
+): string {
+  const serverId = serverSession?.id?.trim() ?? '';
+  if (serverSession?.status === 'open' && serverId) return serverId;
+  const draftId = draftSessionInput.trim();
+  return isUuidLikeString(draftId) ? draftId : '';
 }
 
 function shortRef(id: string): string {
@@ -433,6 +439,7 @@ function SaleKioskSessionHeader({
   siteLabel,
   posteLabel,
   sessionLabel,
+  sessionOpenedAtLabel,
   operatingMode,
   onRefreshSession,
   onCloseSession,
@@ -441,6 +448,7 @@ function SaleKioskSessionHeader({
   readonly siteLabel: string;
   readonly posteLabel: string;
   readonly sessionLabel: string;
+  readonly sessionOpenedAtLabel?: string | null;
   readonly operatingMode: CashflowOperatingMode | null;
   readonly onRefreshSession: () => void;
   readonly onCloseSession: () => void;
@@ -485,6 +493,11 @@ function SaleKioskSessionHeader({
         <div className={classes.saleKioskSessionMetaItem}>
           <span className={classes.saleKioskSessionMetaLabel}>Session</span>
           <span className={classes.saleKioskSessionMetaValue}>{sessionLabel}</span>
+          {sessionOpenedAtLabel ? (
+            <Text size="xs" c="dimmed" mt={2} data-testid="cashflow-kiosk-session-opened-at">
+              Ouverte le {sessionOpenedAtLabel}
+            </Text>
+          ) : null}
         </div>
         <Badge
           size="sm"
@@ -644,7 +657,8 @@ function HeldTicketsPanel({ kioskSurface }: { readonly kioskSurface: boolean }):
   const [heldFailure, setHeldFailure] = useState<RecycliqueClientFailure | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  const sessionId = resolveCashSessionIdForHeldList(envelope.cashSessionId, draft.cashSessionIdInput);
+  const { session: heldListServerSession } = useCaisseServerCurrentSession(auth);
+  const sessionId = resolveCashSessionIdForHeldList(heldListServerSession, draft.cashSessionIdInput);
 
   const refresh = useCallback(async () => {
     if (!sessionId) {
@@ -682,6 +696,7 @@ function HeldTicketsPanel({ kioskSurface }: { readonly kioskSurface: boolean }):
       applyServerHeldSaleToDraft({
         id: res.sale.id,
         total_amount: res.sale.total_amount,
+        cash_session_id: res.sale.cash_session_id,
         items: res.sale.items.map((it) => ({
           id: it.id,
           category: it.category,
@@ -988,6 +1003,7 @@ function LinesStep({
   const [kioskPriceInput, setKioskPriceInput] = useState('5');
   const [kioskShowManualCategoryEdit, setKioskShowManualCategoryEdit] = useState(false);
   const liveRefresh = useLiveEnvelopeRefresh();
+  const heldSaleActive = Boolean(draft.activeHeldSaleId?.trim());
 
   const goKioskBrowse = useCallback(() => {
     setKioskMicroPhase('browse');
@@ -1041,6 +1057,7 @@ function LinesStep({
   }, [selectedCategoryMeta]);
 
   const onAdd = (overrides?: { readonly weight?: number; readonly unitPrice?: number }) => {
+    if (heldSaleActive) return;
     const nextWeight = overrides?.weight ?? weight;
     const nextUnitPrice = overrides?.unitPrice ?? unitPrice;
     const totalPrice = nextUnitPrice * quantity;
@@ -1148,6 +1165,12 @@ function LinesStep({
 
   return (
     <div className={`${classes.step}${kioskCategoryWorkspace ? ` ${classes.stepKiosk}` : ''}`}>
+      {heldSaleActive ? (
+        <Alert color="orange" variant="light" mb="sm" data-testid="cashflow-held-line-add-blocked">
+          Ticket en attente actif : les lignes viennent du serveur. Finalisez ou abandonnez ce ticket avant d’en ajouter
+          d’autres.
+        </Alert>
+      ) : null}
       {kioskCategoryWorkspace ? (
         <>
           <KioskLineMicroRail
@@ -1173,6 +1196,7 @@ function LinesStep({
                 setKioskMicroPhase('weight');
               }}
               onPickCategoryCode={(code, displayName, categoryMeta) => {
+                if (heldSaleActive) return;
                 setCategory(code);
                 setCategoryArticleLabel(displayName.trim());
                 setSelectedCategoryMeta(categoryMeta);
@@ -1205,9 +1229,9 @@ function LinesStep({
                 value={kioskWeightInput}
                 suffix="kg"
                 onChange={setKioskWeightInput}
-                onValidate={commitKioskWeight}
+                onValidate={heldSaleActive ? () => {} : commitKioskWeight}
                 onStepBack={goKioskBrowse}
-                onStepForward={commitKioskWeight}
+                onStepForward={heldSaleActive ? () => {} : commitKioskWeight}
                 validateLabel="Valider le poids total"
                 testIdPrefix="cashflow-kiosk-weight"
               />
@@ -1269,9 +1293,9 @@ function LinesStep({
                 value={kioskPriceInput}
                 suffix="€"
                 onChange={setKioskPriceInput}
-                onValidate={commitKioskPrice}
+                onValidate={heldSaleActive ? () => {} : commitKioskPrice}
                 onStepBack={goKioskWeight}
-                onStepForward={commitKioskPrice}
+                onStepForward={heldSaleActive ? () => {} : commitKioskPrice}
                 validateLabel="Valider et ajouter la ligne"
                 testIdPrefix="cashflow-kiosk-price"
               />
@@ -1283,6 +1307,7 @@ function LinesStep({
               <Button
                 mt="md"
                 onClick={commitKioskPrice}
+                disabled={heldSaleActive}
                 data-testid="cashflow-add-line"
               >
                 Ajouter la ligne
@@ -1332,7 +1357,7 @@ function LinesStep({
             onChange={(v) => setUnitPrice(Number(v) || 0)}
             mt="sm"
           />
-          <Button mt="md" onClick={() => onAdd()} data-testid="cashflow-add-line">
+          <Button mt="md" onClick={() => onAdd()} disabled={heldSaleActive} data-testid="cashflow-add-line">
             Ajouter la ligne
           </Button>
           <Text size="sm" mt="md" data-testid="cashflow-lines-count">
@@ -1359,12 +1384,14 @@ function LinesStep({
 function TotalStep({ wide, kioskSurface }: { readonly wide?: boolean; readonly kioskSurface?: boolean }): ReactNode {
   const draft = useCashflowDraft();
   const sub = useMemo(() => linesSubtotal(draft.lines), [draft.lines]);
+  const heldSaleActive = Boolean(draft.activeHeldSaleId?.trim());
 
   useEffect(() => {
+    if (heldSaleActive) return;
     if (draft.totalAmount === 0 && sub > 0) {
       setTotalAmount(sub);
     }
-  }, [draft.totalAmount, sub]);
+  }, [draft.totalAmount, heldSaleActive, sub]);
 
   return (
     <div className={`${classes.step}${wide ? ` ${classes.stepKiosk}` : ''}`}>
@@ -1378,6 +1405,7 @@ function TotalStep({ wide, kioskSurface }: { readonly wide?: boolean; readonly k
         min={0}
         value={draft.totalAmount}
         onChange={(v) => setTotalAmount(Number(v) || 0)}
+        disabled={heldSaleActive}
         data-testid="cashflow-input-total"
       />
       <Text size="sm" mt="sm" c="dimmed">
@@ -1396,21 +1424,16 @@ function PaymentStep({
 }): ReactNode {
   const draft = useCashflowDraft();
   const auth = useAuthPort();
+  const { session: serverSession } = useCaisseServerCurrentSession(auth);
+  const serverOpenSessionId =
+    serverSession?.status === 'open' ? (serverSession.id?.trim() ?? '') : '';
   const { options: methodOptions, loading: pmLoading, error: pmError } = useCaissePaymentMethodOptions(auth);
   const paymentMethodsReady = !pmLoading && pmError === null && methodOptions.length > 0;
   const envelope = useContextEnvelope();
   const liveRefresh = useLiveEnvelopeRefresh();
-  const stale = draft.widgetDataState === 'DATA_STALE';
   const [busy, setBusy] = useState(false);
 
   const financialCodes = useMemo(() => methodOptions.map((o) => o.code), [methodOptions]);
-
-  useEffect(() => {
-    const fromEnv = envelope.cashSessionId?.trim();
-    if (fromEnv && !draft.cashSessionIdInput) {
-      setCashSessionIdInput(fromEnv);
-    }
-  }, [envelope.cashSessionId, draft.cashSessionIdInput]);
 
   useEffect(() => {
     if (financialCodes.length === 0) return;
@@ -1420,12 +1443,14 @@ function PaymentStep({
     }
   }, [draft.paymentMethod, financialCodes]);
 
-  const canSubmit =
-    !stale &&
-    draft.cashSessionIdInput.trim().length > 0 &&
-    draft.lines.length > 0 &&
-    draft.totalAmount > 0;
-  const canSubmitSale = canSubmit && paymentMethodsReady;
+  const finalizeEligibility = evaluateCashflowFinalizeEligibility(
+    draft,
+    paymentMethodsReady,
+    pmLoading,
+    pmError,
+    serverOpenSessionId || null,
+  );
+  const canSubmitSale = finalizeEligibility.canFinalize;
 
   const saleContextBinding = useMemo(
     () => ({ siteId: envelope.siteId, cashSessionId: envelope.cashSessionId }),
@@ -1466,7 +1491,7 @@ function PaymentStep({
         return;
       }
       const body = {
-        cash_session_id: draft.cashSessionIdInput.trim(),
+        cash_session_id: resolveCashflowSaleSessionId(draft.cashSessionIdInput, serverOpenSessionId),
         items: draft.lines.map((l) => ({
           category: l.category,
           quantity: l.quantity,
@@ -1617,6 +1642,11 @@ function PaymentStep({
         </Button>
       </>
       <CashflowClientErrorAlert error={draft.submitError} />
+      {!canSubmitSale && !busy && finalizeEligibility.blockedReason ? (
+        <Text size="sm" c="orange" mt="xs" data-testid="cashflow-nominal-finalize-blocked-reason">
+          {finalizeEligibility.blockedReason}
+        </Text>
+      ) : null}
       <Button
         mt="lg"
         size="sm"
@@ -1699,17 +1729,63 @@ export function CashflowNominalWizard(props: RegisteredWidgetProps): ReactNode {
     refresh: refreshServerSession,
   } = useCaisseServerCurrentSession(auth);
   const [activeIndex, setActiveIndex] = useState(0);
+  const saleRedirectWithoutSessionRef = useRef(false);
 
-  /** Recolle le brouillon au GET courant (comme /caisse/cloture) si l’enveloppe n’expose pas encore `cashSessionId`. */
+  /** Recolle le brouillon au GET courant (autorité serveur) ; purge si session fermée / absente. */
   useEffect(() => {
     if (entry.blocked) return;
-    const envId = envelope.cashSessionId?.trim();
-    if (envId) return;
-    if (draft.cashSessionIdInput.trim()) return;
+    if (serverSessionLoading) return;
+    /** Epic 6.3 — ticket held : session portée par le ticket serveur ; éviter purge/sync en boucle. */
+    if (draft.activeHeldSaleId?.trim()) return;
+
     const sid = serverSession?.id?.trim();
-    if (!sid) return;
-    setCashSessionIdInput(sid);
-  }, [entry.blocked, envelope.cashSessionId, draft.cashSessionIdInput, serverSession?.id]);
+    const draftId = draft.cashSessionIdInput.trim();
+    const envId = envelope.cashSessionId?.trim() ?? '';
+
+    if (!sid || serverSession?.status !== 'open') {
+      if (!draftId) return;
+      /** Saisie progressive UUID — ne pas couper ni purger avant UUID complet. */
+      if (!isUuidLikeString(draftId)) return;
+      /** Story 28.1 — purge session fantôme alignée enveloppe sans confirmation GET. */
+      if (envId && draftId === envId) {
+        setCashSessionIdInput('');
+      }
+      return;
+    }
+
+    /** Autorité GET courant : recoller même si brouillon/enveloppe portent un UUID périmé. */
+    if (draftId !== sid) {
+      setCashSessionIdInput(sid);
+    }
+  }, [
+    entry.blocked,
+    envelope.cashSessionId,
+    draft.cashSessionIdInput,
+    draft.activeHeldSaleId,
+    serverSession?.id,
+    serverSession?.status,
+    serverSessionLoading,
+  ]);
+
+  /**
+   * Kiosque vente sans session active pour l’opérateur : retour hub (évite l’état « Non résolu » / ticket bloqué).
+   */
+  useEffect(() => {
+    if (!kioskSaleSurface || entry.blocked || serverSessionLoading) return;
+    if (serverSession?.status === 'open') {
+      saleRedirectWithoutSessionRef.current = false;
+      return;
+    }
+    if (saleRedirectWithoutSessionRef.current) return;
+    saleRedirectWithoutSessionRef.current = true;
+    resetCashflowDraft();
+    spaNavigateTo('/caisse');
+  }, [
+    entry.blocked,
+    kioskSaleSurface,
+    serverSession?.status,
+    serverSessionLoading,
+  ]);
 
   const panels = useMemo(
     () => [
@@ -1749,11 +1825,12 @@ export function CashflowNominalWizard(props: RegisteredWidgetProps): ReactNode {
 
   /** Epic 24 — entrée hub opérations spéciales depuis la caisse : session résolue + ticket vide uniquement. */
   const sessionIdResolvedForSpecialOps = useMemo(() => {
+    if (serverSession?.status !== 'open') return '';
     const a = draft.cashSessionIdInput.trim();
     const b = envelope.cashSessionId?.trim() ?? '';
     const c = serverSession?.id?.trim() ?? '';
     return a || b || c;
-  }, [draft.cashSessionIdInput, envelope.cashSessionId, serverSession?.id]);
+  }, [draft.cashSessionIdInput, envelope.cashSessionId, serverSession?.id, serverSession?.status]);
 
   const canUseSpecialOpsHubNav = useMemo(
     () =>
@@ -1865,10 +1942,14 @@ export function CashflowNominalWizard(props: RegisteredWidgetProps): ReactNode {
               return reg ? shortRef(reg) : '—';
             })()}
             sessionLabel={(() => {
-              const sid =
-                envelope.cashSessionId?.trim() || draft.cashSessionIdInput.trim() || serverSession?.id?.trim() || '';
-              return sid ? shortRef(sid) : 'Non résolue';
+              if (serverSessionLoading) return 'Chargement…';
+              if (serverSession?.status === 'open') {
+                const sid = serverSession.id?.trim() || '';
+                return sid ? shortRef(sid) : 'Ouverte';
+              }
+              return 'Aucune session active';
             })()}
+            sessionOpenedAtLabel={formatCashSessionOpenedAt(serverSession?.opened_at)}
             operatingMode={draft.operatingMode}
             onRefreshSession={() => refreshServerSession()}
             onCloseSession={() => spaNavigateTo(saleKioskCloseSessionPath())}

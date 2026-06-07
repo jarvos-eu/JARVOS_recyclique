@@ -2445,7 +2445,7 @@ describe('Story 7.5 — réception défensive (AR21, DATA_STALE, pas de faux suc
     });
     vi.stubGlobal('fetch', fetchMock);
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    setReceptionPosteUiState(true);
+    setReceptionPosteUiState(false);
 
     render(
       <RootProviders authAdapter={auth} disableUserPrefsPersistence>
@@ -2484,7 +2484,7 @@ describe('Story 7.5 — réception défensive (AR21, DATA_STALE, pas de faux suc
         } as Response),
       ),
     );
-    setReceptionPosteUiState(true);
+    setReceptionPosteUiState(false);
 
     render(
       <RootProviders authAdapter={auth} disableUserPrefsPersistence>

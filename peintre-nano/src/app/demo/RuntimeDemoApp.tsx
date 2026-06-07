@@ -571,6 +571,11 @@ export function RuntimeDemoApp() {
     syncSelectionFromPath();
   }, [syncSelectionFromPath]);
 
+  const goProfileFromMenu = useCallback(() => {
+    window.history.pushState({}, '', '/profil');
+    syncSelectionFromPath();
+  }, [syncSelectionFromPath]);
+
   const resolvedEntryId = useMemo(() => {
     if (flatFiltered.some((e) => e.id === selectedEntryId)) return selectedEntryId;
     return flatFiltered[0]?.id ?? selectedEntryId;
@@ -748,6 +753,9 @@ export function RuntimeDemoApp() {
                   flatFiltered.some((e) => e.id === 'transverse-dashboard-benevole')
                     ? goPersonalDashboardFromMenu
                     : undefined
+                }
+                onProfile={
+                  flatFiltered.some((e) => e.id === 'transverse-profile') ? goProfileFromMenu : undefined
                 }
               />
             ) : (

@@ -334,6 +334,7 @@ describe('AdminSystemHealthWidget', () => {
       </RootProviders>,
     );
     await screen.findByTestId('admin-system-health-test-notifications');
+    expect(screen.getByText('Tester les alertes')).toBeTruthy();
     fireEvent.click(screen.getByTestId('admin-system-health-test-notifications'));
     expect(await screen.findByText(/Fonction documentée comme désactivée sur le serveur/)).toBeTruthy();
     expect(vi.mocked(postAdminHealthTestNotifications)).toHaveBeenCalled();

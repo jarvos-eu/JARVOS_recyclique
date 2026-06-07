@@ -70,6 +70,7 @@ describe('contract — navigation transverse servie (story 5.1)', () => {
     const ids = filtered.entries.map((e) => e.id);
     expect(ids).toContain('transverse-dashboard');
     expect(ids).toContain('transverse-dashboard-benevole');
+    expect(ids).toContain('transverse-profile');
     expect(ids).toContain('transverse-admin');
     expect(ids).toContain('transverse-admin-access');
     expect(ids).toContain('transverse-admin-site');

@@ -1,5 +1,5 @@
 import { Alert, Button, Group, Paper, Stack, Table, Text, Title } from '@mantine/core';
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { RecycliqueClientErrorAlert } from '../../api/recyclique-client-error-alert';
 import { recycliqueClientFailureFromReceptionHttp } from '../../api/recyclique-api-error';
 import {
@@ -34,26 +34,38 @@ export function ReceptionHistoryPanel(_props: RegisteredWidgetProps): ReactNode 
   const posteOpened = useReceptionPosteUiState();
   const [rows, setRows] = useState<readonly ReceptionTicketSummary[]>([]);
   const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<ReceptionTicketDetail | null>(null);
   const [busy, setBusy] = useState(false);
   const [surfaceError, setSurfaceError] = useState<CashflowSubmitSurfaceError | null>(null);
+  const loadRequestRef = useRef(0);
+  const prevPosteOpenedRef = useRef(posteOpened);
+  const skipNextPageLoadRef = useRef(false);
 
-  const loadList = useCallback(async () => {
-    setBusy(true);
-    setSurfaceError(null);
-    const res = await getReceptionTicketsList(auth, { page, per_page: 20 });
-    setBusy(false);
-    if (!res.ok) {
-      setSurfaceError({ kind: 'api', failure: recycliqueClientFailureFromReceptionHttp(res) });
-      setRows([]);
-      setTotal(0);
-      return;
-    }
-    setRows(res.data.tickets);
-    setTotal(res.data.total);
-  }, [auth, page]);
+  const loadList = useCallback(
+    async (requestedPage?: number) => {
+      const effectivePage = requestedPage ?? page;
+      const requestId = ++loadRequestRef.current;
+      setBusy(true);
+      setSurfaceError(null);
+      const res = await getReceptionTicketsList(auth, { page: effectivePage, per_page: 20 });
+      if (requestId !== loadRequestRef.current) return;
+      setBusy(false);
+      if (!res.ok) {
+        setSurfaceError({ kind: 'api', failure: recycliqueClientFailureFromReceptionHttp(res) });
+        setRows([]);
+        setTotal(0);
+        setTotalPages(0);
+        return;
+      }
+      setRows(res.data.tickets);
+      setTotal(res.data.total);
+      setTotalPages(res.data.total_pages);
+    },
+    [auth, page],
+  );
 
   const loadDetail = useCallback(
     async (ticketId: string) => {
@@ -77,9 +89,35 @@ export function ReceptionHistoryPanel(_props: RegisteredWidgetProps): ReactNode 
   };
 
   useEffect(() => {
-    if (entry.blocked || !posteOpened) return;
+    if (entry.blocked || posteOpened) {
+      if (posteOpened) {
+        loadRequestRef.current += 1;
+      }
+      prevPosteOpenedRef.current = posteOpened;
+      return;
+    }
+
+    const returningToHub = prevPosteOpenedRef.current && !posteOpened;
+    prevPosteOpenedRef.current = posteOpened;
+
+    if (returningToHub) {
+      if (page !== 1) {
+        skipNextPageLoadRef.current = true;
+      }
+      setPage(1);
+      setSelectedId(null);
+      setDetail(null);
+      void loadList(1);
+      return;
+    }
+
+    if (skipNextPageLoadRef.current) {
+      skipNextPageLoadRef.current = false;
+      return;
+    }
+
     void loadList();
-  }, [entry.blocked, loadList, posteOpened]);
+  }, [entry.blocked, loadList, posteOpened, page]);
 
   const onExportCsv = async () => {
     if (!selectedId) return;
@@ -103,7 +141,7 @@ export function ReceptionHistoryPanel(_props: RegisteredWidgetProps): ReactNode 
     );
   }
 
-  if (!posteOpened) return null;
+  if (posteOpened) return null;
 
   return (
     <Stack gap="md" data-testid="reception-history-panel">
@@ -140,7 +178,12 @@ export function ReceptionHistoryPanel(_props: RegisteredWidgetProps): ReactNode 
         >
           Page préc.
         </Button>
-        <Button size="compact-xs" variant="subtle" disabled={busy} onClick={() => setPage((p) => p + 1)}>
+        <Button
+          size="compact-xs"
+          variant="subtle"
+          disabled={busy || rows.length === 0 || totalPages === 0 || page >= totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
           Page suiv.
         </Button>
       </Group>

@@ -163,7 +163,7 @@ describe('AdminRegisteredDevicesWidget', () => {
     render(wrap(<AdminRegisteredDevicesWidget />, superAdminAuth));
 
     await waitFor(() => {
-      expect(fetchMock.mock.calls.some((c) => String(c[0]).includes('/v1/sites/'))).toBe(true);
+      expect(screen.getByTestId('widget-admin-registered-devices').getAttribute('aria-busy')).toBe('false');
     });
 
     fireEvent.click(screen.getByTestId('admin-registered-devices-create'));

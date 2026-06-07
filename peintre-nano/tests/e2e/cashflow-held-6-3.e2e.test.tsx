@@ -37,6 +37,23 @@ function requestUrl(input: RequestInfo | URL): string {
   return input.url;
 }
 
+function fetchResponseCashSessionsCurrentOpen(sessionId: string = SESSION) {
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    text: async () =>
+      JSON.stringify({
+        id: sessionId,
+        operator_id: 'u-story63',
+        site_id: 'site-demo',
+        register_id: 'register-demo',
+        initial_amount: 0,
+        current_amount: 0,
+        status: 'open',
+      }),
+  });
+}
+
 function heldSaleBody(overrides?: { lifecycle_status?: string }) {
   return {
     id: HELD_ID,
@@ -105,6 +122,10 @@ describe('E2E — ticket en attente (Story 6.3)', () => {
     const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = requestUrl(input);
       const method = (init?.method ?? 'GET').toUpperCase();
+
+      if (method === 'GET' && url.includes('/v1/cash-sessions/current')) {
+        return fetchResponseCashSessionsCurrentOpen();
+      }
 
       if (method === 'GET' && url.includes('/v1/sales/payment-method-options')) {
         return Promise.resolve({
@@ -237,6 +258,10 @@ describe('E2E — ticket en attente (Story 6.3)', () => {
       const url = requestUrl(input);
       const method = (init?.method ?? 'GET').toUpperCase();
 
+      if (method === 'GET' && url.includes('/v1/cash-sessions/current')) {
+        return fetchResponseCashSessionsCurrentOpen();
+      }
+
       if (method === 'GET' && url.includes('/v1/sales/held')) {
         return Promise.resolve({
           ok: true,
@@ -278,6 +303,10 @@ describe('E2E — ticket en attente (Story 6.3)', () => {
     const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = requestUrl(input);
       const method = (init?.method ?? 'GET').toUpperCase();
+
+      if (method === 'GET' && url.includes('/v1/cash-sessions/current')) {
+        return fetchResponseCashSessionsCurrentOpen();
+      }
 
       if (method === 'GET' && url.includes('/v1/sales/held')) {
         return Promise.resolve({

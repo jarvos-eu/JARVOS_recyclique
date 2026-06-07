@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "page_key": "transverse-profile",
+  "required_permission_keys": ["transverse.dashboard.view"],
+  "requires_site": true,
+  "slots": [
+    {
+      "slot_id": "main",
+      "widget_type": "demo.legacy.user.profile",
+      "widget_props": {}
+    }
+  ]
+}

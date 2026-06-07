@@ -4,7 +4,7 @@ import {
   COMPTAGE_PIECES_BILLETS_MODULE_KEY,
   parseComptageModuleDocument,
 } from '../../api/comptage-module-config';
-import { getSiteModuleConfig, patchSiteModuleConfig } from '../../api/module-config-client';
+import { getSiteModuleConfig, patchSiteModuleConfig, resolveModuleConfigEtag } from '../../api/module-config-client';
 import { useAuthPort } from '../../app/auth/AuthRuntimeProvider';
 import {
   COMPTAGE_PIECES_BILLETS_DEFAULTS,
@@ -21,6 +21,20 @@ export type ComptagePiecesBilletsModulePanelProps = {
   readonly disabled?: boolean;
 };
 
+function comptageLoadErrorMessage(status: number, detail: string): string {
+  if (status === 403) {
+    return 'Vous n’avez pas les droits pour lire la configuration comptage sur ce site.';
+  }
+  if (status === 404) {
+    return 'Configuration comptage introuvable pour ce site.';
+  }
+  if (status === 0) {
+    return 'Impossible de joindre le serveur pour charger le module comptage.';
+  }
+  const base = detail.trim() || 'Le chargement a échoué.';
+  return `${base} Rechargez la page ou réessayez dans quelques instants.`;
+}
+
 /** Panneau admin autonome pour le module comptage — GET/PATCH module-config serveur. */
 export function ComptagePiecesBilletsModulePanel({ motif, disabled = false }: ComptagePiecesBilletsModulePanelProps) {
   const auth = useAuthPort();
@@ -35,7 +49,7 @@ export function ComptagePiecesBilletsModulePanel({ motif, disabled = false }: Co
   const [saving, setSaving] = useState(false);
   const etagRef = useRef<string | null>(null);
 
-  useEffect(() => {
+  const loadFromServer = useCallback(async () => {
     if (!siteId) {
       setSettings({ ...COMPTAGE_PIECES_BILLETS_DEFAULTS });
       setDraft({ ...COMPTAGE_PIECES_BILLETS_DEFAULTS });
@@ -44,36 +58,30 @@ export function ComptagePiecesBilletsModulePanel({ motif, disabled = false }: Co
       return;
     }
 
-    let cancelled = false;
-    const ac = new AbortController();
     setIsLoading(true);
     setSaveError(null);
-
-    void (async () => {
-      const res = await getSiteModuleConfig(auth, siteId, COMPTAGE_PIECES_BILLETS_MODULE_KEY, ac.signal);
-      if (cancelled) return;
-      if (res.ok) {
-        etagRef.current = res.etag;
-        const parsed = comptagePayloadToSettings(parseComptageModuleDocument(res.data));
-        setSettings(parsed);
-        setDraft(parsed);
-        setCanSave(Boolean(res.etag));
-        setDirty(false);
-      } else {
-        etagRef.current = null;
-        setSettings({ ...COMPTAGE_PIECES_BILLETS_DEFAULTS });
-        setDraft({ ...COMPTAGE_PIECES_BILLETS_DEFAULTS });
-        setCanSave(false);
-        setSaveError(`${res.detail} Rechargez avant toute tentative d'enregistrement.`);
-      }
-      setIsLoading(false);
-    })();
-
-    return () => {
-      cancelled = true;
-      ac.abort();
-    };
+    const ac = new AbortController();
+    const res = await getSiteModuleConfig(auth, siteId, COMPTAGE_PIECES_BILLETS_MODULE_KEY, ac.signal);
+    if (res.ok) {
+      etagRef.current = resolveModuleConfigEtag(res.etag, res.data.version);
+      const parsed = comptagePayloadToSettings(parseComptageModuleDocument(res.data));
+      setSettings(parsed);
+      setDraft(parsed);
+      setCanSave(true);
+      setDirty(false);
+    } else {
+      etagRef.current = null;
+      setSettings({ ...COMPTAGE_PIECES_BILLETS_DEFAULTS });
+      setDraft({ ...COMPTAGE_PIECES_BILLETS_DEFAULTS });
+      setCanSave(false);
+      setSaveError(comptageLoadErrorMessage(res.status, res.detail));
+    }
+    setIsLoading(false);
   }, [auth, siteId]);
+
+  useEffect(() => {
+    void loadFromServer();
+  }, [loadFromServer]);
 
   useEffect(() => {
     setDraft(settings);
@@ -88,7 +96,9 @@ export function ComptagePiecesBilletsModulePanel({ motif, disabled = false }: Co
 
   const handleSave = useCallback(async () => {
     if (!siteId || !etagRef.current || !canSave) {
-      setSaveError("Configuration serveur non chargée. Rechargez avant toute tentative d'enregistrement.");
+      setSaveError(
+        'Impossible d’enregistrer : la configuration comptage n’a pas pu être chargée. Rechargez la page puis réessayez.',
+      );
       return;
     }
     setSaving(true);
@@ -104,10 +114,15 @@ export function ComptagePiecesBilletsModulePanel({ motif, disabled = false }: Co
     });
     setSaving(false);
     if (!res.ok) {
-      setSaveError(res.detail);
+      const detail = res.detail.trim() || 'L’enregistrement comptage a échoué.';
+      setSaveError(
+        res.status === 412
+          ? `${detail} Rechargez la configuration du module puis réessayez.`
+          : detail,
+      );
       return;
     }
-    etagRef.current = res.etag;
+    etagRef.current = resolveModuleConfigEtag(res.etag, res.data.version);
     const parsed = comptagePayloadToSettings(parseComptageModuleDocument(res.data));
     setSettings(parsed);
     setDraft(parsed);
@@ -124,7 +139,7 @@ export function ComptagePiecesBilletsModulePanel({ motif, disabled = false }: Co
       </Text>
       {!canSave && !isLoading ? (
         <Text size="sm" c="orange">
-          Enregistrement désactivé tant que la configuration serveur n'a pas été rechargée avec succès.
+          Enregistrement indisponible : la configuration n’a pas pu être lue depuis le serveur.
         </Text>
       ) : null}
       <ComptagePiecesBilletsSettingsFields

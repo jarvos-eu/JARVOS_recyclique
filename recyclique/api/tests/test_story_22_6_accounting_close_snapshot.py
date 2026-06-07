@@ -20,6 +20,7 @@ from recyclic_api.models.payment_transaction import (
 from recyclic_api.models.sale import PaymentMethod, Sale, SaleLifecycleStatus
 from recyclic_api.models.site import Site
 from recyclic_api.models.user import User, UserRole, UserStatus
+from recyclic_api.services.admin_settings_service import AdminSettingsService
 from recyclic_api.services.cash_session_service import CashSessionService
 from tests.paheko_8x_test_utils import seed_default_paheko_close_mapping
 
@@ -213,6 +214,7 @@ def test_snapshot_reflects_multiple_journal_lines(db_session, snapshot_close_fix
     """Le snapshot agrège bien tout le journal ``payment_transactions`` de la session."""
     site, _user, cs = snapshot_close_fixtures_multi_pt
     seed_default_paheko_close_mapping(db_session, site.id)
+    AdminSettingsService(db_session).upsert_cash_close_variance_max_eur(str(site.id), 15.0)
     svc = CashSessionService(db_session)
     # Théorique clôture = fond + total ventes (45) ; comptage physique 35 = uniquement la part espèces attendue.
     closed = svc.close_session_with_amounts(

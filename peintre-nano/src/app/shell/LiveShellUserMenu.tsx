@@ -7,13 +7,15 @@ export type LiveShellUserMenuProps = {
   readonly onLogout: () => void;
   /** Route manifestée `/dashboard/benevole` (CREOS) — alignement menu utilisateur legacy. */
   readonly onPersonalDashboard?: () => void;
+  /** Route manifestée `/profil` (CREOS) — Mon profil self-service (Story 28.2). */
+  readonly onProfile?: () => void;
 };
 
 /**
  * Menu utilisateur auth live : libellé issu de {@link AuthSessionState.userDisplayLabel}
  * (dérivé `AuthUserV2` au login OpenAPI, persisté avec le jeton).
  */
-export function LiveShellUserMenu({ displayLabel, onLogout, onPersonalDashboard }: LiveShellUserMenuProps) {
+export function LiveShellUserMenu({ displayLabel, onLogout, onPersonalDashboard, onProfile }: LiveShellUserMenuProps) {
   const label = displayLabel.trim() || 'Utilisateur';
   return (
     <Menu position="bottom-end" shadow="md" width={200}>
@@ -32,6 +34,11 @@ export function LiveShellUserMenu({ displayLabel, onLogout, onPersonalDashboard 
         {onPersonalDashboard ? (
           <Menu.Item onClick={onPersonalDashboard} data-testid="live-shell-user-menu-personal-dashboard">
             Dashboard personnel
+          </Menu.Item>
+        ) : null}
+        {onProfile ? (
+          <Menu.Item onClick={onProfile} data-testid="live-shell-user-menu-profile">
+            Mon profil
           </Menu.Item>
         ) : null}
         <Menu.Item onClick={onLogout} data-testid="live-shell-user-menu-logout">

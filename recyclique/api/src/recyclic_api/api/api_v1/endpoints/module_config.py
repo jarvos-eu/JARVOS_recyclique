@@ -18,6 +18,7 @@ from recyclic_api.core.exceptions import (
     ValidationError,
 )
 from recyclic_api.models.user import User, UserRole
+from recyclic_api.modules.module_config.registry import MODULE_KEY_COMPTAGE_PIECES_BILLETS
 from recyclic_api.modules.module_config.service import ModuleConfigService
 from recyclic_api.modules.module_config.validation import format_etag
 from recyclic_api.schemas.module_config import ModuleConfigDocument
@@ -60,14 +61,26 @@ def get_site_module_config(
     db: Session = Depends(get_db),
     current_user: Union[User, CachedUser] = Depends(get_current_user_strict),
 ) -> ModuleConfigDocument:
-    _require_admin_subject(current_user)
     svc = ModuleConfigService(db)
+    site_uuid = _parse_site_id(site_id)
     try:
-        doc, etag_version = svc.get_site_module_config(
-            site_id=_parse_site_id(site_id),
-            module_key=module_key,
-            current_user=current_user,
-        )
+        if module_key == MODULE_KEY_COMPTAGE_PIECES_BILLETS:
+            svc.assert_operational_module_config_read(
+                site_id=site_uuid,
+                module_key=module_key,
+                current_user=current_user,
+            )
+            doc, etag_version = svc.load_site_module_config_document(
+                site_id=site_uuid,
+                module_key=module_key,
+            )
+        else:
+            _require_admin_subject(current_user)
+            doc, etag_version = svc.get_site_module_config(
+                site_id=site_uuid,
+                module_key=module_key,
+                current_user=current_user,
+            )
     except NotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except AuthorizationError as exc:

@@ -114,7 +114,7 @@ describe('RuntimeDemoApp — hub `/caisse` RCN-01 (Story 13.4)', () => {
     });
   });
 
-  it('affiche Reprendre et le badge Ouverte lorsque le poste signale une session ouverte (is_open)', async () => {
+  it('affiche Ouvrir (pas Reprendre) si is_open site mais pas de session GET /current pour l’opérateur', async () => {
     const fetchMock = vi.fn((input: RequestInfo | URL) => {
       const url = requestUrl(input);
       if (url.includes('/v1/cash-sessions/current')) {
@@ -163,12 +163,11 @@ describe('RuntimeDemoApp — hub `/caisse` RCN-01 (Story 13.4)', () => {
       expect(screen.getByTestId('caisse-brownfield-dashboard')).toBeTruthy();
     });
 
-    // GET postes asynchrone : attendre la fin de chargement avant d’assert le badge (aligné e2e `cash-register-hub-rcn-01-13-4`).
     await waitFor(() => {
-      expect(screen.getByText('Ouverte')).toBeTruthy();
+      expect(screen.getByText('Fermée')).toBeTruthy();
+      expect(screen.getByRole('button', { name: /^Ouvrir$/i })).toBeTruthy();
     });
-    expect(screen.getByRole('button', { name: /^Reprendre$/i })).toBeTruthy();
-    expect(screen.queryByRole('button', { name: /^Ouvrir$/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Reprendre$/i })).toBeNull();
   });
 
   it('affiche l’état chargement des postes (aria-busy) tant que GET /v1/cash-registers/status est en attente', async () => {

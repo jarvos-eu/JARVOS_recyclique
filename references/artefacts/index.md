@@ -25,6 +25,7 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
+| `2026-06-07_01_revision-terrain-caisse-hitl-live.md` | **Redirect** — révisions caisse déplacées vers [`references/revision/`](../revision/index.md) (`domaines/caisse.md`, IDs `REV-CAISSE-01…13`). |
 | `2026-06-06_01_decisions-hitl-comptage-pieces-billets-pilote.md` | **HITL PO** — décisions figées module `comptage-pieces-billets` (pilote La Clique) ; entrée stories **9.11–9.13** Epic 9 v2.0.2 ; D-CPT-01…11 (grille, fond, PDF anomalie, pictos, poids V2, Paheko). |
 | `2026-06-06_03_epic9-comptage-story-runner-handoff.md` | **Handoff Epic Runner** — chaîne autonome **9.11→9.12→9.13** **PASS** ; gates, fichiers touchés, follow-up CR, recette terrain Q-HITL-09/11 manuelle. |
 | `2026-06-06_02_qa2-loop-stories-9-11-9-13-comptage-pieces-billets.md` | **QA2 boucle** stories 9.11–9.13 — pass-1 NO-GO 82 % ; correctifs P0/P1 ; pass-2 **GO 96 %**. |

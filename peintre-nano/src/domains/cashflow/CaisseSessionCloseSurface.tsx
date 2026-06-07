@@ -14,9 +14,13 @@ import {
 } from '@mantine/core';
 import { ArrowLeft, Calculator } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
+import { useComptageModuleConfig } from '../../api/comptage-module-config';
 import { cashSessionCloseFailureMessage, needsVarianceComment, postCloseCashSession, theoreticalCloseAmount } from '../../api/cash-session-client';
 import { spaNavigateTo } from '../../app/demo/spa-navigate';
 import { useAuthPort, useContextEnvelope } from '../../app/auth/AuthRuntimeProvider';
+import { useLiveEnvelopeRefresh } from '../../app/auth/LiveAuthEnvelopeRefreshContext';
+import { CashflowCloseWizard } from './CashflowCloseWizard';
+import { resetCashflowDraft } from './cashflow-draft-store';
 import { useCaisseServerCurrentSession } from './use-caisse-server-current-session';
 import classes from './CaisseBrownfieldDashboardWidget.module.css';
 
@@ -42,11 +46,16 @@ export type CaisseSessionCloseSurfaceProps = {
 export function CaisseSessionCloseSurface({ salePath }: CaisseSessionCloseSurfaceProps): ReactNode {
   const auth = useAuthPort();
   const envelope = useContextEnvelope();
+  const { loading: moduleConfigLoading, moduleEnabled } = useComptageModuleConfig(
+    auth,
+    envelope.siteId,
+  );
   const contextBinding = useMemo(
     () => ({ siteId: envelope.siteId, cashSessionId: envelope.cashSessionId }),
     [envelope.siteId, envelope.cashSessionId],
   );
   const { session, loading, failure, refresh } = useCaisseServerCurrentSession(auth);
+  const liveRefresh = useLiveEnvelopeRefresh();
   const [actualAmount, setActualAmount] = useState<number | string>('');
   const [varianceComment, setVarianceComment] = useState('');
   const [stepUpPin, setStepUpPin] = useState('');
@@ -107,6 +116,8 @@ export function CaisseSessionCloseSurface({ salePath }: CaisseSessionCloseSurfac
           setCloseError(cashSessionCloseFailureMessage(res));
           return;
         }
+        resetCashflowDraft();
+        void liveRefresh?.refreshEnvelope();
         spaNavigateTo('/caisse');
         return;
       }
@@ -132,12 +143,36 @@ export function CaisseSessionCloseSurface({ salePath }: CaisseSessionCloseSurfac
         setCloseError(cashSessionCloseFailureMessage(res));
         return;
       }
+      resetCashflowDraft();
+      void liveRefresh?.refreshEnvelope();
       spaNavigateTo('/caisse');
     } finally {
       setCloseBusy(false);
-      refresh();
     }
-  }, [auth, actualAmount, contextBinding, isEmpty, refresh, session, stepUpPin, theoretical, varianceComment]);
+  }, [auth, actualAmount, contextBinding, isEmpty, liveRefresh, session, stepUpPin, theoretical, varianceComment]);
+
+  if (moduleConfigLoading && envelope.siteId?.trim()) {
+    return (
+      <Stack gap="md" className={classes.root} data-testid="cash-register-session-close-surface">
+        <Title order={1} data-testid="cashflow-session-close-heading">
+          <Group gap="xs">
+            <Calculator size={28} aria-hidden />
+            Fermeture de Caisse
+          </Group>
+        </Title>
+        <Paper withBorder p="xl" pos="relative">
+          <LoadingOverlay visible />
+          <Text ta="center" data-testid="cashflow-session-close-module-loading">
+            Chargement du module comptage…
+          </Text>
+        </Paper>
+      </Stack>
+    );
+  }
+
+  if (moduleEnabled) {
+    return <CashflowCloseWizard widgetProps={{}} />;
+  }
 
   if (failure && !session) {
     return (
@@ -163,7 +198,7 @@ export function CaisseSessionCloseSurface({ salePath }: CaisseSessionCloseSurfac
     );
   }
 
-  if (loading || !session || session.status !== 'open') {
+  if (loading && !session) {
     return (
       <Stack gap="md" className={classes.root} data-testid="cash-register-session-close-surface">
         <Title order={1} data-testid="cashflow-session-close-heading">
@@ -173,13 +208,17 @@ export function CaisseSessionCloseSurface({ salePath }: CaisseSessionCloseSurfac
           </Group>
         </Title>
         <Paper withBorder p="xl" pos="relative">
-          <LoadingOverlay visible={loading} />
+          <LoadingOverlay visible />
           <Text ta="center" data-testid="cashflow-session-close-loading-text">
             Chargement des données de la session...
           </Text>
         </Paper>
       </Stack>
     );
+  }
+
+  if (!session || session.status !== 'open') {
+    return null;
   }
 
   const variance =

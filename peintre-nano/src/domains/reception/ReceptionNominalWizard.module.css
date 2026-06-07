@@ -162,9 +162,40 @@
 
 .desktopLayout {
   display: grid;
-  grid-template-columns: minmax(17.5rem, 1.12fr) minmax(24rem, 1.95fr) minmax(16rem, 1fr);
-  gap: var(--mantine-spacing-sm);
+  gap: 0;
   align-items: start;
+}
+
+.columnResizeHandle {
+  width: 6px;
+  margin: 0 calc(var(--mantine-spacing-xs) / 2);
+  cursor: col-resize;
+  border-radius: 3px;
+  background: var(--mantine-color-gray-3);
+  align-self: stretch;
+  min-height: 12rem;
+  touch-action: none;
+  transition: background 120ms ease;
+}
+
+.columnResizeHandle:hover,
+.columnResizeHandle[data-active='true'] {
+  background: var(--mantine-color-blue-4);
+}
+
+.exitStockHint {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--mantine-color-dimmed);
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--mantine-radius-sm);
+  background: var(--mantine-color-gray-0);
+  border: 1px dashed var(--mantine-color-gray-4);
+}
+
+.ticketClosedSummary {
+  border-color: var(--mantine-color-green-4);
+  background: var(--mantine-color-green-0);
 }
 
 .stickyColumn {
@@ -498,7 +529,11 @@
   .chromeKpiRow,
   .desktopLayout,
   .keypadActionRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+  }
+
+  .columnResizeHandle {
+    display: none;
   }
 
   .chromeKpiRow {

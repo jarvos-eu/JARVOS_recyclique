@@ -33,7 +33,7 @@ class AdminSettingsService:
         try:
             return UUID(str(site_id))
         except (TypeError, ValueError) as exc:
-            raise ValueError("site_id doit ?tre un UUID valide") from exc
+            raise ValueError("site_id doit être un UUID valide") from exc
 
     def _build_query(self, key: str, site_id: Optional[str]):
         query = self.db.query(AdminSetting).filter(AdminSetting.key == key)
@@ -82,12 +82,15 @@ class AdminSettingsService:
         record = query.first()
         if not record:
             return self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR
+        encrypted = getattr(record, "value_encrypted", None)
+        if not isinstance(encrypted, str):
+            return self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR
         try:
-            payload = decrypt_string(record.value_encrypted)
+            payload = decrypt_string(encrypted)
             data = json.loads(payload)
             val = float(data.get("max_eur", self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR))
             return val if val > 0 else self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR
-        except (FinancialDataError, (TypeError, ValueError, json.JSONDecodeError)):
+        except (FinancialDataError, TypeError, ValueError, json.JSONDecodeError):
             return self.DEFAULT_CASH_CLOSE_VARIANCE_MAX_EUR
 
     def upsert_cash_close_variance_max_eur(self, site_id: Optional[str], max_eur: float) -> float:

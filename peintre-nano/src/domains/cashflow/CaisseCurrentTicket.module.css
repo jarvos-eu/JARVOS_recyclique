@@ -13,14 +13,19 @@
   top: var(--mantine-spacing-md);
   align-self: start;
   max-height: calc(100vh - 2.5rem);
-  overflow: visible;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /** Colonne ticket kiosque vente — même famille visuelle que le chrome session (vert caisse). */
 .ticketKioskShell {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 2rem);
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
   border-radius: var(--mantine-radius-md);
   overflow: hidden;
   border: 1px solid rgb(46 125 50 / 38%);

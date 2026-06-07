@@ -72,7 +72,8 @@ class ReceptionService:
         shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> None:
         """Poste ancré poste partagé : refus brownfield JWT seul (Story 27.8)."""
-        if poste.registered_device_id is None:
+        registered_device_id = getattr(poste, "registered_device_id", None)
+        if registered_device_id is None:
             return
         if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
             return
@@ -81,7 +82,7 @@ class ReceptionService:
                 "Opérateur actif requis sur ce poste pour accéder à la réception nominale.",
                 code=_SHARED_WORKSTATION_OPERATOR_REQUIRED,
             )
-        if str(poste.registered_device_id) != str(shared_workstation_scope.device_id):
+        if str(registered_device_id) != str(shared_workstation_scope.device_id):
             raise AuthorizationError(
                 "Ce poste réception ne correspond pas au poste partagé courant.",
                 code=_SHARED_WORKSTATION_OPERATOR_REQUIRED,
@@ -94,9 +95,10 @@ class ReceptionService:
         *,
         shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> bool:
-        if poste.registered_device_id is None or shared_workstation_scope is None:
+        registered_device_id = getattr(poste, "registered_device_id", None)
+        if registered_device_id is None or shared_workstation_scope is None:
             return False
-        if str(poste.registered_device_id) != str(shared_workstation_scope.device_id):
+        if str(registered_device_id) != str(shared_workstation_scope.device_id):
             return False
         if user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
             return True
@@ -131,9 +133,11 @@ class ReceptionService:
         shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> None:
         """Mutations sur lignes / fermeture ticket : bénévole du ticket (ou privilégié)."""
-        poste: Optional[PosteReception] = ticket.poste
+        poste: Optional[PosteReception] = getattr(ticket, "poste", None)
         if poste is None:
-            poste = self.poste_repo.get(ticket.poste_id)
+            poste_id = getattr(ticket, "poste_id", None)
+            if poste_id is not None:
+                poste = self.poste_repo.get(poste_id)
         if poste is not None:
             self._assert_enrolled_poste_requires_device_scope(
                 poste, user, shared_workstation_scope=shared_workstation_scope
@@ -158,9 +162,11 @@ class ReceptionService:
         shared_workstation_scope: Optional[SharedWorkstationReceptionScope] = None,
     ) -> None:
         """Lecture détail ticket : bénévole, ouvreur du poste, ou privilégié."""
-        poste: Optional[PosteReception] = ticket.poste
+        poste: Optional[PosteReception] = getattr(ticket, "poste", None)
         if poste is None:
-            poste = self.poste_repo.get(ticket.poste_id)
+            poste_id = getattr(ticket, "poste_id", None)
+            if poste_id is not None:
+                poste = self.poste_repo.get(poste_id)
         if poste is not None:
             self._assert_enrolled_poste_requires_device_scope(
                 poste, user, shared_workstation_scope=shared_workstation_scope

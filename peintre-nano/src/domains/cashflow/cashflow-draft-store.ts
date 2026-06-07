@@ -195,22 +195,40 @@ function serializeDraft(s: CashflowDraftState): PersistedCashflowDraftV1 {
   };
 }
 
-/** À appeler à la déconnexion — supprime tous les brouillons persistés de l’onglet. */
-export function clearAllCashflowDraftSessionKeys(): void {
+function forEachCashflowDraftSessionKey(fn: (key: string) => void): void {
   if (typeof sessionStorage === 'undefined') {
     return;
   }
   const prefix = `${CASHFLOW_DRAFT_SESSION_STORAGE_PREFIX}:`;
-  const toRemove: string[] = [];
+  const keys: string[] = [];
   for (let i = 0; i < sessionStorage.length; i++) {
     const k = sessionStorage.key(i);
     if (k?.startsWith(prefix)) {
-      toRemove.push(k);
+      keys.push(k);
     }
   }
-  for (const k of toRemove) {
-    sessionStorage.removeItem(k);
+  for (const k of keys) {
+    fn(k);
   }
+}
+
+/** Écrit un brouillon vide sur chaque clé sessionStorage existante (évite réhydratation fantôme). */
+function persistEmptyCashflowDraftToAllSessionKeys(): void {
+  const empty = JSON.stringify(serializeDraft(initialState));
+  forEachCashflowDraftSessionKey((k) => {
+    try {
+      sessionStorage.setItem(k, empty);
+    } catch {
+      /* quota */
+    }
+  });
+}
+
+/** À appeler à la déconnexion — supprime tous les brouillons persistés de l’onglet. */
+export function clearAllCashflowDraftSessionKeys(): void {
+  forEachCashflowDraftSessionKey((k) => {
+    sessionStorage.removeItem(k);
+  });
 }
 
 /**
@@ -263,7 +281,9 @@ export function attachCashflowDraftSessionPersistence(userKey: string): () => vo
     unsub();
     if (timeout !== null) {
       clearTimeout(timeout);
+      timeout = null;
     }
+    persist();
   };
 }
 
@@ -280,8 +300,15 @@ export function getCashflowDraftSnapshot(): CashflowDraftState {
   return state;
 }
 
-export function resetCashflowDraft(): void {
+/**
+ * Réinitialise le brouillon caisse en mémoire.
+ * @param clearSessionStorage — purge les clés sessionStorage (défaut true ; false pour tests F5).
+ */
+export function resetCashflowDraft(clearSessionStorage = true): void {
   state = { ...initialState };
+  if (clearSessionStorage) {
+    persistEmptyCashflowDraftToAllSessionKeys();
+  }
   emit();
 }
 
@@ -374,6 +401,7 @@ export function setAfterSuccessfulSale(saleId: string): void {
 export function applyServerHeldSaleToDraft(sale: {
   id: string;
   total_amount: number;
+  cash_session_id?: string | null;
   items: Array<{
     id?: string;
     category: string;
@@ -391,11 +419,13 @@ export function applyServerHeldSaleToDraft(sale: {
     unitPrice: it.unit_price,
     totalPrice: it.total_price,
   }));
+  const sessionFromSale = sale.cash_session_id?.trim() ?? '';
   state = {
     ...state,
     lines,
     totalAmount: sale.total_amount,
     activeHeldSaleId: sale.id,
+    cashSessionIdInput: sessionFromSale,
     lastSaleId: null,
     widgetDataState: 'NOMINAL',
     submitError: null,

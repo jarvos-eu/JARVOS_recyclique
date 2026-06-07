@@ -44,7 +44,8 @@ import {
   getAdminGroupsList,
   type AdminGroupMembershipRowDto,
 } from '../../api/admin-groups-client';
-import { fetchUsersMeForAdminDashboard } from '../../api/admin-legacy-dashboard-client';
+import { fetchUsersMeProfile } from '../../api/users-me-client';
+import { spaNavigateTo } from '../../app/demo/spa-navigate';
 import {
   canonicalUserIdForPresence,
   createUserV1,
@@ -342,7 +343,12 @@ export function AdminUsersWidget(_: RegisteredWidgetProps): ReactNode {
   const [groupsSaveBusy, setGroupsSaveBusy] = useState(false);
   const [groupsDraftIds, setGroupsDraftIds] = useState<string[]>([]);
 
-  const [feedback, setFeedback] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
+  const [feedback, setFeedback] = useState<{
+    kind: 'ok' | 'error';
+    text: string;
+    profileLink?: boolean;
+  } | null>(null);
+  const [viewerUserId, setViewerUserId] = useState<string | null>(null);
   const [mutationBusy, setMutationBusy] = useState(false);
 
   const [createOpen, setCreateOpen] = useState(false);
@@ -488,8 +494,9 @@ export function AdminUsersWidget(_: RegisteredWidgetProps): ReactNode {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const me = await fetchUsersMeForAdminDashboard(auth);
+      const me = await fetchUsersMeProfile(auth);
       if (cancelled) return;
+      setViewerUserId(me?.id ?? null);
       const r = me?.role?.trim().toLowerCase().replace(/_/g, '-');
       setViewerSuperAdmin(r === 'super-admin');
     })();
@@ -806,8 +813,15 @@ export function AdminUsersWidget(_: RegisteredWidgetProps): ReactNode {
       setFeedback({ kind: 'error', text: res.detail });
       return;
     }
-    setFeedback({ kind: 'ok', text: res.message });
-  }, [auth, selected]);
+    const isSelf = viewerUserId != null && selected.id === viewerUserId;
+    setFeedback({
+      kind: 'ok',
+      text: isSelf
+        ? `${res.message} Définissez un nouveau PIN depuis Mon profil.`
+        : res.message,
+      profileLink: isSelf,
+    });
+  }, [auth, selected, viewerUserId]);
 
   const handleSubmitForcePassword = useCallback(async () => {
     if (!selected) return;
@@ -945,9 +959,21 @@ export function AdminUsersWidget(_: RegisteredWidgetProps): ReactNode {
 
       {error ? <CashflowClientErrorAlert error={error} /> : null}
       {feedback ? (
-        <Text size="sm" c={feedback.kind === 'ok' ? 'green' : 'red'} data-testid="admin-users-feedback">
-          {feedback.text}
-        </Text>
+        <Stack gap="xs">
+          <Text size="sm" c={feedback.kind === 'ok' ? 'green' : 'red'} data-testid="admin-users-feedback">
+            {feedback.text}
+          </Text>
+          {feedback.profileLink ? (
+            <Button
+              size="xs"
+              variant="light"
+              onClick={() => spaNavigateTo('/profil')}
+              data-testid="admin-users-open-self-profile"
+            >
+              Ouvrir mon profil
+            </Button>
+          ) : null}
+        </Stack>
       ) : null}
 
       {statusesError ? (

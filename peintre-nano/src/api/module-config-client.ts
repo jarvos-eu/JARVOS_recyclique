@@ -108,6 +108,22 @@ export function formatIfMatchFromEtag(etag: string | null | undefined): string |
   return etag.trim();
 }
 
+/** Construit un en-tête If-Match `W/"n"` depuis la version document (repli si ETag HTTP absent / CORS). */
+export function formatIfMatchFromVersion(version: number | null | undefined): string {
+  const v = typeof version === 'number' && Number.isFinite(version) ? version : 0;
+  return `W/"${v}"`;
+}
+
+/** ETag HTTP prioritaire ; sinon version du corps `ModuleConfigDocument`. */
+export function resolveModuleConfigEtag(
+  httpEtag: string | null,
+  docVersion: number | null | undefined,
+): string {
+  const fromHeader = httpEtag?.trim();
+  if (fromHeader) return fromHeader;
+  return formatIfMatchFromVersion(docVersion);
+}
+
 function moduleConfigUrl(siteId: string, moduleKey: string): string {
   const base = getLiveSnapshotBasePrefix();
   return `${base}/v1/sites/${encodeURIComponent(siteId)}/module-config/${encodeURIComponent(moduleKey)}`;

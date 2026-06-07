@@ -58,11 +58,12 @@ def upgrade() -> None:
         return
 
     payload_json = json.dumps(_PILOT_PAYLOAD)
+    config_id = uuid.uuid4()
     connection.execute(
         sa.text(
             """
-            INSERT INTO site_module_configs (site_id, module_key, schema_version, payload, version)
-            VALUES (:site_id, :module_key, :schema_version, CAST(:payload AS jsonb), 1)
+            INSERT INTO site_module_configs (id, site_id, module_key, schema_version, payload, version)
+            VALUES (:id, :site_id, :module_key, :schema_version, CAST(:payload AS jsonb), 1)
             ON CONFLICT (site_id, module_key) DO UPDATE SET
                 schema_version = EXCLUDED.schema_version,
                 payload = EXCLUDED.payload,
@@ -70,6 +71,7 @@ def upgrade() -> None:
             """
         ),
         {
+            "id": config_id,
             "site_id": site_id,
             "module_key": _MODULE_KEY,
             "schema_version": _SCHEMA_VERSION,

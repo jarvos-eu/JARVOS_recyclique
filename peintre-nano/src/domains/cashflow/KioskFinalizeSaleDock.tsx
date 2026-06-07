@@ -19,13 +19,17 @@ import {
   bumpHeldTicketsListRefresh,
   clearCashflowDraftSubmitError,
   setAfterSuccessfulSale,
-  setCashSessionIdInput,
   setCashflowDraftApiSubmitError,
   setCashflowDraftLocalSubmitError,
   setPaymentMethod,
   useCashflowDraft,
 } from './cashflow-draft-store';
 import { buildBusinessTagPayload } from './cashflow-business-tag-payload';
+import {
+  evaluateCashflowFinalizeEligibility,
+  resolveCashflowSaleSessionId,
+} from './cashflow-finalize-eligibility';
+import { useCaisseServerCurrentSession } from './use-caisse-server-current-session';
 import wizardClasses from './CashflowNominalWizard.module.css';
 import dockClasses from './KioskFinalizeSaleDock.module.css';
 
@@ -140,6 +144,9 @@ function slimPaymentLines(lines: readonly FinalizePaymentLine[]): Array<{ paymen
 export function KioskFinalizeSaleDock(): ReactNode {
   const draft = useCashflowDraft();
   const auth = useAuthPort();
+  const { session: serverSession } = useCaisseServerCurrentSession(auth);
+  const serverOpenSessionId =
+    serverSession?.status === 'open' ? (serverSession.id?.trim() ?? '') : '';
   const {
     options: methodOptions,
     loading: paymentMethodsLoading,
@@ -154,7 +161,6 @@ export function KioskFinalizeSaleDock(): ReactNode {
     () => ({ siteId: envelope.siteId, cashSessionId: envelope.cashSessionId }),
     [envelope.siteId, envelope.cashSessionId],
   );
-  const stale = draft.widgetDataState === 'DATA_STALE';
   const [busy, setBusy] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [amountReceived, setAmountReceived] = useState('');
@@ -171,13 +177,6 @@ export function KioskFinalizeSaleDock(): ReactNode {
   const saleNoteInputRef = useRef<HTMLTextAreaElement | null>(null);
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
   const openButtonRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    const fromEnv = envelope.cashSessionId?.trim();
-    if (fromEnv && !draft.cashSessionIdInput) {
-      setCashSessionIdInput(fromEnv);
-    }
-  }, [draft.cashSessionIdInput, envelope.cashSessionId]);
 
   const financialCodes = useMemo(() => methodOptions.map((o) => o.code), [methodOptions]);
 
@@ -199,12 +198,16 @@ export function KioskFinalizeSaleDock(): ReactNode {
     }
   }, [draft.paymentMethod, confirmOpen, busy]);
 
-  const canSubmit =
-    !stale &&
-    draft.cashSessionIdInput.trim().length > 0 &&
-    draft.lines.length > 0 &&
-    draft.totalAmount > 0;
-  const canOpenFinalize = canSubmit && paymentMethodsReady;
+  const finalizeEligibility = evaluateCashflowFinalizeEligibility(
+    draft,
+    paymentMethodsReady,
+    paymentMethodsLoading,
+    paymentMethodsError,
+    serverOpenSessionId || null,
+  );
+  const canOpenFinalize = finalizeEligibility.canFinalize;
+  const canSubmit = canOpenFinalize;
+  const finalizeBlockedReason = finalizeEligibility.blockedReason;
   const parsedAmountReceived = parseFinalizeAmount(amountReceived);
   const parsedDonation = parseFinalizeAmount(donation) ?? 0;
   const parsedLoopAmount = parseFinalizeAmount(loopAmount);
@@ -508,7 +511,7 @@ export function KioskFinalizeSaleDock(): ReactNode {
       }
 
       const body: SaleCreateBody = {
-        cash_session_id: draft.cashSessionIdInput.trim(),
+        cash_session_id: resolveCashflowSaleSessionId(draft.cashSessionIdInput, serverOpenSessionId),
         items: draft.lines.map((l) => ({
           category: l.category,
           quantity: l.quantity,
@@ -929,7 +932,7 @@ export function KioskFinalizeSaleDock(): ReactNode {
       <div className={dockClasses.title}>Finaliser la vente</div>
       <Text size="sm" mb="sm" c="dimmed">
         {draft.activeHeldSaleId
-          ? 'Reprise : contrôlez le total dans le ticket, puis encaissez.'
+          ? 'Reprise ticket en attente : seules les lignes serveur seront encaissées — n’ajoutez pas d’articles en parallèle.'
           : 'Moyen de paiement puis enregistrement dans la même colonne ticket.'}
       </Text>
       <Button
@@ -957,6 +960,11 @@ export function KioskFinalizeSaleDock(): ReactNode {
       {paymentMethodsError ? (
         <Text size="sm" c="red" mt="xs" data-testid="cashflow-kiosk-pm-options-error">
           {paymentMethodsError}
+        </Text>
+      ) : null}
+      {!canOpenFinalize && !busy && finalizeBlockedReason ? (
+        <Text size="sm" c="orange" mt="xs" data-testid="cashflow-kiosk-finalize-blocked-reason">
+          {finalizeBlockedReason}
         </Text>
       ) : null}
       {canOpenFinalize && !busy ? (

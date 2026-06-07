@@ -154,6 +154,35 @@ class TestAnomalyDetectionService:
         assert anomalies[0]['type'] == 'auth_failure'
         assert anomalies[0]['severity'] == 'medium'
 
+    def test_generate_recommendations_sans_anomalie_exclut_maintenance_low_generique(self, anomaly_service):
+        """Story 28-4 : pas de reco préventive low systématique sans anomalie détectée."""
+        empty_anomalies = {
+            'cash_anomalies': [],
+            'sync_anomalies': [],
+            'auth_anomalies': [],
+            'classification_anomalies': [],
+        }
+        recos = anomaly_service._generate_recommendations(empty_anomalies)
+        types = {r.get('type') for r in recos}
+        assert 'preventive_database_maintenance' not in types
+        assert 'preventive_security_review' not in types
+
+    def test_generate_recommendations_avec_anomalie_inclut_preventives(self, anomaly_service):
+        anomalies = {
+            'cash_anomalies': [{'type': 'cash_variance', 'severity': 'medium'}],
+            'sync_anomalies': [],
+            'auth_anomalies': [],
+            'classification_anomalies': [],
+        }
+        with patch.object(
+            anomaly_service,
+            '_generate_preventive_maintenance_recommendations',
+            return_value=[{'type': 'preventive_database_maintenance', 'priority': 'low'}],
+        ):
+            recos = anomaly_service._generate_recommendations(anomalies)
+        assert any(r.get('type') == 'cash_control' for r in recos)
+        assert any(r.get('type') == 'preventive_database_maintenance' for r in recos)
+
     @pytest.mark.asyncio
     async def test_run_anomaly_detection(self, anomaly_service):
         """Test l'exécution complète de la détection d'anomalies."""

@@ -61,7 +61,7 @@ def test_validate_session_close_raises_validation_error_when_comment_missing():
     service.get_total_donations_for_session = MagicMock(return_value=0.0)
 
     with pytest.raises(ValidationError, match="commentaire est obligatoire"):
-        service.validate_session_close(session, 80.0, None)
+        service.validate_session_close(session, 76.0, None)
 
 
 def test_validate_session_close_rejects_blank_comment():
@@ -75,4 +75,4 @@ def test_validate_session_close_rejects_blank_comment():
     service.get_total_donations_for_session = MagicMock(return_value=0.0)
 
     with pytest.raises(ValidationError, match="commentaire est obligatoire"):
-        service.validate_session_close(session, 80.0, "   ")
+        service.validate_session_close(session, 76.0, "   ")

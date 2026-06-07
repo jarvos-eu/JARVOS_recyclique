@@ -11,8 +11,9 @@ import {
   Text,
   TextInput,
   Title,
+  Tooltip,
 } from '@mantine/core';
-import { RefreshCw } from 'lucide-react';
+import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   createCashRegisterForAdmin,
@@ -24,6 +25,7 @@ import {
 import { getCashRegistersStatus } from '../../api/cash-session-client';
 import { listSitesForAdmin, type SiteAdminRowDto } from '../../api/admin-sites-client';
 import { recycliqueClientFailureFromSalesHttp } from '../../api/recyclique-api-error';
+import { spaNavigateTo } from '../../app/demo/spa-navigate';
 import { useAuthPort } from '../../app/auth/AuthRuntimeProvider';
 import type { RegisteredWidgetProps } from '../../registry/widget-registry';
 import { CashflowClientErrorAlert } from '../cashflow/CashflowClientErrorAlert';
@@ -46,6 +48,11 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
   const [createName, setCreateName] = useState('');
   const [createSiteId, setCreateSiteId] = useState<string | null>(null);
   const [createBusy, setCreateBusy] = useState(false);
+  const [editTarget, setEditTarget] = useState<CashRegisterAdminRowDto | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editLocation, setEditLocation] = useState('');
+  const [editSiteId, setEditSiteId] = useState<string | null>(null);
+  const [editBusy, setEditBusy] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<CashRegisterAdminRowDto | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
 
@@ -94,6 +101,13 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
     void load();
   }, [load]);
 
+  const openEdit = (row: CashRegisterAdminRowDto) => {
+    setEditTarget(row);
+    setEditName(row.name);
+    setEditLocation(row.location ?? '');
+    setEditSiteId(row.site_id ?? null);
+  };
+
   const patchField = async (
     row: CashRegisterAdminRowDto,
     patch: Partial<{
@@ -137,6 +151,41 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
     await load();
   };
 
+  const onEdit = async () => {
+    if (!editTarget) return;
+    const name = editName.trim();
+    if (!name) return;
+    setEditBusy(true);
+    setError(null);
+    const res = await updateCashRegisterForAdmin(auth, editTarget.id, {
+      name,
+      location: editLocation.trim() || null,
+      site_id: editSiteId && editSiteId !== '' ? editSiteId : null,
+    });
+    setEditBusy(false);
+    if (!res.ok) {
+      setError({ kind: 'api', failure: recycliqueClientFailureFromSalesHttp(res) });
+      return;
+    }
+    setEditTarget(null);
+    setEditName('');
+    setEditLocation('');
+    setEditSiteId(null);
+    setRows((prev) => prev.map((r) => (r.id === editTarget.id ? res.register : r)));
+  };
+
+  const closeEditModal = () => {
+    setEditTarget(null);
+    setEditName('');
+    setEditLocation('');
+    setEditSiteId(null);
+  };
+
+  const reloadList = () => {
+    closeEditModal();
+    void load();
+  };
+
   const onConfirmDelete = async () => {
     if (!deleteTarget) return;
     setDeleteBusy(true);
@@ -153,6 +202,16 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
 
   return (
     <Stack gap="md" data-testid="widget-admin-cash-registers">
+      <Button
+        variant="subtle"
+        leftSection={<ArrowLeft size={16} aria-hidden />}
+        onClick={() => spaNavigateTo('/admin/sites-and-registers')}
+        data-testid="admin-cash-registers-back-to-hub"
+        w="fit-content"
+      >
+        Retour sites et caisses
+      </Button>
+
       <Group justify="space-between" align="flex-start" wrap="wrap">
         <div>
           <Title order={1}>Postes de caisse</Title>
@@ -161,9 +220,18 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
           </Text>
         </div>
         <Group gap="sm">
-          <Button variant="default" leftSection={<RefreshCw size={16} />} onClick={() => void load()} loading={busy}>
-            Actualiser
-          </Button>
+          <Tooltip label="Recharge la liste depuis le serveur" withArrow>
+            <Button
+              variant="default"
+              leftSection={<RefreshCw size={16} />}
+              onClick={reloadList}
+              loading={busy}
+              disabled={editBusy || createBusy}
+              data-testid="admin-cash-registers-reload-list"
+            >
+              Recharger la liste
+            </Button>
+          </Tooltip>
           <Button onClick={() => setCreateOpen(true)} disabled={busy}>
             Nouveau poste
           </Button>
@@ -218,7 +286,7 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
                     <Switch
                       checked={r.is_active}
                       onChange={(e) => void patchField(r, { is_active: e.currentTarget.checked })}
-                      disabled={patching || busy}
+                      disabled={patching || busy || editTarget?.id === r.id}
                       aria-label={`Poste ${r.name} actif`}
                     />
                   </Table.Td>
@@ -226,7 +294,7 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
                     <Switch
                       checked={r.enable_virtual}
                       onChange={(e) => void patchField(r, { enable_virtual: e.currentTarget.checked })}
-                      disabled={patching || busy}
+                      disabled={patching || busy || editTarget?.id === r.id}
                       aria-label={`Poste ${r.name} virtuel`}
                     />
                   </Table.Td>
@@ -234,7 +302,7 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
                     <Switch
                       checked={r.enable_deferred}
                       onChange={(e) => void patchField(r, { enable_deferred: e.currentTarget.checked })}
-                      disabled={patching || busy}
+                      disabled={patching || busy || editTarget?.id === r.id}
                       aria-label={`Poste ${r.name} différé`}
                     />
                   </Table.Td>
@@ -250,9 +318,26 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
                     )}
                   </Table.Td>
                   <Table.Td>
-                    <Button size="xs" variant="light" color="red" onClick={() => setDeleteTarget(r)}>
-                      Supprimer
-                    </Button>
+                    <Group gap="xs" wrap="nowrap">
+                      <Button
+                        size="xs"
+                        variant="light"
+                        onClick={() => openEdit(r)}
+                        disabled={patching || busy || editBusy}
+                        data-testid={`admin-cash-registers-edit-${r.id}`}
+                      >
+                        Modifier
+                      </Button>
+                      <Button
+                        size="xs"
+                        variant="light"
+                        color="red"
+                        onClick={() => setDeleteTarget(r)}
+                        disabled={patching || busy || editTarget?.id === r.id || editBusy}
+                      >
+                        Supprimer
+                      </Button>
+                    </Group>
                   </Table.Td>
                 </Table.Tr>
               );
@@ -283,6 +368,48 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
       </Modal>
 
       <Modal
+        opened={editTarget !== null}
+        onClose={() => {
+          if (!editBusy) closeEditModal();
+        }}
+        closeOnClickOutside={!editBusy}
+        closeOnEscape={!editBusy}
+        title="Modifier le poste"
+        data-testid="admin-cash-registers-edit-modal"
+      >
+        <Stack gap="sm">
+          <TextInput label="Nom" required value={editName} onChange={(e) => setEditName(e.currentTarget.value)} />
+          <TextInput
+            label="Emplacement (optionnel)"
+            value={editLocation}
+            onChange={(e) => setEditLocation(e.currentTarget.value)}
+          />
+          <Select
+            label="Site rattaché"
+            data={siteSelectData}
+            value={editSiteId ?? ''}
+            onChange={(v) => setEditSiteId(v === '' || v === null ? null : v)}
+            clearable={false}
+            data-testid="admin-cash-registers-edit-site"
+            comboboxProps={{ withinPortal: false }}
+          />
+          <Group justify="flex-end" mt="md">
+            <Button variant="default" onClick={closeEditModal} disabled={editBusy}>
+              Annuler
+            </Button>
+            <Button
+              onClick={() => void onEdit()}
+              loading={editBusy}
+              disabled={!editName.trim()}
+              data-testid="admin-cash-registers-edit-submit"
+            >
+              Enregistrer
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      <Modal
         opened={deleteTarget !== null}
         onClose={() => setDeleteTarget(null)}
         title="Supprimer le poste ?"
@@ -291,7 +418,7 @@ export function AdminCashRegistersWidget(_: RegisteredWidgetProps): ReactNode {
           <Stack gap="sm">
             <Text size="sm">
               Le poste « {deleteTarget.name} » sera supprimé si aucune session ou autre donnée ne bloque
-              l’opération.
+              l'opération.
             </Text>
             <Group justify="flex-end" mt="md">
               <Button variant="default" onClick={() => setDeleteTarget(null)}>

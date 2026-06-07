@@ -1,5 +1,15 @@
 import { Alert, Button, Grid, Group, NumberInput, Paper, Select, Stack, Switch, Text, TextInput } from '@mantine/core';
-import { useCallback, useEffect, useMemo, useRef, useState, type FocusEvent, type KeyboardEvent, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FocusEvent,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode,
+} from 'react';
 import { RecycliqueClientErrorAlert } from '../../api/recyclique-client-error-alert';
 import { recycliqueClientFailureFromReceptionHttp } from '../../api/recyclique-api-error';
 import {
@@ -18,6 +28,7 @@ import {
   type ReceptionLigneResponse,
   type ReceptionTicketDetail,
 } from '../../api/reception-client';
+import { spaNavigateTo } from '../../app/demo/spa-navigate';
 import { useAuthPort, useContextEnvelope } from '../../app/auth/AuthRuntimeProvider';
 import { useReceptionEntryBlock } from './reception-entry-gate';
 import {
@@ -30,6 +41,13 @@ import {
   parseReceptionPoidsInput,
 } from './reception-poids-keyboard';
 import { setReceptionPosteUiState, resetReceptionPosteUiState } from './reception-poste-ui-state';
+import {
+  buildCockpitGridTemplateColumns,
+  clampReceptionCockpitLayout,
+  loadReceptionCockpitLayout,
+  saveReceptionCockpitLayout,
+  type ReceptionCockpitLayoutRatios,
+} from './reception-cockpit-layout-storage';
 import {
   fetchSharedWorkstationReceptionDraft,
   type ReceptionDraftSummary,
@@ -119,11 +137,15 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
   const [surfaceError, setSurfaceError] = useState<CashflowSubmitSurfaceError | null>(null);
   const posteRef = posteId ? formatReceptionCompactId(posteId) : null;
   const ticketRef = ticketId ? formatReceptionCompactId(ticketId) : null;
+  const [closedTicketSnapshot, setClosedTicketSnapshot] = useState<ReceptionTicketDetail | null>(null);
+  const [cockpitLayout, setCockpitLayout] = useState<ReceptionCockpitLayoutRatios>(() => loadReceptionCockpitLayout());
   const sessionStatusLabel = !posteId
     ? 'Aucun poste ouvert.'
-    : ticketId
-      ? 'Reception en cours.'
-      : 'Poste ouvert.';
+    : closedTicketSnapshot && !ticketId
+      ? 'Ticket clôturé — poste ouvert.'
+      : ticketId
+        ? 'Reception en cours.'
+        : 'Poste ouvert.';
   const [busy, setBusy] = useState<string | null>(null);
 
   const [selectedRootId, setSelectedRootId] = useState<string | null>(null);
@@ -146,6 +168,10 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
   const initialRootFocusDoneRef = useRef(false);
   const poidsPostAddFeedbackTimeoutRef = useRef<number | null>(null);
   const ticketSyncRequestRef = useRef(0);
+  const cockpitLayoutRef = useRef<HTMLDivElement | null>(null);
+  const cockpitLayoutLatestRef = useRef(cockpitLayout);
+  const layoutDragRef = useRef<'left' | 'right' | null>(null);
+  const layoutDragStartRef = useRef<{ x: number; layout: ReceptionCockpitLayoutRatios } | null>(null);
   /** Incrémenté pour ramener le drill catégories à la racine (`CategoryHierarchyPicker`). */
   const [categoryDrillEpoch, setCategoryDrillEpoch] = useState(0);
 
@@ -166,6 +192,10 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
     },
     [],
   );
+
+  useEffect(() => {
+    cockpitLayoutLatestRef.current = cockpitLayout;
+  }, [cockpitLayout]);
 
   useEffect(() => {
     if (lockRequired) {
@@ -201,15 +231,8 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
     setReceptionCriticalDataState(next);
   }, []);
 
-  const resetWizardAfterServerRefusal = useCallback(() => {
+  const resetSaisieEntryState = useCallback(() => {
     if (!isMountedRef.current) return;
-    setReceptionCriticalDataState('NOMINAL');
-    setPosteId(null);
-    setTicketId(null);
-    setReceptionPosteUiState(false);
-    setTicketDetail(null);
-    setCategories([]);
-    setCategoriesError(null);
     setSelectedRootId(null);
     setCategoryId(null);
     setPoidsKg(0);
@@ -230,6 +253,19 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
     initialRootFocusDoneRef.current = false;
     setCategoryDrillEpoch((e) => e + 1);
   }, []);
+
+  const resetWizardAfterServerRefusal = useCallback(() => {
+    if (!isMountedRef.current) return;
+    setReceptionCriticalDataState('NOMINAL');
+    setPosteId(null);
+    setTicketId(null);
+    setReceptionPosteUiState(false);
+    setTicketDetail(null);
+    setClosedTicketSnapshot(null);
+    setCategories([]);
+    setCategoriesError(null);
+    resetSaisieEntryState();
+  }, [resetSaisieEntryState]);
 
   const clearError = () => setSurfaceError(null);
 
@@ -431,6 +467,7 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
         }
         return;
       }
+      setClosedTicketSnapshot(null);
       setTicketId(ticketResponse.ticketId);
     } finally {
       setBusy(null);
@@ -450,6 +487,7 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
         }
         return;
       }
+      setClosedTicketSnapshot(null);
       setTicketId(r.ticketId);
     } finally {
       setBusy(null);
@@ -610,10 +648,11 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
 
   const onCloseTicket = async () => {
     if (!ticketId) return;
+    const closingTicketId = ticketId;
     clearError();
     setBusy('close-ticket');
     try {
-      const r = await postCloseReceptionTicket(ticketId, auth);
+      const r = await postCloseReceptionTicket(closingTicketId, auth);
       if (!r.ok) {
         setSurfaceError({ kind: 'api', failure: recycliqueClientFailureFromReceptionHttp(r) });
         if (isReceptionAuthoritativeFailure(r.status)) {
@@ -621,8 +660,15 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
         }
         return;
       }
-      const refreshed = await refreshTicket();
-      if (refreshed) return;
+      const detailRes = await getReceptionTicketDetail(closingTicketId, auth);
+      if (detailRes.ok) {
+        setClosedTicketSnapshot(detailRes.ticket);
+      } else if (ticketDetail) {
+        setClosedTicketSnapshot({ ...ticketDetail, status: 'closed' });
+      }
+      resetSaisieEntryState();
+      setTicketId(null);
+      setTicketDetail(null);
     } finally {
       setBusy(null);
     }
@@ -645,10 +691,53 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
       setTicketId(null);
       setReceptionPosteUiState(false);
       setTicketDetail(null);
+      setClosedTicketSnapshot(null);
     } finally {
       setBusy(null);
     }
   };
+
+  const beginCockpitLayoutDrag = useCallback(
+    (edge: 'left' | 'right', event: PointerEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      layoutDragRef.current = edge;
+      layoutDragStartRef.current = { x: event.clientX, layout: cockpitLayout };
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.currentTarget.dataset.active = 'true';
+    },
+    [cockpitLayout],
+  );
+
+  const endCockpitLayoutDrag = useCallback((event: PointerEvent<HTMLDivElement>) => {
+    if (layoutDragRef.current) {
+      saveReceptionCockpitLayout(cockpitLayoutLatestRef.current);
+    }
+    layoutDragRef.current = null;
+    layoutDragStartRef.current = null;
+    delete event.currentTarget.dataset.active;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, []);
+
+  const onCockpitLayoutDragMove = useCallback((event: PointerEvent<HTMLDivElement>) => {
+    const drag = layoutDragRef.current;
+    const start = layoutDragStartRef.current;
+    const container = cockpitLayoutRef.current;
+    if (!drag || !start || !container) return;
+    const rect = container.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const deltaPct = ((event.clientX - start.x) / rect.width) * 100;
+    if (drag === 'left') {
+      const next = clampReceptionCockpitLayout(start.layout.leftPct + deltaPct, start.layout.centerPct - deltaPct);
+      cockpitLayoutLatestRef.current = next;
+      setCockpitLayout(next);
+      return;
+    }
+    const next = clampReceptionCockpitLayout(start.layout.leftPct, start.layout.centerPct + deltaPct);
+    cockpitLayoutLatestRef.current = next;
+    setCockpitLayout(next);
+  }, []);
 
   if (lockRequired) {
     return null;
@@ -656,9 +745,18 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
 
   if (entry.blocked) {
     return (
-      <Alert color="yellow" title={entry.title} data-testid="reception-context-blocked">
-        <Text size="sm">{entry.body}</Text>
-      </Alert>
+      <Stack gap="md">
+        <Alert color="yellow" title={entry.title} data-testid="reception-context-blocked">
+          <Text size="sm">{entry.body}</Text>
+        </Alert>
+        <Button
+          variant="subtle"
+          onClick={() => spaNavigateTo('/dashboard')}
+          data-testid="reception-return-to-menu"
+        >
+          Retour au menu
+        </Button>
+      </Stack>
     );
   }
 
@@ -840,6 +938,15 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
               {ticketId ? `Reception : Ticket #${ticketRef?.display ?? '--------'}` : 'Reception'}
             </Text>
             <Group gap="xs" wrap="wrap" className={styles.chromeHeaderActions}>
+              {!posteId ? (
+                <Button
+                  variant="subtle"
+                  onClick={() => spaNavigateTo('/dashboard')}
+                  data-testid="reception-return-to-menu"
+                >
+                  Retour au menu
+                </Button>
+              ) : null}
               <Button
                 onClick={() => void onCreateTicket()}
                 disabled={!posteId || !!ticketId || dataStale}
@@ -849,7 +956,7 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
               >
                 Créer le ticket
               </Button>
-              {ticketId ? (
+              {ticketId && ticketIsOpen ? (
                 <Button
                   className={styles.chromePrimaryAction}
                   onClick={() => void onCloseTicket()}
@@ -927,13 +1034,37 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
             supportContextHint="le contexte réception"
           />
           {!ticketId ? (
-            <Paper withBorder p="sm" radius="md" bg="gray.0" data-testid="reception-cockpit-inactive">
-              <Stack gap="xs">
-                <Text size="sm" c="dimmed">
-                  Ouvrez poste puis ticket.
-                </Text>
-              </Stack>
-            </Paper>
+            closedTicketSnapshot ? (
+              <Paper
+                withBorder
+                p="sm"
+                radius="md"
+                className={styles.ticketClosedSummary}
+                data-testid="reception-ticket-closed-summary"
+              >
+                <Stack gap="xs">
+                  <Text size="sm" fw={600}>
+                    Ticket clôturé
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    Réf. {formatReceptionCompactId(closedTicketSnapshot.id).display} —{' '}
+                    {closedTicketSnapshot.lignes.length} ligne(s) —{' '}
+                    {closedTicketSnapshot.lignes.reduce((sum, ligne) => sum + ligne.poids_kg, 0).toFixed(2)} kg
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    Créez un nouveau ticket pour poursuivre la saisie sur ce poste.
+                  </Text>
+                </Stack>
+              </Paper>
+            ) : (
+              <Paper withBorder p="sm" radius="md" bg="gray.0" data-testid="reception-cockpit-inactive">
+                <Stack gap="xs">
+                  <Text size="sm" c="dimmed">
+                    Ouvrez poste puis ticket.
+                  </Text>
+                </Stack>
+              </Paper>
+            )
           ) : null}
           {editingLigneId ? (
             <Alert color="blue" title="Édition d’une ligne">
@@ -942,7 +1073,13 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
               </Text>
             </Alert>
           ) : null}
-          {ticketId ? <div className={styles.desktopLayout} data-testid="reception-cockpit-layout">
+          {ticketId ? (
+            <div
+              ref={cockpitLayoutRef}
+              className={styles.desktopLayout}
+              data-testid="reception-cockpit-layout"
+              style={{ gridTemplateColumns: buildCockpitGridTemplateColumns(cockpitLayout) }}
+            >
             <div className={styles.stickyColumn}>
               <Paper withBorder p={0} data-testid="reception-cockpit-left" className={styles.panel}>
                 <div className={styles.visuallyHidden}>
@@ -955,6 +1092,9 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
                 </div>
                 <div className={`${styles.panelBody} ${styles.leftPanelBody}`}>
                   <Stack gap="sm">
+                    <Text size="xs" className={styles.exitStockHint} data-testid="reception-exit-stock-hint">
+                      Sortie de stock : activer le switch ou appuyer sur = dans le champ poids.
+                    </Text>
                     <div className={styles.visuallyHidden} data-testid="reception-category-active-summary">
                       Famille active : {activeRoot?.name ?? selectedCategory?.name ?? 'Aucune'} Sous-catégorie active :{' '}
                       {selectedCategory?.name ?? 'Aucune'}
@@ -976,6 +1116,17 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
                 </div>
               </Paper>
             </div>
+            <div
+              className={styles.columnResizeHandle}
+              data-testid="reception-cockpit-resize-left"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Redimensionner colonnes catégories et saisie"
+              onPointerDown={(event) => beginCockpitLayoutDrag('left', event)}
+              onPointerMove={onCockpitLayoutDragMove}
+              onPointerUp={endCockpitLayoutDrag}
+              onPointerCancel={endCockpitLayoutDrag}
+            />
             <div>
               <Paper withBorder p={0} data-testid="reception-cockpit-center" className={styles.panel}>
                 <div className={styles.visuallyHidden}>
@@ -1172,6 +1323,17 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
                 </div>
               </Paper>
             </div>
+            <div
+              className={styles.columnResizeHandle}
+              data-testid="reception-cockpit-resize-right"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Redimensionner colonnes saisie et résumé"
+              onPointerDown={(event) => beginCockpitLayoutDrag('right', event)}
+              onPointerMove={onCockpitLayoutDragMove}
+              onPointerUp={endCockpitLayoutDrag}
+              onPointerCancel={endCockpitLayoutDrag}
+            />
             <div className={styles.stickyColumn}>
               <div data-testid="reception-cockpit-right" className={styles.ticketShell}>
                 <div className={styles.ticketTitleBar}>Résumé du ticket</div>
@@ -1252,7 +1414,8 @@ export function ReceptionNominalWizard(_props: RegisteredWidgetProps): ReactNode
                 </div>
               </div>
             </div>
-          </div> : null}
+          </div>
+          ) : null}
           {ticketDetail && !ticketIsOpen && ticketDetail.lignes.length > 0 ? (
             <Stack gap="xs" data-testid="reception-admin-patch-weight">
               <Text size="sm" fw={600}>

@@ -1,5 +1,5 @@
-import { Alert, Badge, Button, Divider, Group, Paper, SimpleGrid, Stack, Text, Title } from '@mantine/core';
-import { Activity, Bell, HeartPulse, RefreshCw, Server } from 'lucide-react';
+import { Alert, Badge, Button, Divider, Group, Paper, SimpleGrid, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { Activity, Bell, HeartPulse, Info, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AdminSystemHealthApiError,
@@ -20,6 +20,11 @@ import { useAuthPort } from '../../app/auth/AuthRuntimeProvider';
 import type { ExploitationLiveSnapshot } from '../bandeau-live/live-snapshot-normalize';
 import type { RegisteredWidgetProps } from '../../registry/widget-registry';
 import type { ContextEnvelopeStub } from '../../types/context-envelope';
+import {
+  healthRecommendationBadgeColor,
+  healthRecommendationResponsibleBadge,
+} from './admin-health-recommendation-copy';
+import { useAdminSiteDisplayLabel } from './use-admin-site-display-label';
 
 const LIVE_STATS_DISPLAY_ORDER = [
   'tickets_open',
@@ -272,8 +277,14 @@ function stringifyLiveValue(key: string, v: unknown): string {
   return String(v);
 }
 
-function envelopeSummaryLines(env: ContextEnvelopeStub): EnvelopeSummaryRow[] {
-  const site = operatorDisplayField(env.siteId);
+function envelopeSummaryLines(
+  env: ContextEnvelopeStub,
+  siteDisplayLabel?: { label: string; fullId?: string },
+): EnvelopeSummaryRow[] {
+  const site =
+    siteDisplayLabel && siteDisplayLabel.label !== '—'
+      ? { text: siteDisplayLabel.label, full: siteDisplayLabel.fullId }
+      : operatorDisplayField(env.siteId);
   const register = operatorDisplayField(env.activeRegisterId);
   const session = operatorDisplayField(env.cashSessionId ?? null);
   const markers = formatContextMarkersForOperator(env.contextMarkers);
@@ -290,6 +301,7 @@ function envelopeSummaryLines(env: ContextEnvelopeStub): EnvelopeSummaryRow[] {
 export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
   const auth = useAuthPort();
   const envelope = auth.getContextEnvelope();
+  const siteDisplay = useAdminSiteDisplayLabel(envelope.siteId);
   const token = auth.getAccessToken?.();
 
   const [busy, setBusy] = useState(false);
@@ -471,8 +483,8 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
   }, [liveStats]);
 
   const envLines = useMemo(
-    () => envelopeSummaryLines(lastRefreshedEnvelope ?? envelope),
-    [envelope, lastRefreshedEnvelope],
+    () => envelopeSummaryLines(lastRefreshedEnvelope ?? envelope, siteDisplay),
+    [envelope, lastRefreshedEnvelope, siteDisplay],
   );
 
   const anomalyRows = useMemo(
@@ -516,17 +528,22 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
           <HeartPulse size={22} aria-hidden />
           Santé et signaux
         </Title>
-        <Text size="sm" c="dimmed" mt={4}>
-          Vue d’ensemble pour le super-admin : où vous travaillez, ce que l’application voit en direct aujourd’hui, et
-          les chiffres du jour lorsque le site est identifié. Aucune sonde matérielle, réseau ou infrastructure n’est
-          lancée depuis cet écran : seules des données déjà calculées par l’application sont affichées.
-        </Text>
+        <Group gap={6} align="flex-start" mt={4} wrap="nowrap">
+          <Text size="sm" c="dimmed" style={{ flex: 1 }}>
+            Vue d’ensemble pour le super-admin : contexte de travail, signaux d’exploitation et synthèse applicative du
+            jour.
+          </Text>
+          <Tooltip
+            label="Cet écran n’exécute aucune sonde matérielle ni test réseau bas niveau : seules des données déjà calculées par Recyclique sont affichées."
+            multiline
+            w={300}
+          >
+            <span style={{ display: 'inline-flex', cursor: 'help', flexShrink: 0 }} aria-label="Précision technique">
+              <Info size={16} aria-hidden />
+            </span>
+          </Tooltip>
+        </Group>
       </div>
-
-      <Alert color="gray" title="À propos de cet écran">
-        Les blocs ci-dessous synthétisent l’état métier et applicatif déjà connu par Recyclique. Ils ne remplacent pas
-        un monitoring d’infrastructure (pas de contrôle matériel ni de latence réseau « bas niveau »).
-      </Alert>
 
       <Paper p="md" withBorder>
         <Group justify="space-between" mb="sm">
@@ -663,9 +680,9 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
             ) : null}
             {snapshot.sync_aggregate_unavailable === true ? (
               <div style={{ gridColumn: '1 / -1' }}>
-                <Alert color="orange" variant="light" title="Agrégat synchronisation">
+                <Alert color="orange" variant="light" title="Synchronisation Paheko indisponible">
                   <Text size="sm">
-                    L’agrégat outbox Paheko pour ce site n’a pas pu être calculé honnêtement (erreur ou schéma
+                    La synchronisation Paheko pour ce site n’a pas pu être évaluée correctement (erreur ou schéma
                     incomplet). Les détails ligne à ligne restent dans l’outil support — ne présumez pas un état{' '}
                     « résolu » depuis ce cliché seul.
                   </Text>
@@ -712,20 +729,21 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
           <div>
             <Text fw={600}>Synthèse santé (super-admin)</Text>
             <Text size="xs" c="dimmed" mt={4} maw={720}>
-              Agrégats renvoyés par le serveur Recyclique : anomalies détaillées, recommandations, planificateur interne
-              et indicateurs de sessions récentes. Vue applicative uniquement (pas d’infrastructure « bas niveau »).
+              Anomalies, recommandations et activité récente renvoyées par le serveur Recyclique.
             </Text>
           </div>
-          <Button
-            size="xs"
-            variant="light"
-            leftSection={<Bell size={14} />}
-            loading={testNotifBusy}
-            onClick={() => void onTestNotificationsInfo()}
-            data-testid="admin-system-health-test-notifications"
-          >
-            Vérifier l’endpoint « test notifications »
-          </Button>
+          <Tooltip label="Envoie une notification de test aux canaux configurés.">
+            <Button
+              size="xs"
+              variant="light"
+              leftSection={<Bell size={14} />}
+              loading={testNotifBusy}
+              onClick={() => void onTestNotificationsInfo()}
+              data-testid="admin-system-health-test-notifications"
+            >
+              Tester les alertes
+            </Button>
+          </Tooltip>
         </Group>
         {testNotifMessage ? (
           <Alert color="gray" mb="sm" title="Réponse serveur">
@@ -761,7 +779,7 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
             >
               <Text size="sm">
                 {adminHealth.system_health.overall_status === 'healthy'
-                  ? 'Les agrégats courants ne signalent pas de situation critique côté application.'
+                  ? 'Les indicateurs du jour ne signalent pas de situation critique.'
                   : adminHealth.system_health.overall_status === 'critical'
                     ? 'Des anomalies critiques figurent dans la liste ci-dessous : priorisez leur examen ou contactez le support avec ce contexte.'
                     : 'Certaines anomalies ou tâches méritent attention sans blocage immédiat apparent.'}
@@ -853,31 +871,51 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
             <Divider label="Recommandations" labelPosition="left" />
             {adminHealth.recommendations?.length ? (
               <Stack gap="sm">
-                {adminHealth.recommendations.map((r) => (
-                  <Paper key={`${r.type}-${r.title}`} p="sm" withBorder>
-                    <Badge size="xs" variant="light" color="gray" mb={6}>
-                      Priorité {humanizeRecommendationPriority(r.priority)}
-                    </Badge>
-                    <Text fw={600} size="sm">
-                      {r.title}
-                    </Text>
-                    <Text size="sm" mt={6}>
-                      {r.description}
-                    </Text>
-                    {Array.isArray(r.actions) && r.actions.filter(Boolean).length > 0 ? (
-                      <Stack gap={4} mt="sm">
-                        <Text size="xs" c="dimmed" fw={600}>
-                          Pistes d’action
-                        </Text>
-                        {r.actions.filter((a): a is string => typeof a === 'string' && a.trim().length > 0).map((a, i) => (
-                          <Text key={i} size="sm" pl="sm" style={{ borderLeft: '2px solid var(--mantine-color-gray-4)' }}>
-                            {a}
+                {adminHealth.recommendations.map((r) => {
+                  const responsible = healthRecommendationResponsibleBadge(r.type, r.priority);
+                  return (
+                    <Paper key={`${r.type}-${r.title}`} p="sm" withBorder>
+                      <Group gap="xs" mb={6}>
+                        <Badge
+                          size="xs"
+                          variant="light"
+                          color={healthRecommendationBadgeColor(responsible)}
+                          data-testid="admin-health-reco-responsible-badge"
+                        >
+                          {responsible}
+                        </Badge>
+                        <Badge size="xs" variant="light" color="gray">
+                          Priorité {humanizeRecommendationPriority(r.priority)}
+                        </Badge>
+                      </Group>
+                      <Text fw={600} size="sm">
+                        {r.title}
+                      </Text>
+                      <Text size="sm" mt={6}>
+                        {r.description}
+                      </Text>
+                      {Array.isArray(r.actions) && r.actions.filter(Boolean).length > 0 ? (
+                        <Stack gap={4} mt="sm">
+                          <Text size="xs" c="dimmed" fw={600}>
+                            Pistes d’action
                           </Text>
-                        ))}
-                      </Stack>
-                    ) : null}
-                  </Paper>
-                ))}
+                          {r.actions
+                            .filter((a): a is string => typeof a === 'string' && a.trim().length > 0)
+                            .map((a, i) => (
+                              <Text
+                                key={i}
+                                size="sm"
+                                pl="sm"
+                                style={{ borderLeft: '2px solid var(--mantine-color-gray-4)' }}
+                              >
+                                Responsable : {responsible} — {a}
+                              </Text>
+                            ))}
+                        </Stack>
+                      ) : null}
+                    </Paper>
+                  );
+                })}
               </Stack>
             ) : (
               <Text size="sm" c="teal" fs="italic">
@@ -1001,43 +1039,53 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
                 </Text>
               </Paper>
             ) : null}
-            {sessionMetricExtras && sessionMetricExtras.errEntries.length > 0 ? (
-              <div data-testid="admin-system-health-session-errors" style={{ marginTop: 12 }}>
-                <Text size="xs" c="dimmed" mb={6}>
-                  Rappels d’erreurs par type (fenêtre courante)
-                </Text>
-                <Stack gap={6}>
-                  {sessionMetricExtras.errEntries.map(([code, count]) => (
-                    <Group key={code} justify="space-between" wrap="nowrap">
-                      <Text size="sm" style={{ wordBreak: 'break-word' }}>
-                        {code}
-                      </Text>
-                      <Badge size="sm" color="orange" variant="light">
-                        {String(count)}
-                      </Badge>
-                    </Group>
-                  ))}
-                </Stack>
-              </div>
-            ) : null}
-            {sessionMetricExtras && sessionMetricExtras.ipEntries.length > 0 ? (
-              <div data-testid="admin-system-health-session-ip" style={{ marginTop: 12 }}>
-                <Text size="xs" c="dimmed" mb={6}>
-                  Principales adresses IP associées à des échecs (aperçu)
-                </Text>
-                <Stack gap={6}>
-                  {sessionMetricExtras.ipEntries.slice(0, 8).map(([ip, count]) => (
-                    <Group key={ip} justify="space-between" wrap="nowrap">
-                      <Text size="sm" ff="monospace">
-                        {ip}
-                      </Text>
-                      <Badge size="sm" color="gray" variant="light">
-                        {String(count)}
-                      </Badge>
-                    </Group>
-                  ))}
-                </Stack>
-              </div>
+            {sessionMetricExtras &&
+            (sessionMetricExtras.errEntries.length > 0 || sessionMetricExtras.ipEntries.length > 0) ? (
+              <details data-testid="admin-system-health-session-support-details" style={{ marginTop: 12 }}>
+                <summary style={{ cursor: 'pointer', fontSize: 12 }}>
+                  <Text span size="xs" c="dimmed" component="span">
+                    Pour le support
+                  </Text>
+                </summary>
+                {sessionMetricExtras.errEntries.length > 0 ? (
+                  <div data-testid="admin-system-health-session-errors" style={{ marginTop: 8 }}>
+                    <Text size="xs" c="dimmed" mb={6}>
+                      Rappels d’erreurs par type (fenêtre courante)
+                    </Text>
+                    <Stack gap={6}>
+                      {sessionMetricExtras.errEntries.map(([code, count]) => (
+                        <Group key={code} justify="space-between" wrap="nowrap">
+                          <Text size="sm" style={{ wordBreak: 'break-word' }}>
+                            {code}
+                          </Text>
+                          <Badge size="sm" color="orange" variant="light">
+                            {String(count)}
+                          </Badge>
+                        </Group>
+                      ))}
+                    </Stack>
+                  </div>
+                ) : null}
+                {sessionMetricExtras.ipEntries.length > 0 ? (
+                  <div data-testid="admin-system-health-session-ip" style={{ marginTop: 8 }}>
+                    <Text size="xs" c="dimmed" mb={6}>
+                      Principales adresses IP associées à des échecs (aperçu)
+                    </Text>
+                    <Stack gap={6}>
+                      {sessionMetricExtras.ipEntries.slice(0, 8).map(([ip, count]) => (
+                        <Group key={ip} justify="space-between" wrap="nowrap">
+                          <Text size="sm" ff="monospace">
+                            {ip}
+                          </Text>
+                          <Badge size="sm" color="gray" variant="light">
+                            {String(count)}
+                          </Badge>
+                        </Group>
+                      ))}
+                    </Stack>
+                  </div>
+                ) : null}
+              </details>
             ) : null}
             {sessionMetricExtras && sessionMetricExtras.siteEntries.length > 0 ? (
               <div data-testid="admin-system-health-session-sites" style={{ marginTop: 12 }}>
@@ -1082,7 +1130,7 @@ export function AdminSystemHealthWidget(_props: RegisteredWidgetProps) {
           Indicateurs du jour
         </Text>
         <Text size="xs" c="dimmed" mb="sm">
-          Agrégats journaliers pour le site sélectionné dans votre contexte (lorsque le serveur les fournit).
+          Chiffres du jour pour votre site (lorsque le serveur les fournit).
         </Text>
         {liveStatsError ? (
           <Text size="sm" c="red">

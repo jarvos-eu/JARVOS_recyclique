@@ -31,7 +31,7 @@ import { CashflowCloseVerifyPanel } from './CashflowCloseVerifyPanel';
 import { CashflowDenominationGridPanel } from './CashflowDenominationGridPanel';
 import { CashflowOperationalSyncNotice } from './cashflow-operational-sync-notice';
 import type { CashflowSubmitSurfaceError } from './cashflow-submit-error';
-import { useCashflowDraft } from './cashflow-draft-store';
+import { resetCashflowDraft, useCashflowDraft } from './cashflow-draft-store';
 import classes from './CashflowCloseWizard.module.css';
 
 const DENOMINATION_PUT_DEBOUNCE_MS = 500;
@@ -358,6 +358,7 @@ export function CashflowCloseWizard(_props: RegisteredWidgetProps): ReactNode {
         });
         return;
       }
+      resetCashflowDraft();
       if (res.data.kind === 'deleted') {
         setDone({
           kind: 'deleted',
@@ -386,7 +387,7 @@ export function CashflowCloseWizard(_props: RegisteredWidgetProps): ReactNode {
     );
   }
 
-  if (loading || (moduleConfigLoading && !session)) {
+  if (loading || moduleConfigLoading) {
     return (
       <Stack gap="xs" data-testid="cashflow-close-loading-wrap">
         <Button variant="subtle" size="xs" data-testid="cashflow-close-back-to-caisse" onClick={() => spaNavigateTo('/caisse')}>

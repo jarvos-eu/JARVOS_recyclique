@@ -11,6 +11,7 @@ export const NAV_LABEL_PRESENTATION_FALLBACKS: Readonly<Record<string, string>> 
   'nav.transverse.dashboard': 'Tableau de bord',
   'nav.transverse.dashboard.benevole': 'Dashboard personnel',
   'nav.transverse.dashboard.personal': 'Dashboard personnel',
+  'nav.transverse.profile': 'Mon profil',
   'nav.transverse.admin': 'Administration',
   'nav.transverse.admin.access': 'Accès et visibilité',
   'nav.transverse.admin.site': 'Site et périmètre',

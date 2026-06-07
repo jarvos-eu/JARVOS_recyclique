@@ -24,7 +24,9 @@ describe('Story 7.4 — panneau historique réception (API mockée)', () => {
   });
 
   beforeEach(() => {
-    setReceptionPosteUiState(true);
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    setReceptionPosteUiState(false);
     vi.stubGlobal(
       'matchMedia',
       vi.fn().mockImplementation((query: string) => ({

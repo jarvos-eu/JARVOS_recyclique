@@ -58,6 +58,9 @@
 
 Chaque dossier liste son contenu dans son propre **index** : `references/<dossier>/index.md`. Le détail ne figure pas ici.
 
+- **`revision/`** — **Révisions terrain HITL** (registre vivant, cochable) : un fichier par domaine (`domaines/caisse.md`, etc.), IDs `REV-<DOMAINE>-NN`, types métier / UI/UX / tech. Porte d'entrée : **revision/index.md** · conventions : **revision/CONVENTIONS.md**.
+  _(Charger si : revue live beta, correction parité terrain, suivi P0 caisse/réception, ou ajout d'un problème constaté en test.)_
+
 - **`artefacts/`** — Artefacts temporaires de handoff entre agents ; **audit références 2026-03-31** (`2026-03-31_0*_audit-references-*.md`). Sous-dossier `artefacts/archive/` pour artefacts historiques (ex. plan Git exécuté). Détail : **artefacts/index.md**. **Spec multi-contextes / authz v2 (Epic 1.3)** : [artefacts/2026-04-02_03_spec-multi-contextes-invariants-autorisation-v2.md](artefacts/2026-04-02_03_spec-multi-contextes-invariants-autorisation-v2.md) (traçabilité AC, §1 bis opérateur=bénévole, PIN §6). **Gouvernance contrats v2 (Epic 1.4, HITL terrain)** : [artefacts/2026-04-02_04_gouvernance-contractuelle-openapi-creos-contextenvelope.md](artefacts/2026-04-02_04_gouvernance-contractuelle-openapi-creos-contextenvelope.md) (**§0** décisions, **§2.3** reviewable vs démo). **Bandeau / signaux exploitation (Epic 1.7)** : [artefacts/2026-04-02_07_signaux-exploitation-bandeau-live-premiers-slices.md](artefacts/2026-04-02_07_signaux-exploitation-bandeau-live-premiers-slices.md) (§1 bis KPIs globaux type 1.4.4 ; F1–F6 ; snapshot OpenAPI legacy : `2026-04-02_08_*.json`). **Checklist PR / create-story Peintre sans métier (Epics 4–10)** : [artefacts/2026-04-07_03_checklist-pr-peintre-sans-metier.md](artefacts/2026-04-07_03_checklist-pr-peintre-sans-metier.md).
   _(Charger : si un artefact est mentionné dans `ou-on-en-est.md`, pour l’audit références, ou selon le besoin de la session.)_
 

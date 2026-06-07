@@ -72,6 +72,7 @@ def test_close_session_with_amounts_reuses_preview_formula(mock_a1, mock_journal
             "variance": 10.0,
         }
     )
+    service._close_variance_block_max_eur = MagicMock(return_value=15.0)
 
     with patch("recyclic_api.services.paheko_outbox_service.enqueue_cash_session_close_outbox") as mock_enq:
         result = service.close_session_with_amounts(str(session.id), 90.0, "ecart")

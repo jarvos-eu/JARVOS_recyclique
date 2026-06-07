@@ -7,6 +7,7 @@ import { DemoListSimple } from '../widgets/demo/DemoListSimple';
 import { DemoTextBlock } from '../widgets/demo/DemoTextBlock';
 import { LegacyDashboardPersonalWidget } from '../widgets/demo/LegacyDashboardPersonalWidget';
 import { LegacyDashboardWorkspaceWidget } from '../widgets/demo/LegacyDashboardWorkspaceWidget';
+import { UserSelfProfileWidget } from '../domains/transverse/UserSelfProfileWidget';
 
 /**
  * Catalogue starter (infra runtime) — préfixe stable `demo.*`.
@@ -20,5 +21,6 @@ export function registerDemoWidgets(): void {
   registerWidget('demo.legacy.app.topstrip', DemoLegacyAppTopstrip);
   registerWidget('demo.legacy.dashboard.workspace', LegacyDashboardWorkspaceWidget);
   registerWidget('demo.legacy.dashboard.personal', LegacyDashboardPersonalWidget);
+  registerWidget('demo.legacy.user.profile', UserSelfProfileWidget);
   registerWidget('admin.legacy.dashboard.home', AdminLegacyDashboardHomeWidget);
 }
