@@ -1,0 +1,21 @@
+# Normalisation fins de ligne — canon LF (VPS Linux + compat Windows via Git)
+# Evite les faux diffs massifs apres sync Syncthing Windows -> Linux
+
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.sqlite binary
+*.db binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
