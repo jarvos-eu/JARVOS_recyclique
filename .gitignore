@@ -29,6 +29,9 @@ normalize_typographic_chars_*.log
 !.transcription/_queue_run_pipeline.py
 .transcription/.env
 
+# Syncthing — marqueur auto (cree par Syncthing, pas versionner)
+.stfolder/
+
 # Config locale (secrets)
 .env
 .env.*

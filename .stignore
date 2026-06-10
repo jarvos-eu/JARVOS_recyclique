@@ -1,0 +1,32 @@
+// Modèle .stignore — copier à la racine du projet sur VPS et miroir local
+// Voir docs/profils-workspaces-miroir/04-zones-sync-et-exclusions.md
+
+.git
+node_modules
+.pnpm-store
+.venv
+venv
+__pycache__
+dist
+build
+out
+.next
+.nuxt
+target
+.cache
+*.log
+logs
+coverage
+.pytest_cache
+.mypy_cache
+.idea
+.DS_Store
+Thumbs.db
+
+// Ré-inclure explicitement si besoin (décommenter) :
+// !.env
+// !_local/**
+// !data/dev.sqlite
+
+.env
+.env.old
