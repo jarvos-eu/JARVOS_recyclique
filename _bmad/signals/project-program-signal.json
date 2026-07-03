@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1",
+  "project_id": "jarvos-recyclique",
+  "updated_at": "2026-07-03T19:00:00Z",
+  "status": "active",
+  "headline": "Epic 28 in-progress — stories 28.1–28.5 done ; gate B_EPIC28 ; Epic 9.7 gelée",
+  "next_action": "Retests HITL terrain Epic 28 puis clôture gate B_EPIC28 (sprint-status.yaml)",
+  "risk_level": "medium",
+  "source_ref": {
+    "path": "references/ou-on-en-est.md",
+    "updated_at": "2026-07-03T19:00:00Z",
+    "note": "Programme slim lot 3a ; SoT grain fin sprint-status.yaml (last_updated 2026-06-07)"
+  }
+}

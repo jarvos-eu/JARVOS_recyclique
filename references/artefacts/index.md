@@ -18,6 +18,7 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 | `archive/2026-02-24_04_brief-create-subagent-git.md` | Brief pour Strophe : /create-subagent avec prompt Git |
 | `archive/2026-02-24_05_mission-creer-regle-git-workflow.md` | Mission : creer `.cursor/rules/git-workflow.mdc` et mettre a jour l'index principal |
 | `archive/2026-05-21-menage-paheko-compta-qa/` | **Archive 2026-05-21** — synthèses intermédiaires (06/09/11), rapports QA ventilation (08/10/12), QA prompts Perplexity, révisions transcription, QA2 recap — contenu fusionné dans [guide Paheko](../migration-paheko/2026-05-21_guide-liaison-paheko-compta.md) et docs `migration-paheko/`. |
+| `archive/2026-07-03_ou-on-en-est-journal-pre-trio.md` | **Archive lot 3a** — journal complet extrait de `ou-on-en-est.md` (sections Dernière session, Prochaine étape, Ordre spirale 1re passe) avant slim trio ; remplacé par version active [`ou-on-en-est.md`](../ou-on-en-est.md) + SoT [`sprint-status.yaml`](../../_bmad-output/implementation-artifacts/sprint-status.yaml). |
 
 ---
 
@@ -25,6 +26,12 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
+| `2026-07-03_04_point-situation-kanban-idees-jarvos.md` | **Point de situation Kanban** (post-triage lot A) — **7** archivages spirale 1 ; **11** cartes actives ; todo condensé ; repère [`idees-kanban/point-situation.md`](../idees-kanban/point-situation.md). |
+| `2026-07-03_03_proposition-migration-cockpit-local-trio.md` | **Proposition Mentor** — inventaire poste pilotage local (ou-on-en-est, guide-pilotage, idees-kanban, revision, jarvos-agentique) ; répartition trio ; plan migration lot 3a–c. |
+| `2026-07-03_02_qa95-post-context-jarvos-recyclique.md` | **QA gate 95+ lot 2** — boucle QA3 (3 itérations) post-migration BMAD 6.9 + DOX-lite ; verdict **GO** quality **98** / coverage **100** ; sign-off auto checklist opérateur. |
+| `2026-07-03_01_validation-operateur-post-migration-bmad-dox.md` | **Checklist validation opérateur** — sign-off auto QA95 2026-07-03 (mandat Strophe) ; onboarding lot 2 clos ; registre `operator_validated: true`. |
+| `2026-07-01_01_note-striatum-slm-nvidia.md` | **Note de rappel** — Striatum (ex-Ganglion) à relier au papier NVIDIA **SLM: The Future of Agentic AI** ; repère futur pour les reprises JARVOS. |
+| `2026-06-13_01_addendum-notes-vocales-onboarding-dashboard.md` | **Addendum 13/06** — 3 notes vocales téléphone → **12** idées **USR-001…012** (import bénévoles, onboarding overlay, dashboard perso / présence) ; finaux `.transcription/meetings/2026-06-13-notes-0*`. |
 | `2026-06-07_01_revision-terrain-caisse-hitl-live.md` | **Redirect** — révisions caisse déplacées vers [`references/revision/`](../revision/index.md) (`domaines/caisse.md`, IDs `REV-CAISSE-01…13`). |
 | `2026-06-06_01_decisions-hitl-comptage-pieces-billets-pilote.md` | **HITL PO** — décisions figées module `comptage-pieces-billets` (pilote La Clique) ; entrée stories **9.11–9.13** Epic 9 v2.0.2 ; D-CPT-01…11 (grille, fond, PDF anomalie, pictos, poids V2, Paheko). |
 | `2026-06-06_03_epic9-comptage-story-runner-handoff.md` | **Handoff Epic Runner** — chaîne autonome **9.11→9.12→9.13** **PASS** ; gates, fichiers touchés, follow-up CR, recette terrain Q-HITL-09/11 manuelle. |

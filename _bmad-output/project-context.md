@@ -1,7 +1,8 @@
 ---
 project_name: JARVOS_recyclique
 user_name: Strophe
-date: '2026-04-23'
+date: '2026-07-03'
+rules_stable_since: '2026-04-23'
 sections_completed:
   - technology_stack
   - language_rules
@@ -15,11 +16,13 @@ rule_count: 42
 optimized_for_llm: true
 ---
 
+_Règles applicatives revues post-migration BMAD 6.9.0 (2026-07-03) — cohérence DOX-lite AGENTS.md validée ; contenu technique inchangé depuis 2026-04-23._
+
 # Contexte projet pour agents IA
 
 _Ce fichier fixe les règles et motifs que les agents doivent appliquer lors de l’implémentation. Priorité aux détails non évidents — les conventions évidentes sont volontairement absentes._
 
-**Canon applicatif :** le **front-end** de référence est **peintre-nano** (`peintre-nano/`) ; le **back-end** de référence est **Recyclique API** (`recyclique/api/`, paquet Python `recyclic-api`). Les agents implémentent par défaut dans ces deux périmètres uniquement.
+**Canon applicatif :** le **front-end** de référence est **peintre-nano** (`peintre-nano/`) ; le **back-end** de référence est **Recyclique API** (`recyclique/api/`, paquet Python `recyclic-api`) ; les contrats partagés sont sous **`contracts/`**. Implémenter par défaut dans **peintre-nano** et **recyclique/api** ; synchroniser **contracts/** lors des évolutions OpenAPI ou CREOS (voir traversal DOX-lite [`AGENTS.md`](../AGENTS.md)).
 
 ---
 
@@ -95,6 +98,7 @@ _Ce fichier fixe les règles et motifs que les agents doivent appliquer lors de 
 **Pour les agents IA**
 
 - Lire ce fichier avant d’implémenter du code dans ce dépôt.
+- **Traversal code (DOX-lite) :** lire la chaîne `AGENTS.md` racine → zone (`peintre-nano/`, `recyclique/api/`, `contracts/`) avant toute édition dans ces périmètres — voir [`AGENTS.md`](../AGENTS.md).
 - Appliquer toutes les règles ci-dessus ; en cas de doute, privilégier l’option **plus stricte** ou la **décision documentée** dans `_bmad-output/planning-artifacts/architecture/`.
 - Si une nouvelle convention se stabilise (répétée en PR ou ADR), proposer une mise à jour **courte** de ce fichier plutôt que des paraphrases longues.
 
@@ -103,4 +107,4 @@ _Ce fichier fixe les règles et motifs que les agents doivent appliquer lors de 
 - Garder ce fichier **court** et orienté agents ; l’actualiser quand la stack ou les ADR changent.
 - Réviser périodiquement : retirer ce qui devient universellement évident pour les modèles.
 
-_Dernière mise à jour : 2026-04-23._
+_Dernière mise à jour : 2026-07-03 (renvoi traversal DOX-lite `AGENTS.md` ; règles applicatives inchangées depuis 2026-04-23)._

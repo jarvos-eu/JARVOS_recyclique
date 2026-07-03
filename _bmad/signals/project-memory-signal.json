@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1",
+  "project_id": "jarvos-recyclique",
+  "updated_at": "2026-07-03T18:42:00Z",
+  "status": "active",
+  "headline": "Onboarding BMAD 6.9 clos ; prochaine étape = gate B_EPIC28 selon sprint-status (Epic 9 gelé)",
+  "next_action": "Planifier ou exécuter la gate B_EPIC28 selon `_bmad-output/implementation-artifacts/sprint-status.yaml`",
+  "risk_level": "low",
+  "source_ref": {
+    "path": "REPRISE.md",
+    "updated_at": "2026-07-03T18:42:00Z"
+  }
+}

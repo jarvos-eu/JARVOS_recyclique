@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bmad-project-signal-v0.1",
+  "title": "BMAD project signal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "updated_at",
+    "status",
+    "headline",
+    "next_action",
+    "risk_level",
+    "source_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "blocked", "idle", "closed", "onboarding"]
+    },
+    "headline": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "next_action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "ledger_drift": {
+      "type": "boolean",
+      "description": "true si divergence meta/turns vs carnet (memoire uniquement)"
+    },
+    "thread_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Nombre de fils indexes (memoire uniquement)"
+    },
+    "source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "updated_at"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

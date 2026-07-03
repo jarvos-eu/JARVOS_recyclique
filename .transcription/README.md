@@ -42,3 +42,7 @@ Voir le skill **transcription-pipeline-v1.1** (étapes scan inbox, `run_pipeline
 ## Révision et QA2 (mai 2026)
 
 **État (2026-05-21) :** révision éditoriale appliquée sur les **6** meetings (drafts + finaux). Rapports `qa2-draft-fusion.md` : **4/6** présents ; absents pour `2026-05-21-terrain-1401` et `2026-05-21-recyclique-terrain-paheko`. Recap idées : **`references/artefacts/2026-05-21_02_recap-idees-paheko-reception-terrain.md`**. Journaux de chantier archivés : `references/artefacts/archive/2026-05-21-menage-paheko-compta-qa/`.
+
+## Notes vocales (13/06/2026)
+
+**3** notes téléphone traitées : `2026-06-13-notes-01` (inscription/import), `2026-06-13-notes-02` (onboarding overlay), `2026-06-13-notes-03` (dashboard perso / présence). Addendum idées : **`references/artefacts/2026-06-13_01_addendum-notes-vocales-onboarding-dashboard.md`** (USR-001…012).

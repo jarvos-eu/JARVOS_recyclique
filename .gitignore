@@ -87,3 +87,14 @@ recyclique/api/pytest_run_capture.txt
 recyclique/api/pytest_single_run.log
 recyclique/api/pytest_subprocess.log
 recyclique/api/subagent*.log
+
+# BMAD — config personnelle (voir _bmad/ONBOARDING.md)
+_bmad/config.user.yaml
+_bmad/config.user.toml
+_bmad/custom/config.user.toml
+
+# BMAD — skills Cursor (install local via npx bmad-method install — voir _bmad/ONBOARDING.md)
+.agents/skills/
+
+# BMAD — sauvegardes locales install
+_bmad/config.toml.bak
