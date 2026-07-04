@@ -21,6 +21,8 @@ LayoutResolver(
 1. MERGE AUTORITÉ (04A) : effective = merge(défaut, app, user) par champ
                           + invariants AR39/required + override_policy
                           → profil de composition effectif (+ provenance)
+1bis. STEP COURANT (04D): micro-workflow orchestrator résout le step actif →
+                          alimente la visibilité slots/overlays (inerte v0.1)
 2. ARBITRAGE (04A §6)   : effective = arbiter.arbitrate(effective, ctx)
                           v0.1 = pass-through (ne change rien, mais EST appelé)
 3. ADAPTATION SUPPORT (04B) : applique colonnes / per_support / priorité /

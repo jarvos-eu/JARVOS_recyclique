@@ -1,13 +1,24 @@
 {
   "schema_version": "0.1",
   "project_id": "jarvos-recyclique",
-  "updated_at": "2026-07-03T18:42:00Z",
+  "updated_at": "2026-07-04T01:12:00Z",
   "status": "active",
-  "headline": "Onboarding BMAD 6.9 clos ; prochaine étape = gate B_EPIC28 selon sprint-status (Epic 9 gelé)",
-  "next_action": "Planifier ou exécuter la gate B_EPIC28 selon `_bmad-output/implementation-artifacts/sprint-status.yaml`",
+  "headline": "Fil courant = gate B_EPIC28 ; chantier Peintre v0.1 annoncé et parké — reprise via REPRISE.md § Sessions à reprendre",
+  "next_action": "Court terme : gate B_EPIC28 selon sprint-status. Chantier Peintre v0.1 : reprendre session 1 (ventilation pack PEINTRE) quand Strophe dit GO — voir REPRISE.md et references/todo.md",
   "risk_level": "low",
   "source_ref": {
     "path": "REPRISE.md",
-    "updated_at": "2026-07-03T18:42:00Z"
-  }
+    "updated_at": "2026-07-04T01:12:00Z"
+  },
+  "parked_chantiers": [
+    {
+      "id": "peintre-v0-1",
+      "title": "Peintre v0.1 — peintre-nano → moteur agnostique CREOS",
+      "announced_at": "2026-07-04",
+      "status": "preparation_only",
+      "entry": "references/artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md",
+      "fil": "REPRISE.md",
+      "kanban": "IDEA-2026-07-04-001"
+    }
+  ]
 }

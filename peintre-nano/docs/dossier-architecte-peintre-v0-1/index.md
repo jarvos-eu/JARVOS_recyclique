@@ -42,6 +42,7 @@ L'« affichage convaincant » (court terme) et le « moteur agnostique réutilis
 | 04A | `04A-PEINTRE-modele-autorite-affichage.md` | **Modèle d'autorité défaut→app→user** en grammaire unique CREOS ; hooks d'arbitrage inertes | architecte + agent |
 | 04B | `04B-PEINTRE-adaptation-support-spec.md` | **Adaptation au support** : breakpoints, réarrangement, priorité, nature info/tactile | architecte + agent |
 | 04C | `04C-PEINTRE-templates-et-overlays.md` | **Templates à géométrie variable** (le moteur ne fige pas le nb de zones) + **couche overlays** (pilote raccourcis clavier) | architecte + agent |
+| 04D | `04D-PEINTRE-micro-workflows.md` | **Micro-workflows UI** déclaratifs (guards → step/panel/overlay/command), orchestrateur inerte | architecte + agent |
 | 05 | `05-PEINTRE-layout-resolver-spec.md` | `LayoutResolver` : pipeline de résolution, superposition des couches, rapatriement des alias | agent |
 | 06 | `06-PEINTRE-prd-chantier.md` | PRD du chantier : épics, stories, AC, séquençage, definition of done | agent + PO |
 | 07 | `07-PEINTRE-adr-decisions.md` | ADR : décisions structurantes (D-01…D-0x), statuts, alternatives | architecte |

@@ -112,6 +112,13 @@
 **Décision** : pas de split repo en v1. On durcit la frontière moteur/métier et on documente la surface publique. L'extraction reste une évolution de packaging future.
 **Justification** : éviter coûts de versioning/sync prématurés tant que contrats et frontend évoluent à la même cadence.
 
+## D-16 — Micro-workflows UI déclaratifs (guards → step/panel/overlay/command)
+**Statut** : Proposed.
+**Décision** : enchaînements de vues, navigation selon saisie et transitions « validé → étape » sont exprimés en **`flow_definition` CREOS** (vocabulaire fermé, `guard` = référence à une rule, pas d'expression libre), résolus par un **`MicroWorkflowOrchestrator`** moteur. `FlowRenderer` existant = rendu ; la définition devient donnée. Voir `04D`.
+**Justification** : comble IDEA-2026-03-31-001 ; aujourd'hui la logique step est codée en React dans les wizards caisse (~2000 l.).
+**v0.1** : orchestrateur **inerte** (lit et évalue les guards, ne navigue pas ; D-15). Activer = remplacer l'implémentation.
+**Ne pas confondre** avec navigation structurelle (`NavigationManifest`).
+
 ## Journal
 | ID | Décision | Statut | Dépend de |
 |----|----------|--------|-----------|
@@ -131,3 +138,4 @@
 | **D-13** | **Géométrie par templates (nb zones libre)** | Proposed | D-00, D-12 |
 | **D-14** | **Overlays = strate + hook édition live inerte** | Proposed | D-00, D-10 |
 | **D-15** | **Tout futur préparé/moqué dans le code (pas que doc)** | Proposed | D-10 (généralise) |
+| **D-16** | **Micro-workflows déclaratifs (flow_definition + orchestrateur inerte)** | Proposed | D-09, D-15 |

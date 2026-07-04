@@ -6,6 +6,7 @@ Projections synthétiques pour consolidation Mentor (`jarmes-cockpit/global-bmad
 |---------|-----------|-------|
 | `project-program-signal.json` | Ariane | `docs/programme/JARMES_REPRISE.md` |
 | `project-memory-signal.json` | Clio | `REPRISE.md` |
+| `project-kanban-signal.json` | idees-kanban skill | `docs/ideas/kanban/INDEX.md` |
 
 **Ne pas** traiter ces JSON comme source de vérité — lire les amont.
 

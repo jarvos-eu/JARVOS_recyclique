@@ -24,7 +24,7 @@
 - **`todo.md`** — To-do de réflexion, recherche et agrégations hors flux BMAD (hors epics/stories).
   _(Charger si : session d’idéation, de recherche ou de synthèse conceptuelle.)_
 
-- **`idees-kanban/`** — Kanban d’idées (un fichier par idée, stades a-conceptualiser, a-rechercher, a-creuser, a-faire, archive). Vue globale : **idees-kanban/index.md**. **Instantanés « où on en est »** (artefacts datés + tableau des versions) : **idees-kanban/point-situation.md**. Gestion : skill **idees-kanban** (`.cursor/skills/idees-kanban/`). *Ne pas éditer l’index Kanban à la main.*
+- **Kanban idées (v2)** — [`docs/ideas/kanban/`](../docs/ideas/kanban/) : fiches `IDEA-*.md`, index [`INDEX.md`](../docs/ideas/kanban/INDEX.md), signal `_bmad/signals/project-kanban-signal.json`. **Archive v1** : [`references/archive/idees-kanban-v1-2026-07-03/`](archive/idees-kanban-v1-2026-07-03/) · redir [`idees-kanban/README.md`](idees-kanban/README.md). Gestion : skill **idees-kanban** (global). *Ne pas éditer `INDEX.md` à la main.*
   _(Charger si : Strophe donne une idée à noter, note / transition / archivage, session d’idéation / priorisation, ou pilotage / audit du backlog idées.)_
 
 - **`guide-pilotage-v2.md`** (BMAD) — [_bmad-output/planning-artifacts/guide-pilotage-v2.md](../_bmad-output/planning-artifacts/guide-pilotage-v2.md) : document maître d’**exécution** v2 — réconciliation des deux récits de rythme (séquence PRD / décision directrice vs Pistes A/B et convergences), **jalons à cocher** (Convergence 1–3, Epics 1–10) synchronisés aux grands jalons avec `sprint-status.yaml` pour le grain fin, **carte des emplacements** pour audits, données, rapports de tests et handoffs, frictions connues, **prompt type** agent superviseur, lien **correct course**. Ne remplace pas le PRD ni l’index `references/` pour le détail métier.
@@ -64,7 +64,7 @@ Chaque dossier liste son contenu dans son propre **index** : `references/<dossie
 - **`artefacts/`** — Artefacts temporaires de handoff entre agents ; **audit références 2026-03-31** (`2026-03-31_0*_audit-references-*.md`). Sous-dossier `artefacts/archive/` pour artefacts historiques (ex. plan Git exécuté). Détail : **artefacts/index.md**. **Spec multi-contextes / authz v2 (Epic 1.3)** : [artefacts/2026-04-02_03_spec-multi-contextes-invariants-autorisation-v2.md](artefacts/2026-04-02_03_spec-multi-contextes-invariants-autorisation-v2.md) (traçabilité AC, §1 bis opérateur=bénévole, PIN §6). **Gouvernance contrats v2 (Epic 1.4, HITL terrain)** : [artefacts/2026-04-02_04_gouvernance-contractuelle-openapi-creos-contextenvelope.md](artefacts/2026-04-02_04_gouvernance-contractuelle-openapi-creos-contextenvelope.md) (**§0** décisions, **§2.3** reviewable vs démo). **Bandeau / signaux exploitation (Epic 1.7)** : [artefacts/2026-04-02_07_signaux-exploitation-bandeau-live-premiers-slices.md](artefacts/2026-04-02_07_signaux-exploitation-bandeau-live-premiers-slices.md) (§1 bis KPIs globaux type 1.4.4 ; F1–F6 ; snapshot OpenAPI legacy : `2026-04-02_08_*.json`). **Checklist PR / create-story Peintre sans métier (Epics 4–10)** : [artefacts/2026-04-07_03_checklist-pr-peintre-sans-metier.md](artefacts/2026-04-07_03_checklist-pr-peintre-sans-metier.md).
   _(Charger : si un artefact est mentionné dans `ou-on-en-est.md`, pour l’audit références, ou selon le besoin de la session.)_
 
-- **`idees-kanban/`** — Kanban d’idées. Vue globale : **idees-kanban/index.md**. Gestion : skill idees-kanban.
+- **`idees-kanban/`** — Redir v2 → [`docs/ideas/kanban/`](../docs/ideas/kanban/) · archive v1 : **archive/idees-kanban-v1-2026-07-03/**. Gestion : skill idees-kanban.
   _(Charger : idée à capturer, note / transition / archivage, ou session d’idéation.)_
 
 
@@ -103,6 +103,9 @@ Chaque dossier liste son contenu dans son propre **index** : `references/<dossie
 
 - **`paheko/`** — Guide et référence Paheko : clone, doc officielle (Fossil). Code source dans **paheko/repo/** (gitignore). Détail : **paheko/index.md**.
   _(Charger : intégration Paheko, analyse API/extensions ou croisement avec migration-paheko.)_
+
+- **`dossier-architecte-peintre-v0-1/`** — Pack **PEINTRE** (3ᵉ pack doc v2) : moteur UI agnostique v0.1, CREOS composition, LayoutResolver, portage Recyclique. **Emplacement actuel** : [`peintre-nano/docs/dossier-architecte-peintre-v0-1/`](../peintre-nano/docs/dossier-architecte-peintre-v0-1/index.md) — **cible** : ce dossier sous `references/` (ventilation à faire). Chantier annoncé 2026-07-04 : [`artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md`](artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md) · Kanban `IDEA-2026-07-04-001`.
+  _(Charger : chantier Peintre v0.1, promotion BMAD post-HITL, prompt `prompt-agent-chantier-peintre.md`.)_
 
 - **`peintre/`** — Travail et synthèses sur JARVOS Peintre (pipeline nano → macro, layout, commandes, widgets) ; complète **recherche/** (allers-retours IA externes) sans la remplacer. Détail : **peintre/index.md**.
   _(Charger : cadrage Peintre, macro affichage / agents, alignement `peintre-nano/` avec la vision long terme.)_

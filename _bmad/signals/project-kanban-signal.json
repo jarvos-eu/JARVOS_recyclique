@@ -1,0 +1,452 @@
+{
+  "schema_version": "0.2",
+  "project_id": "jarvos-recyclique",
+  "updated_at": "2026-07-04T01:05:29Z",
+  "source_ref": {
+    "path": "docs/ideas/kanban/INDEX.md",
+    "updated_at": "2026-07-04T01:05:29Z"
+  },
+  "counts_by_stage": {
+    "inbox": 5,
+    "refining": 6,
+    "ready": 1,
+    "promoted": 0,
+    "parked": 0,
+    "archived": 13
+  },
+  "hot_ideas": [
+    {
+      "idea_id": "IDEA-2026-07-04-001",
+      "title": "Chantier Peintre v0.1 — moteur agnostique CREOS",
+      "stage": "refining"
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-002",
+      "title": "IA LLM modules intelligents",
+      "stage": "refining"
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-005",
+      "title": "JARVOS Ports Nano Mini Peintre",
+      "stage": "refining"
+    }
+  ],
+  "ideas": [
+    {
+      "idea_id": "IDEA-2026-02-24-001",
+      "title": "Calendar espace fichiers Paheko",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-02-24",
+      "maturity": "forged",
+      "tags": [
+        "calendrier",
+        "fichiers",
+        "agenda",
+        "paheko-natif"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-02-24_11_capacites-paheko-calendrier-fichiers-communication.md",
+        "references/artefacts/2026-02-25_01_decision-agenda-recyclic-externe.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-002",
+      "title": "IA LLM modules intelligents",
+      "stage": "refining",
+      "status": "captured",
+      "captured_at": "2026-02-24",
+      "maturity": "researched",
+      "tags": [
+        "llm",
+        "import-intelligent",
+        "classification",
+        "ganglion"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-003",
+      "title": "Integration Paheko core",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-02-24",
+      "maturity": "forged",
+      "tags": [
+        "integration-paheko",
+        "max-paheko",
+        "docker",
+        "compose"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-02-24_08_decision-architecture-max-paheko.md",
+        "epic-9",
+        "references/migration-paheko/2026-05-21_guide-liaison-paheko-compta.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-004",
+      "title": "JARVOS Le Fil placeholder GitHub",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-02-24",
+      "maturity": "forged",
+      "tags": [
+        "le-fil",
+        "github",
+        "hors-scope",
+        "reseau-inter-ressourceries"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-005",
+      "title": "JARVOS Ports Nano Mini Peintre",
+      "stage": "refining",
+      "status": "captured",
+      "captured_at": "2026-02-24",
+      "maturity": "researched",
+      "tags": [
+        "ports",
+        "nano",
+        "mini",
+        "relay-peintre"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-006",
+      "title": "Module correspondance Paheko",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-02-24",
+      "maturity": "forged",
+      "tags": [
+        "correspondance",
+        "traducteur",
+        "sync-caisse",
+        "plugin-php"
+      ],
+      "suggested_routes": [
+        "epic-9",
+        "references/todo.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-007",
+      "title": "Module store Recyclic",
+      "stage": "inbox",
+      "status": "captured",
+      "captured_at": "2026-02-24",
+      "tags": [
+        "module-store",
+        "distribution",
+        "optionnels",
+        "github"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-008",
+      "title": "Nouvelles UI workflows Paheko",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-02-24",
+      "maturity": "forged",
+      "tags": [
+        "ui-modules",
+        "lazy-loading",
+        "moduleslot",
+        "workflows-paheko"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-02-24_07_design-systeme-modules.md",
+        "epic-8"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-009",
+      "title": "Plugin framework Recyclic",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-02-24",
+      "maturity": "forged",
+      "tags": [
+        "plugin-framework",
+        "modulebase",
+        "redis-streams",
+        "module-toml"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-02-24_07_design-systeme-modules.md",
+        "references/recherche/2026-02-24_pluggy-vs-alternatives-hooks_perplexity_reponse-1.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-010",
+      "title": "README contexte projet, La Clique Qui Recycle et ancien repo",
+      "stage": "inbox",
+      "status": "captured",
+      "captured_at": "2026-02-24",
+      "tags": [
+        "readme",
+        "ancien-repo",
+        "contexte",
+        "archivage"
+      ],
+      "suggested_routes": [
+        "references/ancien-repo/README.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-011",
+      "title": "README international ou multi-pays",
+      "stage": "inbox",
+      "status": "captured",
+      "captured_at": "2026-02-24",
+      "tags": [
+        "readme",
+        "international",
+        "multi-pays",
+        "i18n"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-012",
+      "title": "Sync financiere caisse Paheko",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-02-24",
+      "maturity": "forged",
+      "tags": [
+        "sync-financiere",
+        "push-ticket",
+        "redis-streams",
+        "source-verite-paheko"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-02-25_04_analyse-plugins-caisse-decisions-push.md",
+        "references/artefacts/2026-02-25_07_decisions-push-redis-source-eee.md",
+        "epic-9"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-24-013",
+      "title": "UI modulaire configurable",
+      "stage": "refining",
+      "status": "captured",
+      "captured_at": "2026-02-24",
+      "maturity": "researched",
+      "tags": [
+        "ui-modulaire",
+        "lazy-loading",
+        "moduleslot",
+        "creos"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-02-24_07_design-systeme-modules.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-25-001",
+      "title": "Chantier fichiers / politique documentaire",
+      "stage": "refining",
+      "status": "captured",
+      "captured_at": "2026-02-25",
+      "maturity": "researched",
+      "tags": [
+        "politique-documentaire",
+        "fichiers",
+        "webdav",
+        "scans-factures"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-02-25_02_chantier-fichiers-politique-documentaire.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-02-26-001",
+      "title": "Parcours ouverture caisse, postes et accès PIN",
+      "stage": "inbox",
+      "status": "captured",
+      "captured_at": "2026-02-26",
+      "tags": [
+        "ouverture-caisse",
+        "postes",
+        "pin",
+        "niveaux-acces"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-03-01-001",
+      "title": "Workflow evenements caisse RecyClique vers Paheko",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-03-01",
+      "maturity": "forged",
+      "tags": [
+        "evenements-caisse",
+        "ventilation",
+        "liaison-paheko",
+        "cloture-caisse"
+      ],
+      "suggested_routes": [
+        "references/recherche/2026-03-01_api-paheko-caisse-from-recyclique_good-reponse.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-03-31-001",
+      "title": "Peintre workflows raccourcis navigation",
+      "stage": "ready",
+      "status": "triaged",
+      "captured_at": "2026-03-31",
+      "maturity": "researched",
+      "tags": [
+        "workflows",
+        "raccourcis",
+        "navigation",
+        "micro-workflows"
+      ],
+      "suggested_routes": [
+        "peintre-nano/docs/dossier-architecte-peintre-v0-1/04D-PEINTRE-micro-workflows.md",
+        "peintre-nano/docs/dossier-architecte-peintre-v0-1/04C-PEINTRE-templates-et-overlays.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-04-14-001",
+      "title": "Configuration raccourcis clavier par poste",
+      "stage": "inbox",
+      "status": "captured",
+      "captured_at": "2026-04-14",
+      "tags": [
+        "raccourcis-clavier",
+        "poste",
+        "kiosque",
+        "layout-clavier"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-04-18-001",
+      "title": "Chantier opérations spéciales caisse — PRD v1.1 + exécution BMAD",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-04-18",
+      "maturity": "forged",
+      "tags": [
+        "operations-speciales",
+        "matiere",
+        "tags-metier",
+        "prd"
+      ],
+      "suggested_routes": [
+        "references/operations-speciales-recyclique/2026-04-18_prd-recyclique-operations-speciales-sorties-matiere-paheko_v1-1.md",
+        "epic-24"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-04-18-002",
+      "title": "Durcissement sync Paheko outbox (suite audit Red Team + QA2)",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-04-18",
+      "maturity": "forged",
+      "tags": [
+        "outbox",
+        "sync-paheko",
+        "hardening",
+        "audit-red-team"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-04-18_01_audit-red-team-paheko-outbox-synthese-agents.md",
+        "references/artefacts/2026-04-18_03_livraison-paheko-outbox-hardening-v2-plan-cloud.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-04-18-003",
+      "title": "Finir les écarts QA — paramétrage comptable SuperAdmin",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-04-18",
+      "maturity": "forged",
+      "tags": [
+        "parametrage-comptable",
+        "superadmin",
+        "qa-ecarts",
+        "moyens-paiement"
+      ],
+      "suggested_routes": [
+        "references/migration-paheko/2026-04-18_spec-corrections-qa-parametrage-comptable-superadmin.md",
+        "references/artefacts/2026-04-20_bilan-fin-ecarts-qa-parametrage-comptable-superadmin.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-04-19-001",
+      "title": "Aligner brownfield vs PRD architecture permissions multisite — BMAD",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-04-19",
+      "maturity": "forged",
+      "tags": [
+        "permissions",
+        "multisite",
+        "kiosque",
+        "alignement-prd"
+      ],
+      "suggested_routes": [
+        "references/vision-projet/2026-04-19_prd-recyclique-architecture-permissions-multisite-kiosques-bmad.md",
+        "epic-25",
+        "_bmad-output/planning-artifacts/epics.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-04-19-002",
+      "title": "Chantier refactor API Recyclique — audit brownfield 2026-04-19 (F1–F11, P0–P2)",
+      "stage": "archived",
+      "status": "archived",
+      "captured_at": "2026-04-19",
+      "maturity": "forged",
+      "tags": [
+        "refactor-api",
+        "brownfield",
+        "dette-qualite",
+        "pytest"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-04-19_01_audit-brownfield-recyclic-api-architecture-style-handoff.md",
+        "epic-26"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-05-20-001",
+      "title": "Peintre — gardien du seuil (conscience d'affichage)",
+      "stage": "refining",
+      "status": "captured",
+      "captured_at": "2026-05-20",
+      "maturity": "researched",
+      "tags": [
+        "gardien-seuil",
+        "conscience-affichage",
+        "agent-ia",
+        "creos"
+      ],
+      "suggested_routes": [
+        "references/protocole-modules-recyclique/04-MOD-protocole-front-creos.md",
+        "references/dossier-architecte-externe-v2/05-ARCH-frontend-peintre-creos-contrats.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-07-04-001",
+      "title": "Chantier Peintre v0.1 — moteur agnostique CREOS",
+      "stage": "refining",
+      "status": "captured",
+      "captured_at": "2026-07-04",
+      "priority_hint": "P1",
+      "tags": [
+        "peintre",
+        "creos",
+        "chantier",
+        "bmad"
+      ],
+      "suggested_routes": [
+        "references/artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md",
+        "peintre-nano/docs/dossier-architecte-peintre-v0-1/index.md"
+      ]
+    }
+  ]
+}

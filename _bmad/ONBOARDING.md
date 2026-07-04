@@ -59,6 +59,16 @@
 
 ---
 
+## Lot 2bis — Kanban idées v2
+
+- [x] Arborescence `docs/ideas/kanban/` + `DEPOT/` — 2026-07-03
+- [x] Migration brownfield 24 fiches (`references/idees-kanban/` → `IDEA-*.md`) — [`MIGRATION-MAP-v1.md`](../docs/ideas/kanban/MIGRATION-MAP-v1.md)
+- [x] Archive v1 : `references/archive/idees-kanban-v1-2026-07-03/`
+- [x] Signal `project-kanban-signal.json` publié
+- [x] Skill projet v1 archivé (`.cursor/skills/.archives/idees-kanban-v1-2026-07-03/`) — canon global `~/.cursor/skills/idees-kanban/`
+
+---
+
 ## Lot 3 — Programme (optionnel)
 
 - [x] Programme actif : epics 1–26 via `_bmad-output/planning-artifacts/` (ligne courante)

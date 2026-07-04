@@ -5,6 +5,8 @@
 **Auteur** : Mentor (synthèse explorations + mapping trio)  
 **Statut** : proposition — **GO Strophe requis** avant exécution lot 3
 
+> **Note 2026-07-03 (soir)** — Kanban **v2** installé (`docs/ideas/kanban/`, signal `project-kanban-signal.json`). L'ancien `references/idees-kanban/` est archivé ; ce document reste valide pour la répartition trio — seul le chemin kanban change (hors trio inchangé).
+
 ---
 
 ## 1. Ce que tu avais mis en place (retrouvé)

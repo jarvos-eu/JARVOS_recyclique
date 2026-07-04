@@ -26,7 +26,8 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
-| `2026-07-03_04_point-situation-kanban-idees-jarvos.md` | **Point de situation Kanban** (post-triage lot A) — **7** archivages spirale 1 ; **11** cartes actives ; todo condensé ; repère [`idees-kanban/point-situation.md`](../idees-kanban/point-situation.md). |
+| `2026-07-04_01_preparation-chantier-peintre-v0-1.md` | **Préparation chantier Peintre v0.1** — annonce Strophe ; process BMAD phases 0–3 ; move pack PEINTRE vers `references/` ; liens kanban ; gate GO vs Epic 28/C2b. |
+| `2026-07-03_04_point-situation-kanban-idees-jarvos.md` | **Point de situation Kanban v1** (photographie post-triage lot A) — **7** archivages ; **11** actives ; SoT vivant désormais [`docs/ideas/kanban/`](../../docs/ideas/kanban/) · archive v1 [`archive/idees-kanban-v1-2026-07-03/`](../archive/idees-kanban-v1-2026-07-03/). |
 | `2026-07-03_03_proposition-migration-cockpit-local-trio.md` | **Proposition Mentor** — inventaire poste pilotage local (ou-on-en-est, guide-pilotage, idees-kanban, revision, jarvos-agentique) ; répartition trio ; plan migration lot 3a–c. |
 | `2026-07-03_02_qa95-post-context-jarvos-recyclique.md` | **QA gate 95+ lot 2** — boucle QA3 (3 itérations) post-migration BMAD 6.9 + DOX-lite ; verdict **GO** quality **98** / coverage **100** ; sign-off auto checklist opérateur. |
 | `2026-07-03_01_validation-operateur-post-migration-bmad-dox.md` | **Checklist validation opérateur** — sign-off auto QA95 2026-07-03 (mandat Strophe) ; onboarding lot 2 clos ; registre `operator_validated: true`. |

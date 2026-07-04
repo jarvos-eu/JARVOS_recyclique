@@ -25,6 +25,18 @@
 
 ---
 
+## Pack PEINTRE — dossier architecte v0.1 (chantier annoncé 2026-07-04)
+
+| Élément | Chemin |
+|---------|--------|
+| **Pack normatif (brouillon, promotion BMAD après HITL)** | [`peintre-nano/docs/dossier-architecte-peintre-v0-1/`](../../peintre-nano/docs/dossier-architecte-peintre-v0-1/index.md) — **cible** : `references/dossier-architecte-peintre-v0-1/` (pas encore déplacé) |
+| **Préparation chantier BMAD** | [`artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md`](../artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md) |
+| **Kanban** | [`IDEA-2026-07-04-001`](../../docs/ideas/kanban/IDEA-2026-07-04-001.md) · workflows/raccourcis : [`IDEA-2026-03-31-001`](../../docs/ideas/kanban/IDEA-2026-03-31-001.md) |
+
+> 3ᵉ pack doc Recyclique v2 (après ARCH, MOD). Piste A — mocks OK. PRD exécutable : `06-PEINTRE-prd-chantier.md`.
+
+---
+
 ## Liens utiles (hors dossier)
 
 - **Configuration modules / `site_id` / bandeau KPI (normatif QA + ADR + OpenAPI brouillon)** : `references/config-modules-site-id/index.md`.

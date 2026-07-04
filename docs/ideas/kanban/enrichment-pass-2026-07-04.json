@@ -1,0 +1,241 @@
+{
+  "IDEA-2026-02-24-001": {
+    "maturity": "forged",
+    "domain": ["paheko", "doc"],
+    "tags": ["calendrier", "fichiers", "agenda", "paheko-natif"],
+    "routes_suggested": [
+      "references/artefacts/2026-02-24_11_capacites-paheko-calendrier-fichiers-communication.md",
+      "references/artefacts/2026-02-25_01_decision-agenda-recyclic-externe.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 avec recherche Paheko et décisions agenda/fichiers actées."
+  },
+  "IDEA-2026-02-24-002": {
+    "maturity": "researched",
+    "domain": ["ia-llm", "modules"],
+    "tags": ["llm", "import-intelligent", "classification", "ganglion"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "a-creuser : inventaire 1.4.4 et stratégie v0.1 placeholder ; décision finale reportée."
+  },
+  "IDEA-2026-02-24-003": {
+    "maturity": "forged",
+    "domain": ["paheko", "api"],
+    "tags": ["integration-paheko", "max-paheko", "docker", "compose"],
+    "routes_suggested": [
+      "references/artefacts/2026-02-24_08_decision-architecture-max-paheko.md",
+      "epic-9",
+      "references/migration-paheko/2026-05-21_guide-liaison-paheko-compta.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 intégrée : décisions max Paheko, cartographie et Epic 9."
+  },
+  "IDEA-2026-02-24-004": {
+    "maturity": "forged",
+    "domain": ["ecosystem", "doc"],
+    "tags": ["le-fil", "github", "hors-scope", "reseau-inter-ressourceries"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "Archive v1 : Le Fil et placeholder GitHub actés hors scope projet."
+  },
+  "IDEA-2026-02-24-005": {
+    "maturity": "researched",
+    "domain": ["peintre", "ecosystem"],
+    "tags": ["ports", "nano", "mini", "relay-peintre"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "a-creuser : port unique Nano/Mini + relay Peintre acté, implémentation à détailler."
+  },
+  "IDEA-2026-02-24-006": {
+    "maturity": "forged",
+    "domain": ["paheko", "api", "modules"],
+    "tags": ["correspondance", "traducteur", "sync-caisse", "plugin-php"],
+    "routes_suggested": [
+      "epic-9",
+      "references/todo.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 intégrée : pattern plugin PHP syncAccounting couvert par Epic 9."
+  },
+  "IDEA-2026-02-24-007": {
+    "maturity": "raw",
+    "domain": ["modules", "ecosystem"],
+    "tags": ["module-store", "distribution", "optionnels", "github"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "a-conceptualiser : concept store acté sans recherche ni design détaillé."
+  },
+  "IDEA-2026-02-24-008": {
+    "maturity": "forged",
+    "domain": ["paheko", "ux", "modules"],
+    "tags": ["ui-modules", "lazy-loading", "moduleslot", "workflows-paheko"],
+    "routes_suggested": [
+      "references/artefacts/2026-02-24_07_design-systeme-modules.md",
+      "epic-8"
+    ],
+    "priority": null,
+    "notes": "Archive v1 intégrée : pattern routes /modules/paheko/* dans artefact 07."
+  },
+  "IDEA-2026-02-24-009": {
+    "maturity": "forged",
+    "domain": ["modules", "api"],
+    "tags": ["plugin-framework", "modulebase", "redis-streams", "module-toml"],
+    "routes_suggested": [
+      "references/artefacts/2026-02-24_07_design-systeme-modules.md",
+      "references/recherche/2026-02-24_pluggy-vs-alternatives-hooks_perplexity_reponse-1.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 intégrée : design système modules (TOML, ModuleBase, Redis Streams) arbitre."
+  },
+  "IDEA-2026-02-24-010": {
+    "maturity": "raw",
+    "domain": ["doc"],
+    "tags": ["readme", "ancien-repo", "contexte", "archivage"],
+    "routes_suggested": [
+      "references/ancien-repo/README.md"
+    ],
+    "priority": null,
+    "notes": "a-conceptualiser : contenu identifié, archivage repo 1.4.4 non réalisé."
+  },
+  "IDEA-2026-02-24-011": {
+    "maturity": "raw",
+    "domain": ["doc", "ecosystem"],
+    "tags": ["readme", "international", "multi-pays", "i18n"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "a-conceptualiser : options encart EN vs multi-pays natif à trancher au README."
+  },
+  "IDEA-2026-02-24-012": {
+    "maturity": "forged",
+    "domain": ["paheko", "caisse", "compta"],
+    "tags": ["sync-financiere", "push-ticket", "redis-streams", "source-verite-paheko"],
+    "routes_suggested": [
+      "references/artefacts/2026-02-25_04_analyse-plugins-caisse-decisions-push.md",
+      "references/artefacts/2026-02-25_07_decisions-push-redis-source-eee.md",
+      "epic-9"
+    ],
+    "priority": null,
+    "notes": "Archive v1 intégrée : décisions push par ticket + story 9.10 clôture caisse."
+  },
+  "IDEA-2026-02-24-013": {
+    "maturity": "researched",
+    "domain": ["peintre", "ux", "modules"],
+    "tags": ["ui-modulaire", "lazy-loading", "moduleslot", "creos"],
+    "routes_suggested": [
+      "references/artefacts/2026-02-24_07_design-systeme-modules.md"
+    ],
+    "priority": null,
+    "notes": "a-creuser : pattern UI arbitre dans artefact 07 ; hook useModuleExtensions à implémenter."
+  },
+  "IDEA-2026-02-25-001": {
+    "maturity": "researched",
+    "domain": ["doc", "paheko"],
+    "tags": ["politique-documentaire", "fichiers", "webdav", "scans-factures"],
+    "routes_suggested": [
+      "references/artefacts/2026-02-25_02_chantier-fichiers-politique-documentaire.md"
+    ],
+    "priority": null,
+    "notes": "a-creuser : chantier ouvert avec artefact dédié ; scope versions futures."
+  },
+  "IDEA-2026-02-26-001": {
+    "maturity": "raw",
+    "domain": ["caisse", "reception", "admin"],
+    "tags": ["ouverture-caisse", "postes", "pin", "niveaux-acces"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "a-conceptualiser : parcours postes/PIN décrit, benchmark POS et architecture à faire."
+  },
+  "IDEA-2026-03-01-001": {
+    "maturity": "forged",
+    "domain": ["paheko", "caisse"],
+    "tags": ["evenements-caisse", "ventilation", "liaison-paheko", "cloture-caisse"],
+    "routes_suggested": [
+      "references/recherche/2026-03-01_api-paheko-caisse-from-recyclique_good-reponse.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 : workflow événements caisse couvert par chantier clôture/ventilation Paheko."
+  },
+  "IDEA-2026-03-31-001": {
+    "maturity": "researched",
+    "domain": ["peintre", "ux"],
+    "tags": ["workflows", "raccourcis", "navigation", "micro-workflows"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "a-rechercher v1 : questions patterns déclaratifs CREOS posées, recherche non consignée dans la fiche."
+  },
+  "IDEA-2026-04-14-001": {
+    "maturity": "raw",
+    "domain": ["ux", "admin"],
+    "tags": ["raccourcis-clavier", "poste", "kiosque", "layout-clavier"],
+    "routes_suggested": [],
+    "priority": null,
+    "notes": "a-conceptualiser : idée admin raccourcis par terminal, version future sans implémentation."
+  },
+  "IDEA-2026-04-18-001": {
+    "maturity": "forged",
+    "domain": ["caisse", "paheko"],
+    "tags": ["operations-speciales", "matiere", "tags-metier", "prd"],
+    "routes_suggested": [
+      "references/operations-speciales-recyclique/2026-04-18_prd-recyclique-operations-speciales-sorties-matiere-paheko_v1-1.md",
+      "epic-24"
+    ],
+    "priority": null,
+    "notes": "Archive v1 : Epic 24 livré et mergé master (stories 24-1 à 24-10 done)."
+  },
+  "IDEA-2026-04-18-002": {
+    "maturity": "forged",
+    "domain": ["paheko", "api"],
+    "tags": ["outbox", "sync-paheko", "hardening", "audit-red-team"],
+    "routes_suggested": [
+      "references/artefacts/2026-04-18_01_audit-red-team-paheko-outbox-synthese-agents.md",
+      "references/artefacts/2026-04-18_03_livraison-paheko-outbox-hardening-v2-plan-cloud.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 intégrée : hardening outbox livré sur branche paheko-outbox-hardening-v2."
+  },
+  "IDEA-2026-04-18-003": {
+    "maturity": "forged",
+    "domain": ["compta", "admin", "paheko"],
+    "tags": ["parametrage-comptable", "superadmin", "qa-ecarts", "moyens-paiement"],
+    "routes_suggested": [
+      "references/migration-paheko/2026-04-18_spec-corrections-qa-parametrage-comptable-superadmin.md",
+      "references/artefacts/2026-04-20_bilan-fin-ecarts-qa-parametrage-comptable-superadmin.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 intégrée : grille spec B/M/I satisfaite, merge PR #1 et stash appliqué."
+  },
+  "IDEA-2026-04-19-001": {
+    "maturity": "forged",
+    "domain": ["admin", "api", "ux"],
+    "tags": ["permissions", "multisite", "kiosque", "alignement-prd"],
+    "routes_suggested": [
+      "references/vision-projet/2026-04-19_prd-recyclique-architecture-permissions-multisite-kiosques-bmad.md",
+      "epic-25",
+      "_bmad-output/planning-artifacts/epics.md"
+    ],
+    "priority": null,
+    "notes": "Archive v1 : Epic 25 clôturé (stories 25.1–25.15 done, rétro 2026-04-22)."
+  },
+  "IDEA-2026-04-19-002": {
+    "maturity": "forged",
+    "domain": ["api"],
+    "tags": ["refactor-api", "brownfield", "dette-qualite", "pytest"],
+    "routes_suggested": [
+      "references/artefacts/2026-04-19_01_audit-brownfield-recyclic-api-architecture-style-handoff.md",
+      "epic-26"
+    ],
+    "priority": null,
+    "notes": "Archive v1 : Epic 26 clôturé (stories 26.1–26.5 done, rétro 2026-04-23)."
+  },
+  "IDEA-2026-05-20-001": {
+    "maturity": "researched",
+    "domain": ["peintre", "ia-llm", "ux"],
+    "tags": ["gardien-seuil", "conscience-affichage", "agent-ia", "creos"],
+    "routes_suggested": [
+      "references/protocole-modules-recyclique/04-MOD-protocole-front-creos.md",
+      "references/dossier-architecte-externe-v2/05-ARCH-frontend-peintre-creos-contrats.md"
+    ],
+    "priority": null,
+    "notes": "a-creuser : intention architecture gardien du seuil (L-16, T-PEINT-1) ; bypass v2 prévu."
+  }
+}

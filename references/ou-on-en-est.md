@@ -1,6 +1,6 @@
 # Ou on en est — JARVOS Recyclique
 
-Mis à jour : 2026-07-03
+Mis à jour : 2026-07-04
 
 > **Bannière trio (lot 3a)**
 >
@@ -67,6 +67,7 @@ Source backlog : [`references/revision/`](revision/index.md). Stories **28.1–2
 | Mémoire sessions Jarvos | [`jarvos-agentique/index.md`](jarvos-agentique/index.md) — phases 0–3 livrées ; QA2 mémoire pending |
 | Terrain / réception / Paheko | Addendum [`2026-05-23_01`](artefacts/2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md) ; brainstorm réception **clôturé** ; liaison Paheko — validation comptable en attente |
 | Migration cockpit trio | [`2026-07-03_03`](artefacts/2026-07-03_03_proposition-migration-cockpit-local-trio.md) |
+| **Peintre v0.1** (peintre-nano → moteur agnostique) | **Annoncé 2026-07-04 — préparation seulement** — [`2026-07-04_01`](artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md) · pack PEINTRE : `peintre-nano/docs/dossier-architecte-peintre-v0-1/` · Kanban `IDEA-2026-07-04-001` · **GO exécution après HITL + arbitrage vs Epic 28/C2b** |
 | Postes partagés / PIN (Epic 27) | **done** — runbook [`2026-05-29_04`](artefacts/2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md) |
 
 **Stratégie recherche : spirale.** 1re passe **clôturée** (2026-02-25). Dumps BDD : `references/dumps/` (gitignore) — schémas Recyclic et Paheko documentés.
@@ -81,3 +82,4 @@ Source backlog : [`references/revision/`](revision/index.md). Stories **28.1–2
 | **Après C2b** | Lire synthèse rapport 03 : écarts **P1 clavier** → backlog **13.8** si KO | [`2026-05-26_03`](artefacts/2026-05-26_03_rapport-parite-plancher-v2-gestes-terrain.md) |
 | **Avant tag v2.0.0** | C2b complet + décision PO sur écarts restants | Plan § Ordre global |
 | **Après clôture Epic 28** | Reprendre **9.7** (ACL minimales) ou prioriser via Story Runner | `sprint-status.yaml` § epic-9 |
+| **Session(s) dédiée(s) — chantier Peintre v0.1** | Reprendre le tableau **5 sessions** dans [`REPRISE.md`](../REPRISE.md) § « Sessions à reprendre » — ventilation pack → HITL → promotion BMAD → arbitrage timing → exécution | [`2026-07-04_01`](artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md) · Kanban `IDEA-2026-07-04-001` · **pas démarré 2026-07-04** |
