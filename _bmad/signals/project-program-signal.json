@@ -1,14 +1,14 @@
 {
   "schema_version": "0.1",
   "project_id": "jarvos-recyclique",
-  "updated_at": "2026-07-03T19:00:00Z",
+  "updated_at": "2026-07-07T16:20:00Z",
   "status": "active",
-  "headline": "Epic 28 in-progress — stories 28.1–28.5 done ; gate B_EPIC28 ; Epic 9.7 gelée",
-  "next_action": "Retests HITL terrain Epic 28 puis clôture gate B_EPIC28 (sprint-status.yaml)",
+  "headline": "P0 mission T2 Ecologic — pg_restore pending ; patch 1.4.5 gated ; K-Drive VPS P1 backlogé (runbook prêt)",
+  "next_action": "pg_restore dump 20260707 en miroir RO → CSV complément DEC_REE T2 (mission 2026-07-07_mission-assistance-decla-ecologic-t2-2026.md)",
   "risk_level": "medium",
   "source_ref": {
     "path": "references/ou-on-en-est.md",
-    "updated_at": "2026-07-03T19:00:00Z",
-    "note": "Programme slim lot 3a ; SoT grain fin sprint-status.yaml (last_updated 2026-06-07)"
+    "updated_at": "2026-07-07T16:20:00Z",
+    "note": "Branche T2 terrain avant patch 1.4.5 ; K-Drive VPS P1 dans todo § Infra VPS ; SoT grain fin sprint-status.yaml (last_updated 2026-06-07)"
   }
 }

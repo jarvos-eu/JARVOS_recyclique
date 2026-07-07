@@ -1,0 +1,10 @@
+Code article;Type ope;Volume;Unite;Nb_lignes_source;Periode;Mapping_source;Ecart_ODS;Hitl_id;Commentaire
+PAM;DEC_REE;0.270;t;119;2026-T2;sale_items + categories (golden T1);ODS partiel 0.25 t;HITL-09;Ventes caisse cat. « 1- Petits appareils em melange(PAM) » — remplace/complète la saisie partielle ODS B4
+ECR;DEC_REE;0.032;t;3;2026-T2;sale_items + categories (golden T1);vide;—;Ventes caisse cat. « 2- Ecrans »
+GHF;DEC_REE;0.060;t;1;2026-T2;sale_items + categories;vide;HITL-10;1 seule vente T2 — à confirmer terrain
+GEF;DEC_REE;0.063;t;1;2026-T2;sale_items + categories;vide;HITL-10;1 seule vente T2 — à confirmer terrain
+ASL-CAT1;DEC_REE;0.100;t;15;2026-T2;sale_items « 1- Cycles et engins… » → ASL-CAT1 (golden T1);vide;HITL-04;Mapping ASL via golden T1 — pas photobook ligne à ligne
+ASL-CAT2;DEC_REE;0.036;t;33;2026-T2;sale_items « 2- Autres ASL » → ASL-CAT2 (golden T1);vide;HITL-04;Idem ASL-CAT1
+ABJ-TONA;DEC_REE;0;pièces;0;2026-T2;sale_items;vide;—;Aucune vente T2 cat. tondeuses autoportées
+ABJ-TONM;DEC_REE;1;pièces;1;2026-T2;sale_items qty=1 (10.33 kg);vide;HITL-08;1 vente tondeuse marchante — unité portail t vs pièces à trancher (cf. HITL)
+ABJ-AUT;DEC_REE;0;pièces;0;2026-T2;sale_items;vide;—;Aucune vente T2 cat. « 3- Autres ABJ thermique »

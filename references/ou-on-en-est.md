@@ -1,6 +1,6 @@
 # Ou on en est — JARVOS Recyclique
 
-Mis à jour : 2026-07-04
+Mis à jour : 2026-07-07
 
 > **Bannière trio (lot 3a)**
 >
@@ -37,6 +37,20 @@ Les sorties BMAD **actives** (`_bmad-output/planning-artifacts/`, `_bmad-output/
 
 Mono-repo v2 : `recyclique/api/`, `peintre-nano/`, `contracts/`. Analyses brownfield **1.4.4** et **Paheko** dans `references/`. Workflow Git en place.
 
+### Branche ouverte — mission urgence T2 Ecologic (P0)
+
+| Élément | État |
+|---------|------|
+| **Priorité** | **P0 terrain** — assistance décla T2 2026 La Clique (~**30/07/2026**) |
+| **Dump BDD** | Reçu 2026-07-07 · `references/_depot/recyclic_db_export_20260707_152448.dump` |
+| **Prochaine étape** | **pg_restore** miroir PostgreSQL read-only → requêtes T2 → CSV complément **DEC_REE** (8/9 cases) |
+| **Entrée** | [`2026-07-07_mission-assistance…`](eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md) · spec [`2026-07-07_06`](artefacts/2026-07-07_06_mission-assistance-decla-ecologic-t2-recyclic-144.md) · kanban [`IDEA-2026-07-07-001`](../docs/ideas/kanban/IDEA-2026-07-07-001.md) |
+| **Règle pilotage** | **Pas de story BMAD** (patch 1.4.5, Epic 9, Peintre v0.1) tant que mission assistance en cours |
+
+### Patch 1.4.5 éco-organismes — cadré, gated
+
+Cadrages **prêts** (session 2026-07-07) pour **Ecomaison**, **Ecologic**, **Refashion** — stories `9.EM-*`, `9.ECO-*`, `9.RF-*` dans les artefacts [`03`](artefacts/2026-07-07_03_cadrage-patch-1.4.5-ecomaison.md) / [`04`](artefacts/2026-07-07_04_cadrage-patch-1.4.5-ecologic.md) / [`05`](artefacts/2026-07-07_05_cadrage-patch-1.4.5-refashion.md). **Implémentation patch = branche suivante**, après clôture mission T2.
+
 ### Epic 28 — stabilisation beta terrain
 
 Source backlog : [`references/revision/`](revision/index.md). Stories **28.1–28.5** **done** (caisse P0, profil/PIN self-service, réception hub/poste, admin débruîté, édition sites/postes). Sync [`epic-28-stabilisation-beta-terrain/00_SYNC_STATUS.md`](../_bmad-output/implementation-artifacts/epic-28-stabilisation-beta-terrain/00_SYNC_STATUS.md) : gate **B_EPIC28** **done** côté livrables ; **0 P0 ouvert** dans revision ; **retests HITL** Strophe avant enchaînement Epic **10.7 / 10.8**. `epic-28` reste `in-progress` jusqu'à rétrospective.
@@ -67,7 +81,10 @@ Source backlog : [`references/revision/`](revision/index.md). Stories **28.1–2
 | Mémoire sessions Jarvos | [`jarvos-agentique/index.md`](jarvos-agentique/index.md) — phases 0–3 livrées ; QA2 mémoire pending |
 | Terrain / réception / Paheko | Addendum [`2026-05-23_01`](artefacts/2026-05-23_01_addendum-transcripts-1423-visions-rec-pko.md) ; brainstorm réception **clôturé** ; liaison Paheko — validation comptable en attente |
 | Migration cockpit trio | [`2026-07-03_03`](artefacts/2026-07-03_03_proposition-migration-cockpit-local-trio.md) |
-| **Peintre v0.1** (peintre-nano → moteur agnostique) | **Annoncé 2026-07-04 — préparation seulement** — [`2026-07-04_01`](artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md) · pack PEINTRE : `peintre-nano/docs/dossier-architecte-peintre-v0-1/` · Kanban `IDEA-2026-07-04-001` · **GO exécution après HITL + arbitrage vs Epic 28/C2b** |
+| **Mission T2 Ecologic** (assistance décla) | **P0 en cours** — dump reçu · pg_restore pending · [`2026-07-07_mission…`](eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md) · **bloque** patch 1.4.5 et stories BMAD associées |
+| **Patch 1.4.5 éco-org** (Ecomaison / Ecologic / Refashion) | **Cadrages prêts** — [`03`/`04`/`05`](artefacts/index.md) · **gated** après mission T2 · index [`eco-organismes/`](eco-organismes/index.md) |
+| **Peintre v0.1** (peintre-nano → moteur agnostique) | **Annoncé 2026-07-04 — préparation seulement** — [`2026-07-04_01`](artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md) · pack PEINTRE : `peintre-nano/docs/dossier-architecte-peintre-v0-1/` · Kanban `IDEA-2026-07-04-001` · **GO exécution après HITL + arbitrage vs Epic 28/C2b** · **gelé** par mission T2 |
+| **K-Drive headless VPS** (miroir La Clique) | **P1 proche — pas déployé** — runbook [`2026-07-07_08`](artefacts/2026-07-07_08_installation-kdrive-headless-vps.md) · backlog [`todo.md`](todo.md) § Infra VPS · levier futur mode AIDE bot · **derrière** T2 + gate CREOS |
 | Postes partagés / PIN (Epic 27) | **done** — runbook [`2026-05-29_04`](artefacts/2026-05-29_04_runbook-orchestration-epic-27-postes-partages-pin.md) |
 
 **Stratégie recherche : spirale.** 1re passe **clôturée** (2026-02-25). Dumps BDD : `references/dumps/` (gitignore) — schémas Recyclic et Paheko documentés.
@@ -76,6 +93,7 @@ Source backlog : [`references/revision/`](revision/index.md). Stories **28.1–2
 
 | Quand | Quoi | Où |
 |-------|------|-----|
+| **Maintenant — échéance ~30/07** | **Mission T2 Ecologic** — pg_restore dump → CSV DEC_REE + HITL questions | [`2026-07-07_mission…`](eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md) · [`todo.md`](todo.md) P0 |
 | **Reprise chantier parité beta** | Cocher checklist sections A–H + backlog BC-01..12 | [`2026-05-30_01`](artefacts/2026-05-30_01_checklist-chantier-parite-v2-beta-1.4.4.md) |
 | **Epic 28 — retests HITL** | Valider retests listés dans revision avant gates **10.7 / 10.8** | [`revision/index.md`](revision/index.md) · sync [`00_SYNC_STATUS`](../_bmad-output/implementation-artifacts/epic-28-stabilisation-beta-terrain/00_SYNC_STATUS.md) |
 | **Quand stack locale + bénévole dispo** | **C2b** — 30 min, 4 scénarios OK/KO (caisse, paiement, clôture, réception) | Plan [post-9.6](../.cursor/plans/post-9.6_plancher_et_compta_3341de2e.plan.md) § **C2b** |

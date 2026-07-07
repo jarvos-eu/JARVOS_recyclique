@@ -1,4 +1,4 @@
-# Index kanban idées — jarvos-recyclique
+# Index kanban idées — JARVOS_recyclique
 
 **Maintenu par** : skill `@idees-kanban` (capture · transition · sync)
 **SoT fiches** : `docs/ideas/kanban/IDEA-*.md`
@@ -10,8 +10,8 @@
 
 | stage | count |
 |-------|-------|
-| inbox | 5 |
-| refining | 6 |
+| inbox | 7 |
+| refining | 7 |
 | ready | 1 |
 | promoted | 0 |
 | parked | 0 |
@@ -33,6 +33,9 @@
 | IDEA-2026-04-14-001 | inbox | Configuration raccourcis clavier par poste | - | 2026-07-03T22:09:48Z |
 | IDEA-2026-05-20-001 | refining | Peintre — gardien du seuil (conscience d'affichage) | - | 2026-07-03T22:09:48Z |
 | IDEA-2026-07-04-001 | refining | Chantier Peintre v0.1 — moteur agnostique CREOS | P1 | 2026-07-04T01:05:19Z |
+| IDEA-2026-07-05-001 | inbox | Dashboard — détail sous-catégories + ventes/dons/recyclage (retour La Clique) | - | 2026-07-05T01:45:00Z |
+| IDEA-2026-07-05-002 | refining | Bot Discord pilote La Clique — tickets, idées, assistance | P0 | 2026-07-07T17:30:00Z |
+| IDEA-2026-07-07-001 | inbox | Mission urgence — assistance décla Ecologic T2 depuis dump Recyclique 1.4.4 | P0 | 2026-07-07T17:30:00Z |
 
 ## Liens
 

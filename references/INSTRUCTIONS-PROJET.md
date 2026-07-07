@@ -15,7 +15,8 @@
 | `idees-kanban/` | Kanban d'idees (un fichier par idee) — gere par le skill **idees-kanban** |
 | `ancien-repo/` | Guide et clone local du repo Recyclique 1.4.4 (`repo/` gitignore) + doc brownfield |
 | `config-modules-site-id/` | Configuration modules persistée serveur (JSON / site_id, CREOS, ADR, OpenAPI brouillon, schémas JSON par module) ; livrable QA aligné |
-| `migration-paheko/` | Guides Paheko/RecyClique, TODO, CR, decla eco-organismes |
+| `migration-paheko/` | Guides Paheko/RecyClique, TODO, CR, decla eco-organismes (generique) |
+| `eco-organismes/` | Referentiels partenaires, declarations terrain La Clique, mapping patch 1.4.5 |
 | `operations-speciales-recyclique/` | PRD + prompt agent pour le chantier operations speciales caisse (tags, Paheko) — pack produit |
 | `paheko/` | Guide et clone local du code source Paheko (`repo/` gitignore) — reference pour integration |
 | `peintre/` | Travail et synthese sur JARVOS Peintre (nano → macro, DSL layout, orchestration UI) ; pas les prompts/reponses Perplexity (voir `recherche/`) |

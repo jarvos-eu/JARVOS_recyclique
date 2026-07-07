@@ -22,6 +22,7 @@ Explorer et formaliser une **politique documentaire** et un **acces unifie** aux
 
 - Capacites fichiers Paheko : `references/artefacts/2026-02-24_11_capacites-paheko-calendrier-fichiers-communication.md`.
 - API, WebDAV, upload : `references/paheko/analyse-brownfield-paheko.md`.
+- **K-Drive headless VPS** (version intermediaire, kSuite gratuit) : [`2026-07-07_08_installation-kdrive-headless-vps.md`](2026-07-07_08_installation-kdrive-headless-vps.md) — clone local sur VPS pour agents ; lien bot Discord [`2026-07-05_02`](2026-07-05_02_cadrage-bot-discord-la-clique-pilote.md).
 
 ## Lien idees-kanban
 

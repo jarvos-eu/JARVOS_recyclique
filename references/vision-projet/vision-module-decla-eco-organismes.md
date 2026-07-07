@@ -39,3 +39,4 @@
 
 - Confronter cette vision avec les capacités réelles de Paheko (Saisie au poids, plugin Caisse) et avec l'analyste : grille [2026-02-25_05_grille-confrontation-recyclic-paheko.md](../artefacts/2026-02-25_05_grille-confrontation-recyclic-paheko.md).
 - Module **correspondance Paheko** (traducteur RecyClique → API Paheko pour caisse/compta) : distinct du module décla éco-organismes ; les deux peuvent coexister (voir idée [module-correspondance-paheko](../idees-kanban/a-conceptualiser/2026-02-24_module-correspondance-paheko.md)).
+- **Retour La Clique (2026-07-05)** — en préparation des déclarations, besoin dashboard : détail **sous-catégories** réceptions/sorties + distinguer ventes/dons/recyclage sur les sorties (**LCQ-001…003**). Artefact [2026-07-05_01_feedback-la-clique-dashboard-stats-eco-organismes.md](../artefacts/2026-07-05_01_feedback-la-clique-dashboard-stats-eco-organismes.md) · kanban [IDEA-2026-07-05-001](../../docs/ideas/kanban/IDEA-2026-07-05-001.md).

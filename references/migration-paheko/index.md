@@ -2,7 +2,9 @@
 
 Matiere de travail sur la migration Paheko / RecyClique : guides, presentations, TODO, comptes-rendus, decla eco-organismes, **audits**, specifications d'integration avec services tiers (ex. HelloAsso). Contexte pour le refactor JARVOS Recyclique.
 
-> Charger si : session sur integration Paheko, vision plateforme, decla eco-organismes, historique decisions RecyClique, ou cadrage module **HelloAsso** / paiements en ligne tiers.
+> Charger si : session sur integration Paheko, vision plateforme, decla eco-organismes **generiques**, historique decisions RecyClique, ou cadrage module **HelloAsso** / paiements en ligne tiers.
+
+**Declarations terrain La Clique (Excel, MO partenaires, trimestres)** : [../eco-organismes/index.md](../eco-organismes/index.md) — ventile depuis K-Drive 2026-07-07.
 
 **Voir aussi (2026-03-31) :** croiser avec le **backlog technique** et les audits code dans [consolidation-1.4.5/](../consolidation-1.4.5/) ; synthese transversale des dossiers `references/` : [artefacts/2026-03-31_02_audit-references-00-synthese-globale.md](../artefacts/2026-03-31_02_audit-references-00-synthese-globale.md).
 

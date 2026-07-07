@@ -1,7 +1,7 @@
 # REPRISE — JARVOS Recyclique
 
 **project_id** : `jarvos-recyclique`  
-**Mis à jour** : 2026-07-04
+**Mis à jour** : 2026-07-07
 
 > **Fil Clio** — lire en début de session agent (signal `project-memory-signal.json`). Checklist onboarding détaillée : [`_bmad/ONBOARDING.md`](_bmad/ONBOARDING.md).
 
@@ -21,12 +21,60 @@ Migration BMAD **6.2.1 → 6.9.0** + module **bmb** + alignement pack JARMES (TO
 
 ## Idées & réflexion
 
-- Kanban idées projet : [`references/idees-kanban/index.md`](references/idees-kanban/index.md)
+- Kanban idées projet : [`docs/ideas/kanban/INDEX.md`](docs/ideas/kanban/INDEX.md)
 - Todo opérateur / rappels : [`references/todo.md`](references/todo.md)
+- **🔴 P0 URGENCE — Assistance décla Ecologic T2** : [`IDEA-2026-07-07-001`](docs/ideas/kanban/IDEA-2026-07-07-001.md) · dump reçu · [`2026-07-07_mission-assistance-decla-ecologic-t2-2026.md`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md)
+- **🔴 P0 — Bot Discord pilote La Clique** : [`IDEA-2026-07-05-002`](docs/ideas/kanban/IDEA-2026-07-05-002.md) · CH-LACLIQUE-BOT-001 · **bloqué gate Ombre/CREOS** · Discord→Hermes→Ombre→Cursor · spec [`JARMES/docs/programme/CH-LACLIQUE-BOT-001-spec.md`](../../../JARMES/docs/programme/CH-LACLIQUE-BOT-001-spec.md)
+
+## Mission urgence — assistance décla Ecologic T2 2026 *(filé Clio, 2026-07-07)*
+
+**Statut :** `en cours` — dump BDD **reçu** 2026-07-07 · **prochaine étape** : `pg_restore` miroir RO → requêtes T2 → CSV complément  
+**Échéance indicative :** ~30/07/2026 (T2 Ecologic)  
+**État ODS T2 :** entrées **`LIV` 9/9** renseignées · sorties **`DEC_REE` 8/9 vides** (PAM partiel 0,25 t)  
+**Intention :** dump + ODS + mode d'emploi → **`Complément-DEC_REE-T2-2026.csv`** + **`HITL-questions-decla-ecologic-t2-2026.md`** — **sans inventer**.
+
+| Entrée | Chemin |
+|--------|--------|
+| **Racine mission** *(regroupée éco-org 2026-07-07)* | [`…/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md) |
+| **Spec détaillée** | [`references/artefacts/2026-07-07_06_mission-assistance-decla-ecologic-t2-recyclic-144.md`](references/artefacts/2026-07-07_06_mission-assistance-decla-ecologic-t2-recyclic-144.md) |
+| **ODS + mode d'emploi** | [`…/2026-T2/`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/) — `DeclarationESS-ECOLOGIC-2T2026.ods` · [`MODE-EMPLOI`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md) |
+| **Dump canon** *(gitignore)* | `references/_depot/recyclic_db_export_20260707_152448.dump` |
+| **Dump archive** | `references/_depot/recyclic_db_export_20260411_172643.dump` |
+| **Kanban P0** | [`IDEA-2026-07-07-001`](docs/ideas/kanban/IDEA-2026-07-07-001.md) |
+| **Index éco-org** | [`references/eco-organismes/index.md`](references/eco-organismes/index.md) |
+
+**Contexte session 2026-07-07** *(liens — pas de substance ici)* : grilles champs + calendrier partenaires ([`eco-organismes/`](references/eco-organismes/)) · cadrages patch 1.4.5 Ecomaison / Ecologic / Refashion ([`_03`](references/artefacts/2026-07-07_03_cadrage-patch-1.4.5-ecomaison.md) · [`_04`](references/artefacts/2026-07-07_04_cadrage-patch-1.4.5-ecologic.md) · [`_05`](references/artefacts/2026-07-07_05_cadrage-patch-1.4.5-refashion.md)) — mission **hors** livraison 1.4.5, raccourci terrain avant industrialisation.
+
+**Prompt reprise (coller en tête de chat) :**
+
+```
+Mission urgence — décla Ecologic T2 2026 La Clique.
+Charger : …/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md
+         + references/artefacts/2026-07-07_06_mission-assistance-decla-ecologic-t2-recyclic-144.md
+         + DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md (même dossier)
+Dump : references/_depot/recyclic_db_export_20260707_152448.dump
+→ pg_restore miroir read-only → requêtes T2 → Complément-DEC_REE-T2-2026.csv
+Règle : rien inventer — chaque trou → HITL pour Strophe.
+```
+
+---
+
+## Session 2026-07-07 (fin) — ventilation K-Drive headless
+
+**Statut :** documenté, **non déployé** — chantier infra VPS à part ; levier futur **mode AIDE** bot Discord (post-gate CREOS), en attente V2 produit.
+
+| Entrée | Chemin |
+|--------|--------|
+| Runbook (ex-`_depot`) | [`references/artefacts/2026-07-07_08_installation-kdrive-headless-vps.md`](references/artefacts/2026-07-07_08_installation-kdrive-headless-vps.md) |
+| Bot Discord pilote | [`IDEA-2026-07-05-002`](docs/ideas/kanban/IDEA-2026-07-05-002.md) · cadrage [`2026-07-05_02`](references/artefacts/2026-07-05_02_cadrage-bot-discord-la-clique-pilote.md) |
+
+---
 
 ## Prochaine action
 
-Selon **`sprint-status.yaml`** — pas de story imposée dans ce fil :
+**Urgence terrain (2026-07-07) :** mission assistance décla Ecologic T2 — dump reçu ; **restore miroir** + requêtes T2 (voir dossier [`2026-T2/`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/)).
+
+Sinon, selon **`sprint-status.yaml`** — pas de story imposée dans ce fil :
 
 1. **Gate Epic 28** — stories 28.1–28.5 **done** ; `epic-28` reste `in-progress` jusqu'à clôture gate **B_EPIC28** (retests HITL terrain).
 2. **Programme métier** — Ariane resync [`references/ou-on-en-est.md`](references/ou-on-en-est.md) après gate si besoin ; Epic 9 (ex. 9-7) **gelé** jusqu'à clôture Epic 28.

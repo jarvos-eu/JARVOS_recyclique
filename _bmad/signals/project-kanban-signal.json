@@ -1,14 +1,14 @@
 {
   "schema_version": "0.2",
-  "project_id": "jarvos-recyclique",
-  "updated_at": "2026-07-04T01:05:29Z",
+  "project_id": "JARVOS_recyclique",
+  "updated_at": "2026-07-07T15:27:49Z",
   "source_ref": {
     "path": "docs/ideas/kanban/INDEX.md",
-    "updated_at": "2026-07-04T01:05:29Z"
+    "updated_at": "2026-07-07T15:27:49Z"
   },
   "counts_by_stage": {
-    "inbox": 5,
-    "refining": 6,
+    "inbox": 7,
+    "refining": 7,
     "ready": 1,
     "promoted": 0,
     "parked": 0,
@@ -16,18 +16,18 @@
   },
   "hot_ideas": [
     {
+      "idea_id": "IDEA-2026-07-05-002",
+      "title": "Bot Discord pilote La Clique — tickets, idées, assistance",
+      "stage": "refining"
+    },
+    {
+      "idea_id": "IDEA-2026-07-07-001",
+      "title": "Mission urgence — assistance décla Ecologic T2 depuis dump Recyclique 1.4.4",
+      "stage": "inbox"
+    },
+    {
       "idea_id": "IDEA-2026-07-04-001",
       "title": "Chantier Peintre v0.1 — moteur agnostique CREOS",
-      "stage": "refining"
-    },
-    {
-      "idea_id": "IDEA-2026-02-24-002",
-      "title": "IA LLM modules intelligents",
-      "stage": "refining"
-    },
-    {
-      "idea_id": "IDEA-2026-02-24-005",
-      "title": "JARVOS Ports Nano Mini Peintre",
       "stage": "refining"
     }
   ],
@@ -446,6 +446,72 @@
       "suggested_routes": [
         "references/artefacts/2026-07-04_01_preparation-chantier-peintre-v0-1.md",
         "peintre-nano/docs/dossier-architecte-peintre-v0-1/index.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-07-05-001",
+      "title": "Dashboard — détail sous-catégories + ventes/dons/recyclage (retour La Clique)",
+      "stage": "inbox",
+      "status": "captured",
+      "captured_at": "2026-07-05",
+      "tags": [
+        "la-clique",
+        "sous-categories",
+        "sorties",
+        "reception",
+        "declarations-eco-organismes"
+      ],
+      "suggested_routes": [
+        "epic-5",
+        "epic-9",
+        "references/artefacts/2026-07-05_01_feedback-la-clique-dashboard-stats-eco-organismes.md",
+        "references/vision-projet/vision-module-decla-eco-organismes.md"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-07-05-002",
+      "title": "Bot Discord pilote La Clique — tickets, idées, assistance",
+      "stage": "refining",
+      "status": "captured",
+      "captured_at": "2026-07-05",
+      "priority_hint": "P0",
+      "tags": [
+        "la-clique",
+        "discord",
+        "CH-LACLIQUE-BOT-001",
+        "hermes",
+        "ombre",
+        "creos",
+        "verrous"
+      ],
+      "suggested_routes": [
+        "JARMES/docs/programme/CH-LACLIQUE-BOT-001-spec.md",
+        "references/artefacts/2026-07-05_02_cadrage-bot-discord-la-clique-pilote.md",
+        "JARMES/docs/ideas/kanban/IDEA-2026-07-05-002",
+        "epic-CH-TICKETS-001",
+        "references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md",
+        "references/_depot/recyclic_db_export_20260707_152448.dump"
+      ]
+    },
+    {
+      "idea_id": "IDEA-2026-07-07-001",
+      "title": "Mission urgence — assistance décla Ecologic T2 depuis dump Recyclique 1.4.4",
+      "stage": "inbox",
+      "status": "captured",
+      "captured_at": "2026-07-07",
+      "priority_hint": "P0",
+      "tags": [
+        "la-clique",
+        "eco-organismes",
+        "ecologic",
+        "urgence",
+        "assistance"
+      ],
+      "suggested_routes": [
+        "references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md",
+        "references/artefacts/2026-07-07_06_mission-assistance-decla-ecologic-t2-recyclic-144.md",
+        "references/_depot/recyclic_db_export_20260707_152448.dump",
+        "references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md"
       ]
     }
   ]
