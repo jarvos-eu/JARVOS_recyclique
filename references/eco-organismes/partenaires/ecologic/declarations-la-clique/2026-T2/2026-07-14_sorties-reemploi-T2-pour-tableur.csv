@@ -1,0 +1,10 @@
+Filière Ecologic;Colonne tableur;Sortie réemploi T2 (à recopier);Unité;Action
+PAM;B;0.270;t;Remplace le 0.25 t partiel déjà saisi ligne « Du 1er avril 2026 »
+Écrans (ECR);C;0.032;t;Cellule vide → remplir
+Gros électro hors froid (GHF);D;0.060;t;Cellule vide → remplir
+Gros électro froid (GEF);E;0.063;t;Cellule vide → remplir
+ASL cat. 1;F;0.100;t;Cellule vide → remplir
+ASL cat. 2;G;0.036;t;Cellule vide → remplir
+Tondeuses autoportées (ABJ-TON Auto);H;0;pièce;Zéro
+Tondeuses marchantes (ABJ-TON Marchant);I;1;pièce;1 vente T2
+Autres ABJ thermiques (ABJ-AUT);J;0;pièce;Zéro

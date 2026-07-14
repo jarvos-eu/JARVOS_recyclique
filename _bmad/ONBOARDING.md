@@ -72,7 +72,8 @@
 ## Lot 3 — Programme (optionnel)
 
 - [x] Programme actif : epics 1–26 via `_bmad-output/planning-artifacts/` (ligne courante)
-- [ ] Handoff Ariane + Clio pour republication signaux après validation opérateur
+- [x] Scripts trio signaux (`publish_*_signal.py`) — CH-ASR-005 · install pack 2026-07-07
+- [x] Handoff Ariane + Clio pour republication signaux — scripts brownfield livrés (republication au besoin via `python scripts/publish_*_signal.py`)
 
 ---
 

@@ -1,0 +1,10 @@
+id;partenaire;flux;code;categorie_recyclique;date_debut;date_fin;unite;exclure_recyclage;resultat;statut;commentaire
+Q1;ecologic;DEC_REE;PAM;;2026-04-01;2026-06-30;t;oui;0.270;ok;
+Q2;ecologic;DEC_REE;ECR;;2026-04-01;2026-06-30;t;oui;0.032;ok;
+Q3;ecologic;DEC_REE;GHF;;2026-04-01;2026-06-30;t;oui;0.060;ok;
+Q4;ecologic;DEC_REE;GEF;;2026-04-01;2026-06-30;t;oui;0.063;ok;
+Q5;ecologic;DEC_REE;ASL-CAT1;;2026-04-01;2026-06-30;t;oui;0.100;ok;split photobook — valider terrain mapping_hitl — valider terrain si décla officielle
+Q6;ecologic;DEC_REE;ASL-CAT2;;2026-04-01;2026-06-30;t;oui;0.036;ok;split photobook — valider terrain mapping_hitl — valider terrain si décla officielle
+Q7;ecologic;DEC_REE;ABJ-TONA;;2026-04-01;2026-06-30;pieces;oui;0;ok;
+Q8;ecologic;DEC_REE;ABJ-TONM;;2026-04-01;2026-06-30;pieces;oui;1;ok; mapping_hitl — valider terrain si décla officielle
+Q9;ecologic;DEC_REE;ABJ-AUT;;2026-04-01;2026-06-30;pieces;oui;0;ok;

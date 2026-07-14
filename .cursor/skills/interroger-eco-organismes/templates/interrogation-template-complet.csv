@@ -1,0 +1,9 @@
+id;partenaire;flux;code;categorie_recyclique;date_debut;date_fin;unite;destination;exclure_recyclage;resultat;statut;commentaire
+Q1;ecologic;DEC_REE;PAM;;2026-04-01;2026-06-30;t;;oui;;;
+Q2;ecologic;LIV;PAM;;2026-04-01;2026-06-30;t;;oui;;;
+Q3;ecologic;RECYCLAGE;P;;2026-04-01;2026-06-30;kg;RECYCLAGE;oui;;;ecomaison col P — benne interne kg
+Q4;ecomaison;DEC_REE;P;;2026-04-01;2026-06-30;t;;oui;;;ameublement assises/meubles
+Q5;ecomaison;LIV;P;;2026-04-01;2026-06-30;t;;oui;;;
+Q6;ecomaison;RECYCLAGE;P;;2026-04-01;2026-06-30;kg;RECYCLAGE;oui;;;
+Q7;ecologic;DEC_REE;ASL-CAT1;;2026-04-01;2026-06-30;t;;oui;;;split photobook HITL
+Q8;ecologic;DEC_REE;ABJ-AUT;;2026-04-01;2026-06-30;pieces;;oui;;;

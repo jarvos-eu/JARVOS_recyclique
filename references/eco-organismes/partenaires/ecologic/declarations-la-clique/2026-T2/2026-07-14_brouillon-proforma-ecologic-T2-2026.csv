@@ -1,0 +1,19 @@
+N° pro forma;N° ordre;N° opération;Date d'opération;Code article;Type ope;Volume;Coût unitaire;Coût total;Source;Commentaire
+BROUILLON-T2-2026;;;30/06/2026;PAM;LIV;246.5;20.40;5028.60;Tableur T2 (ligne TOTAL entrées B51);Ne pas recalculer — pesées enlèvements déjà saisies
+BROUILLON-T2-2026;;;30/06/2026;ECR;LIV;25.1;20.40;512.04;Tableur T2 (C51);
+BROUILLON-T2-2026;;;30/06/2026;GHF;LIV;40;20.40;816.00;Tableur T2 (D51);
+BROUILLON-T2-2026;;;30/06/2026;GEF;LIV;0;20.40;0.00;Tableur T2 (E51);
+BROUILLON-T2-2026;;;30/06/2026;ASL-CAT1;LIV;69;0.00;0.00;Tableur T2 (F51);
+BROUILLON-T2-2026;;;30/06/2026;ASL-CAT2;LIV;32.7;0.00;0.00;Tableur T2 (G51);
+BROUILLON-T2-2026;;;30/06/2026;ABJ-TONA;LIV;0;0.00;0.00;Tableur T2 (H51);
+BROUILLON-T2-2026;;;30/06/2026;ABJ-TONM;LIV;0;0.00;0.00;Tableur T2 (I51);
+BROUILLON-T2-2026;;;30/06/2026;ABJ-AUT;LIV;0;0.00;0.00;Tableur T2 (J51);Unité = pièces
+BROUILLON-T2-2026;;;30/06/2026;PAM;DEC_REE;0.270;561.00;151.47;Recyclique ventes caisse T2;119 sorties — confiance agent 96%
+BROUILLON-T2-2026;;;30/06/2026;ECR;DEC_REE;0.032;561.00;17.95;Recyclique ventes caisse T2;3 sorties
+BROUILLON-T2-2026;;;30/06/2026;GHF;DEC_REE;0.060;561.00;33.66;Recyclique ventes caisse T2;1 sortie (don)
+BROUILLON-T2-2026;;;30/06/2026;GEF;DEC_REE;0.063;561.00;35.34;Recyclique ventes caisse T2;1 sortie
+BROUILLON-T2-2026;;;30/06/2026;ASL-CAT1;DEC_REE;0.100;550.00;55.00;Recyclique — cat. Cycles et engins…;15 sorties
+BROUILLON-T2-2026;;;30/06/2026;ASL-CAT2;DEC_REE;0.036;350.00;12.60;Recyclique — cat. Autres ASL;33 sorties
+BROUILLON-T2-2026;;;30/06/2026;ABJ-TONA;DEC_REE;0;30.00;0.00;Recyclique ventes caisse T2;
+BROUILLON-T2-2026;;;30/06/2026;ABJ-TONM;DEC_REE;1;8.00;8.00;Recyclique ventes caisse T2;1 tondeuse marchante — unité pièce
+BROUILLON-T2-2026;;;30/06/2026;ABJ-AUT;DEC_REE;0;5.00;0.00;Recyclique ventes caisse T2;Unité = pièces

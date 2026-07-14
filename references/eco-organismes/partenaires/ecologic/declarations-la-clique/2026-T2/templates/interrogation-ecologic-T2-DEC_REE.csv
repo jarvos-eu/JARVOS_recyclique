@@ -1,0 +1,10 @@
+id;partenaire;flux;code;categorie_recyclique;date_debut;date_fin;unite;exclure_recyclage;resultat;statut;commentaire
+Q1;ecologic;DEC_REE;PAM;;2026-04-01;2026-06-30;t;oui;;;
+Q2;ecologic;DEC_REE;ECR;;2026-04-01;2026-06-30;t;oui;;;
+Q3;ecologic;DEC_REE;GHF;;2026-04-01;2026-06-30;t;oui;;;
+Q4;ecologic;DEC_REE;GEF;;2026-04-01;2026-06-30;t;oui;;;
+Q5;ecologic;DEC_REE;ASL-CAT1;;2026-04-01;2026-06-30;t;oui;;;split photobook — valider terrain
+Q6;ecologic;DEC_REE;ASL-CAT2;;2026-04-01;2026-06-30;t;oui;;;split photobook — valider terrain
+Q7;ecologic;DEC_REE;ABJ-TONA;;2026-04-01;2026-06-30;pieces;oui;;;
+Q8;ecologic;DEC_REE;ABJ-TONM;;2026-04-01;2026-06-30;pieces;oui;;;
+Q9;ecologic;DEC_REE;ABJ-AUT;;2026-04-01;2026-06-30;pieces;oui;;;

@@ -1,7 +1,7 @@
 # Mode d'emploi — Déclaration ESS Ecologic T2 2026
 
 **Date d'extraction :** 2026-07-07  
-**Fichier source :** [`DeclarationESS-ECOLOGIC-2T2026.ods`](DeclarationESS-ECOLOGIC-2T2026.ods)  
+**Fichier source :** [`DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods`](DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods) · template vierge : [`../../../_depot/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties.ods`](../../../_depot/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties.ods)  
 **Période :** **T2 2026** — 1er avril au 30 juin 2026 inclus  
 **Statut fichier :** en cours de remplissage (entrées Ecologic quasi complètes au niveau TOTAL ; sorties Ecologic quasi vides)
 
@@ -238,7 +238,8 @@ Tolérance golden test PAM LIV : **± 0,001 t**.
 ### Chemins
 
 ```text
-ODS T2 (source)     : references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-2T2026.ods
+ODS T2 (rempli)     : references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods
+Template Germaine   : references/_depot/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties.ods
 Mode d'emploi (SoT) : …/2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md
 JSON extraction     : log/cursor-agent/ecologic-t2-2026-ods-extract.json
 ODS référence T4    : …/2025-T4/DeclarationEcologic-EntreesDepot-4T2025-1.ods

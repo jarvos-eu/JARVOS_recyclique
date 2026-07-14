@@ -1,10 +1,10 @@
-Code article;Type ope;Volume;Unite;Nb_lignes_source;Periode;Mapping_source;Ecart_ODS;Hitl_id;Commentaire
-PAM;DEC_REE;0.270;t;119;2026-T2;sale_items + categories (golden T1);ODS partiel 0.25 t;HITL-09;Ventes caisse cat. « 1- Petits appareils em melange(PAM) » — remplace/complète la saisie partielle ODS B4
-ECR;DEC_REE;0.032;t;3;2026-T2;sale_items + categories (golden T1);vide;—;Ventes caisse cat. « 2- Ecrans »
-GHF;DEC_REE;0.060;t;1;2026-T2;sale_items + categories;vide;HITL-10;1 seule vente T2 — à confirmer terrain
-GEF;DEC_REE;0.063;t;1;2026-T2;sale_items + categories;vide;HITL-10;1 seule vente T2 — à confirmer terrain
-ASL-CAT1;DEC_REE;0.100;t;15;2026-T2;sale_items « 1- Cycles et engins… » → ASL-CAT1 (golden T1);vide;HITL-04;Mapping ASL via golden T1 — pas photobook ligne à ligne
-ASL-CAT2;DEC_REE;0.036;t;33;2026-T2;sale_items « 2- Autres ASL » → ASL-CAT2 (golden T1);vide;HITL-04;Idem ASL-CAT1
-ABJ-TONA;DEC_REE;0;pièces;0;2026-T2;sale_items;vide;—;Aucune vente T2 cat. tondeuses autoportées
-ABJ-TONM;DEC_REE;1;pièces;1;2026-T2;sale_items qty=1 (10.33 kg);vide;HITL-08;1 vente tondeuse marchante — unité portail t vs pièces à trancher (cf. HITL)
-ABJ-AUT;DEC_REE;0;pièces;0;2026-T2;sale_items;vide;—;Aucune vente T2 cat. « 3- Autres ABJ thermique »
+Code article;Type ope;Volume;Unite;Statut;Confiance_pct;Source;Commentaire
+PAM;DEC_REE;0.270;t;validé agent;96;Recyclique ventes caisse T2 (119 lignes);Remplace saisie partielle tableur 0.25 t
+ECR;DEC_REE;0.032;t;validé agent;94;Recyclique ventes caisse T2 (3 lignes);
+GHF;DEC_REE;0.060;t;validé agent;91;Recyclique ventes caisse T2 (1 ligne don);
+GEF;DEC_REE;0.063;t;validé agent;91;Recyclique ventes caisse T2 (1 ligne);
+ASL-CAT1;DEC_REE;0.100;t;validé agent;89;Recyclique — 1- Cycles et engins de déplacement non motorisés;
+ASL-CAT2;DEC_REE;0.036;t;validé agent;89;Recyclique — 2- Autres ASL;
+ABJ-TONA;DEC_REE;0;pièces;validé agent;97;Aucune vente T2;
+ABJ-TONM;DEC_REE;1;pièces;validé agent;88;1 tondeuse à conducteur marchant;
+ABJ-AUT;DEC_REE;0;pièces;validé agent;93;Aucune vente T2;

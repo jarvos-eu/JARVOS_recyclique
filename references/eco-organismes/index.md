@@ -9,6 +9,8 @@ Matière **module déclarations éco-organismes** : référentiels partenaires, 
 **Calendrier déclarations (2026-07-07) :** [2026-07-07_calendrier-declarations-partenaires.md](2026-07-07_calendrier-declarations-partenaires.md) — échéances trimestrielles par partenaire, vue consolidée juil.–déc. 2026.  
 **Grilles déclaration finale (2026-07-07) :** [2026-07-07_grilles-declaration-finale-champs-a-remplir.md](2026-07-07_grilles-declaration-finale-champs-a-remplir.md) — cases à remplir par partenaire (Ecomaison, Ecologic, Refashion), exemples T4/T1, gaps Recyclique.
 
+**Skill agent — interrogations dump (2026-07-14) :** [`.cursor/skills/interroger-eco-organismes/SKILL.md`](../../.cursor/skills/interroger-eco-organismes/SKILL.md) — template CSV → agrégats DEC_REE/LIV depuis miroir PostgreSQL ; runbook + mapping Ecologic/Ecomaison.
+
 **Liens projet :**
 - Vision module : [vision-projet/vision-module-decla-eco-organismes.md](../vision-projet/vision-module-decla-eco-organismes.md)
 - Filières REP (générique) : [migration-paheko/categories-decla-eco-organismes.md](../migration-paheko/categories-decla-eco-organismes.md)
@@ -80,7 +82,7 @@ Chaque partenaire :
 |-----------|-------------------|
 | T4 2025 | `2025-T4/DeclarationEcologic-EntreesDepot-4T2025-1.ods` + sorties |
 | T1 2026 | Exports xlsx par filière + `pro forma déclaration T1 2026.csv` (218,87 € HT) |
-| **T2 2026** | [`2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md`](partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md) — **fiche mode d'emploi** ; ODS : `DeclarationESS-ECOLOGIC-2T2026.ods` · **mission urgence** : [`2026-07-07_mission-assistance-decla-ecologic-t2-2026.md`](partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md) |
+| **T2 2026** | [`2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md`](partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md) — **fiche mode d'emploi** ; template : [`../_depot/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties.ods`](../_depot/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties.ods) · **tableur rempli** : [`2026-T2/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods`](partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods) · **mission** : [`2026-07-07_mission-assistance-decla-ecologic-t2-2026.md`](partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md) |
 
 **Analyse mapping (2026-07-07) :** [partenaires/ecologic/2026-07-07_analyse-declarations-mapping.md](partenaires/ecologic/2026-07-07_analyse-declarations-mapping.md) — grilles T4, exports T1, codes pro forma, gaps.
 

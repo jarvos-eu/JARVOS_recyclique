@@ -37,7 +37,7 @@ Migration BMAD **6.2.1 → 6.9.0** + module **bmb** + alignement pack JARMES (TO
 |--------|--------|
 | **Racine mission** *(regroupée éco-org 2026-07-07)* | [`…/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/2026-07-07_mission-assistance-decla-ecologic-t2-2026.md) |
 | **Spec détaillée** | [`references/artefacts/2026-07-07_06_mission-assistance-decla-ecologic-t2-recyclic-144.md`](references/artefacts/2026-07-07_06_mission-assistance-decla-ecologic-t2-recyclic-144.md) |
-| **ODS + mode d'emploi** | [`…/2026-T2/`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/) — `DeclarationESS-ECOLOGIC-2T2026.ods` · [`MODE-EMPLOI`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md) |
+| **ODS + mode d'emploi** | [`…/2026-T2/`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/) — `DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods` · template : [`_depot/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties.ods`](references/_depot/DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties.ods) · [`MODE-EMPLOI`](references/eco-organismes/partenaires/ecologic/declarations-la-clique/2026-T2/DeclarationESS-ECOLOGIC-2T2026_MODE-EMPLOI.md) |
 | **Dump canon** *(gitignore)* | `references/_depot/recyclic_db_export_20260707_152448.dump` |
 | **Dump archive** | `references/_depot/recyclic_db_export_20260411_172643.dump` |
 | **Kanban P0** | [`IDEA-2026-07-07-001`](docs/ideas/kanban/IDEA-2026-07-07-001.md) |

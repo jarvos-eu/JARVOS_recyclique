@@ -1,46 +1,42 @@
 # README — Complément DEC_REE T2 2026
 
-**Objectif :** compléter les **8 cases `DEC_REE`** vides (ou partielles) de l’ODS / portail Ecologic T2.
+**Objectif :** compléter les **sorties réemploi** de l'ODS / portail Ecologic T2.
+
+**Statut (14/07) :** volumes **validés agent** — document rempli disponible pour l'équipe.
 
 ---
 
 ## Fichiers produits
 
-| Fichier | Usage |
-|---------|--------|
-| [`Complément-DEC_REE-T2-2026.csv`](Complément-DEC_REE-T2-2026.csv) | Volumes proposés par code filière |
-| [`HITL-questions-decla-ecologic-t2-2026.md`](HITL-questions-decla-ecologic-t2-2026.md) | Points à trancher avant soumission |
-| [`queries-decla-t2.sql`](queries-decla-t2.sql) | Requêtes de contrôle / audit |
-| [`NOTE-schema-dump-20260707.md`](NOTE-schema-dump-20260707.md) | Schéma dump + reproductibilité miroir |
+| Fichier | Origine | Usage |
+|---------|---------|--------|
+| **[`2026-07-14_brouillon-proforma-ecologic-T2-2026.csv`](2026-07-14_brouillon-proforma-ecologic-T2-2026.csv)** | Agent | **Document rempli** — 18 lignes, format pro forma T1 |
+| **[`2026-07-14_sorties-reemploi-T2-pour-tableur.csv`](2026-07-14_sorties-reemploi-T2-pour-tableur.csv)** | Agent | Fiche simple à recopier dans l'ODS (colonnes B–J) |
+| [`2026-07-14_guide-documents-T2-equipe.md`](2026-07-14_guide-documents-T2-equipe.md) | Agent | Quel fichier remettre à l'équipe |
+| [`Complément-DEC_REE-T2-2026.csv`](Complément-DEC_REE-T2-2026.csv) | Agent | Synthèse DEC_REE (volumes + confiance) |
+| [`HITL-questions-decla-ecologic-t2-2026.md`](HITL-questions-decla-ecologic-t2-2026.md) | Agent | Décisions tranchées 14/07 |
+| [`queries-decla-t2.sql`](queries-decla-t2.sql) | Agent | Requêtes de contrôle / audit |
+| [`NOTE-schema-dump-20260707.md`](NOTE-schema-dump-20260707.md) | Agent | Schéma dump + reproductibilité miroir |
+| [`DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods`](DeclarationESS-ECOLOGIC-ECOMAISON-EntreesSorties-REMPLI.ods) | **La Clique** | Tableur rempli T2 (Ecologic + Ecomaison) |
 
 ---
 
 ## Transposition ODS → portail
 
-1. **Lire le HITL** — valider les lignes marquées HITL-04, 08, 09, 10 minimum.
-2. **Feuille `Sortie-VenteDonsReemploi`** — colonnes B–J (Ecologic) :
-   - Col. **B** PAM → **0,270 t** *(remplace le 0,25 t partiel L4 si validation HITL-09)*
-   - Col. **C** ECR → **0,032 t**
-   - Col. **D** GHF → **0,060 t**
-   - Col. **E** GEF → **0,063 t**
-   - Col. **F** ASL-CAT1 → **0,100 t**
-   - Col. **G** ASL-CAT2 → **0,036 t**
-   - Col. **H** ABJ-TONA → **0**
-   - Col. **I** ABJ-TONM → **1** *(pièce — cf. HITL-08)*
-   - Col. **J** ABJ-AUT → **0** pièce
-3. **Consolider ligne TOTAL 2T 2026** (corriger libellé « 4T 2025 » — cf. mode d’emploi §4.2).
-4. **Portail SI Fusion** — saisir les 9 volumes `DEC_REE` (+ 9 `LIV` déjà dans ODS entrées) → export pro forma CSV.
+1. Recopier depuis [`2026-07-14_sorties-reemploi-T2-pour-tableur.csv`](2026-07-14_sorties-reemploi-T2-pour-tableur.csv) dans la feuille **Sortie-VenteDonsReemploi** (colonnes B–J).
+2. Renommer la ligne TOTAL « 4T 2025 » → **« TOTAL 2T 2026 »**.
+3. **Ne pas modifier** les entrées déjà saisies (feuille Entrees-Reception).
+4. Contrôle avant portail : [`2026-07-14_brouillon-proforma-ecologic-T2-2026.csv`](2026-07-14_brouillon-proforma-ecologic-T2-2026.csv) (18 volumes LIV + DEC_REE).
 
 ---
 
-## Ce qui n’a pas été recalculé
+## Ce qui n'a pas été recalculé
 
-- **`LIV` entrées** : l’ODS TOTAL (ex. PAM 246,5 t) provient des **pesées enlèvements** saisies manuellement — le dump tickets ne reproduit pas ces masses (écart documenté HITL-06).
+- **`LIV` entrées** : totaux tableur (ex. PAM 246,5 t) = pesées enlèvements — source métier, pas Recyclique tickets.
 - **Colonnes Ecomaison K–T** : hors périmètre Ecologic.
-- **Dons matière (kg)** : non ventilés dans le dump → HITL-03.
 
 ---
 
-## Source calcul
+## Source calcul DEC_REE
 
-Ventes caisse Recyclique 1.4.4 (dump 2026-07-07), mapping catégories validé sur **golden T1 DEC_REE** (pro forma T1 2026).
+Ventes caisse Recyclique 1.4.4 (dump 2026-07-07), mapping validé sur golden T1 DEC_REE. Confiance globale **92 %** (décisions 14/07).
