@@ -12,10 +12,11 @@
 
 | Emplacement | Convention |
 |-------------|------------|
-| `references/_depot/` | `recyclic_db_export_YYYYMMDD_HHMMSS.dump` |
+| `references/_depot/` | Recyclique (volumes décla) : `recyclic_db_export_YYYYMMDD_HHMMSS.dump` |
+| `references/_depot/` | Paheko (compta € seulement) : `*.sqlite` — **pas** pour DEC_REE / LIV / poids |
 | Gitignore | oui — ne pas committer |
 
-**Choisir le dump :** le plus récent dont la date **≥** fin de période interrogée.
+**Choisir le dump Recyclique :** le plus récent dont la date **≥** fin de période interrogée.
 
 ```bash
 python .cursor/skills/interroger-eco-organismes/scripts/dump_manifest.py --dump-dir references/_depot
@@ -61,6 +62,17 @@ python .cursor/skills/interroger-eco-organismes/scripts/docker_mirror.py
 | Base vide / tables manquantes | Refaire pg_restore |
 
 `interroger_eco_org.py` appelle cette vérification automatiquement (sauf `--dry-run` ou `--skip-docker-check`). En cas d'échec : statut `docker_indisponible` sur toutes les lignes du CSV sortie.
+
+---
+
+## Dump Paheko — hors volumes (compta €)
+
+Paheko n'est **pas** une source DEC_REE / LIV / poids. Caisse métier et Saisie au poids Paheko : **à désinstaller**.  
+`--source paheko` est refusé par `interroger_eco_org.py`.
+
+`check_paheko_dump.py` vérifie qu'un `.sqlite` est une base Paheko **lisible pour la compta**, et **alerte** si Saisie au poids ou Caisse sont encore là.
+
+Détail : [references/bdd-metier-paheko.md](references/bdd-metier-paheko.md)
 
 ---
 

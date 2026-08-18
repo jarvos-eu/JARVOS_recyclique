@@ -1,14 +1,19 @@
 {
   "type": "multi",
   "default_template": "brainstorming-organique",
-  "template": "brainstorming-organique",
+  "template": "default",
   "speakers": {
-    "A": "Intervenant A (a renommer)",
-    "B": "Intervenant B (a renommer)",
-    "C": "Intervenant C (a renommer)",
-    "D": "Intervenant D (a renommer)"
+    "A": "Germaine",
+    "B": "Louiise",
+    "C": "Benevole local (a confirmer)",
+    "D": "Catherine",
+    "E": "Benevole (a confirmer)",
+    "F": "Greg",
+    "G": "Claudie",
+    "H": "Anne"
   },
   "language": "fr",
   "diarization": true,
-  "meeting_id_pattern": "YYYY-MM-DD-recyclique-terrain"
+  "meeting_id_pattern": "YYYY-MM-DD-recyclique-terrain",
+  "notes": "HITL 2026-08-18: Louiise = speaker B (fondatrice, facilitatrice de fond). Benoit = distribution de parole uniquement (exercice AG), pas speaker B."
 }

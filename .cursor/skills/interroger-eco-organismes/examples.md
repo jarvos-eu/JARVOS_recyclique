@@ -41,6 +41,13 @@ Template avec `date_fin=2026-09-30` et dump du `2026-07-07` :
 
 ---
 
+## Cas 4 — Paheko n'est pas une source de volumes (2026-08-18)
+
+`--source paheko` et `--compare` sont **refusés** : Paheko = compta € ; Recyclique = poids / décla.  
+Attendu : statut CSV `hors_perimetre` + message en français.
+
+---
+
 ## Commande type
 
 ```bash

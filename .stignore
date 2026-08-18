@@ -23,10 +23,8 @@ coverage
 .DS_Store
 Thumbs.db
 
+// .env / .env.example — SYNC miroir VPS <-> poste local (Git = .gitignore)
+
 // Ré-inclure explicitement si besoin (décommenter) :
-// !.env
 // !_local/**
 // !data/dev.sqlite
-
-.env
-.env.old

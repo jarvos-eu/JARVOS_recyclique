@@ -7,30 +7,40 @@ description: >-
   Vérifie fraîcheur dump, exécute template CSV, produit CSV rempli + SQL audit.
   Use when the user asks to query eco-organismes declarations, run DEC_REE/LIV
   aggregates, explore Recyclique DB for declaration volumes, or refresh from dump.
+  Do not use Paheko for weights or eco-organism volumes — Paheko is euros/accounting only.
 ---
 
 # Interroger éco-organismes (dump Recyclique)
 
 Skill **projet** — La Clique / Recyclique 1.4.4 · miroir BDD read-only.
 
-**Périmètre canon :** extraire des **chiffres fiables depuis la BDD** (caisse + dépôt). Le format tableur partenaire (ODS Germaine, XLSX, etc.) change à chaque mission — **non prioritaire** ; voir [references/](references/) si besoin.
+**Périmètre canon :** extraire des **chiffres fiables depuis Recyclique** (caisse + dépôt). Le format tableur partenaire (ODS Germaine, XLSX, etc.) change à chaque mission — **non prioritaire** ; voir [references/](references/) si besoin.
+
+## Frontière Paheko (2026-08-18)
+
+**Paheko = compta en euros** (écritures, exercices, bilans, questions comptables).  
+**Recyclique = poids, caisse métier, dépôts, déclarations éco-organismes.**
+
+Ne pas interroger Paheko pour DEC_REE / LIV / RECYCLAGE / PRE. Les extensions Paheko **Saisie au poids** et **Caisse** (`plugin_pos_*`) sont **hors périmètre** et vont être **désinstallées**. `--source paheko` / `--compare` sont **refusés** par le script.
+
+Détail : [references/bdd-metier-paheko.md](references/bdd-metier-paheko.md)
 
 ## Quand l'utiliser
 
 - Calculer **DEC_REE** (sorties réemploi caisse), **LIV** (entrées tickets), **RECYCLAGE** (benne kg)
 - Remplir un **template CSV** de volumes par filière et période
-- Vérifier la **fraîcheur du dump** avant une période
+- Vérifier la **fraîcheur du dump Recyclique** avant une période
 - Reconnaître le schéma BDD / rejouer golden tests (cf. [references/bdd-metier.md](references/bdd-metier.md))
 
-**Hors périmètre v1 :** saisie portail, module déclaration Recyclique (story 9.ECO-04).
+**Hors périmètre v1 :** saisie portail, module déclaration Recyclique (story 9.ECO-04), **tout volume poids depuis Paheko**.
 
 ---
 
 ## Workflow agent (7 étapes)
 
 ```
-1. mapping-reference.md + references/bdd-metier.md (règles métier)
-2. dump_manifest.py → dernier dump + date couverture
+1. mapping-reference.md + references/bdd-metier.md (règles métier Recyclique)
+2. dump_manifest.py → dernier dump Recyclique + date couverture
 3. Si date_fin > date dump → STOP : demander dump frais
 4. docker_mirror.py → Docker démarré ? conteneur miroir prêt ? (sinon message clair, pas de force)
 5. runbook.md → restaurer le miroir si étape 4 échoue
@@ -108,12 +118,13 @@ Convention : `references/_depot/recyclic_db_export_YYYYMMDD_HHMMSS.dump`
 | Priorité | Fichier | Contenu |
 |----------|---------|---------|
 | 1 | [runbook.md](runbook.md) | Docker, restore, sécurité |
-| 2 | [mapping-reference.md](mapping-reference.md) | Codes ↔ catégories |
+| 2 | [mapping-reference.md](mapping-reference.md) | Codes ↔ catégories Recyclique |
 | 3 | [references/bdd-metier.md](references/bdd-metier.md) | SQL, flux, sanity, exploration |
 | 4 | [references/exploration-requetes.sql](references/exploration-requetes.sql) | Requêtes copiables |
 | 5 | [examples.md](examples.md) | Cas T2 chiffré |
 | — | [templates/interrogation-template-complet.csv](templates/interrogation-template-complet.csv) | Exemple DEC_REE + LIV + RECYCLAGE + Ecomaison |
 | — | [scripts/docker_mirror.py](scripts/docker_mirror.py) | Vérif Docker / miroir (messages clair) |
+| — | [references/bdd-metier-paheko.md](references/bdd-metier-paheko.md) | Frontière : Paheko = €, pas les volumes |
 | — | [references/](references/) | Archives situational (ex. Germaine ODS) |
 
 **Projet :** `references/eco-organismes/index.md` · `references/dumps/schema-recyclic-dev.md`
@@ -125,6 +136,7 @@ Convention : `references/_depot/recyclic_db_export_YYYYMMDD_HHMMSS.dump`
 - Partenaires : Ecologic + Ecomaison (colonnes K–T) dans le script
 - Pas d'écriture dump / prod · pas de restauration Docker automatique
 - Tableur partenaire : ad hoc — voir `references/`
+- Paheko n'est **pas** une source de volumes
 
 ## Évolutions prévues
 

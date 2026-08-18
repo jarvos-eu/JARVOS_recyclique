@@ -26,6 +26,8 @@ Les artefacts du **plan Git** (tests, procedure, subagent) sont dans `artefacts/
 
 | Fichier | Role |
 |---------|------|
+| `2026-08-18_01_handoff-interroger-paheko-eco-organismes.md` | **Handoff obsolète** (corrigé 2026-08-18) — Paheko = compta €, pas les volumes éco-org. Ne pas exécuter `--source paheko`. |
+| `2026-08-18_02_trame-rapport-financier-ag-2025.csv` | **Trame CSV non remplie** du rapport financier 2025 pour l’AG : période Paheko provisoire, lignes ressources/emplois/bilan/indicateurs/commentaires, comptes cibles et statuts d’extraction. |
 | `2026-07-07_05_cadrage-patch-1.4.5-refashion.md` | **Cadrage patch 1.4.5 Refashion** — DPAV TLC : ≥4 cases/PAV, J+40, P2 conditionnelle (convention) · mapping textile · export brouillon · **6** stories `9.RF-01…06` · prérequis SIRET repreneurs. |
 | `2026-07-07_04_cadrage-patch-1.4.5-ecologic.md` | **Cadrage patch 1.4.5 Ecologic** — DEEE/ESS : **18** cases (9 codes × LIV/DEC_REE), P1 · mapping double étape · golden test **PAM LIV 2,223 t** · export pro forma · **6** stories `9.ECO-01…06` · gaps Paheko/LCQ. |
 | `2026-07-07_08_installation-kdrive-headless-vps.md` | **Runbook K-Drive headless VPS** — client desktop AppImage + systemd sur VPS Linux ; accès fichiers La Clique (kSuite gratuit, sans API/WebDAV) pour agents/scripts · chantier à part · levier futur mode **AIDE** bot Discord · liens [`2026-07-05_02`](2026-07-05_02_cadrage-bot-discord-la-clique-pilote.md) · [`2026-02-25_02`](2026-02-25_02_chantier-fichiers-politique-documentaire.md). |

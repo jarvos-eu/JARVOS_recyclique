@@ -80,3 +80,12 @@ Période SQL : `[date_debut 00:00 UTC, date_fin+1 jour)` — date_fin **inclusiv
 | ABJ-TONM unité | pièces par défaut | tonnes OK si portail (ex. 0,010 t) |
 | LIV entrées | tickets Recyclique | Pesées enlèvement tableur = source métier possible |
 | Volume LIV aberrant | tickets Recyclique | Ex. PAM 246 t tableur vs ~1,1 t tickets → rejeter tableur, HITL |
+
+---
+
+## Paheko — hors mapping volumes
+
+**2026-08-18 :** Paheko n'alimente **aucun** code portail (PAM, ASL, K–T…).  
+Poids et décla = catégories Recyclique ci-dessus. Paheko = euros / bilans.  
+Les objets « Vélo… » du module Saisie au poids Paheko ne doivent **plus** être mappés : extension à désinstaller. Voir [references/bdd-metier-paheko.md](references/bdd-metier-paheko.md).
+

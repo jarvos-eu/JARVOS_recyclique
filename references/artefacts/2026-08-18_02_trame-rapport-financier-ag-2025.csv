@@ -1,0 +1,47 @@
+section;id;libelle;type_ligne;unite;periode;comptes_paheko_cibles;budget_n;realise_n;realise_n_1;valeur_n;valeur_n_1;formule_ou_source;statut;commentaire
+parametres;P01;Nom de l’association;parametre;texte;2025-07-04/2025-12-31;;;;;;;config.org_name;a_confirmer;Valeur lue dans Paheko : L’Eco de la Clique
+parametres;P02;Exercice N;parametre;date;2025-07-04/2025-12-31;acc_years;;;;;;acc_years.label = Exercice 2025;a_confirmer;Période configurée dans le backup Paheko fourni
+parametres;P03;Exercice N-1;parametre;date;non configure;;;;;;;acc_years;non_disponible;Aucun exercice 2024 n’est configuré dans le backup fourni
+parametres;P04;Source à interroger;parametre;texte;2025-07-04/2025-12-31;acc_transactions / acc_accounts;;;;;;Backup SQLite Paheko du 2026-08-18;a_preparer;Extraire les montants sans modifier le backup
+parametres;P05;Convention de remplissage;instruction;texte;2025-07-04/2025-12-31;;;;;;;Valeurs monétaires en EUR sans symbole;a_preparer;Ne pas inventer une valeur absente et signaler toute catégorie non mappable
+compte_resultat;R01;Cotisations et adhésions;poste;EUR;2025-07-04/2025-12-31;756*;;;;;;Comptes de cotisations;a_extraire;À distinguer selon les comptes effectivement utilisés
+compte_resultat;R02;Subventions et concours publics;poste;EUR;2025-07-04/2025-12-31;730*,740*;;;;;;Subventions et concours publics;a_extraire;Vérifier la nature de chaque produit
+compte_resultat;R03;Dons et mécénat;poste;EUR;2025-07-04/2025-12-31;754*;;;;;;Dons manuels et mécénat;a_extraire;Inclure les ressources liées à la générosité du public
+compte_resultat;R04;Contributions financières d’autres organismes;poste;EUR;2025-07-04/2025-12-31;755*;;;;;;Contributions financières;a_extraire;À distinguer des subventions publiques
+compte_resultat;R05;Ventes et prestations;poste;EUR;2025-07-04/2025-12-31;70*;;;;;;Ventes de marchandises et prestations;a_extraire;Le compte 7070 Vente de réemploi existe dans Paheko
+compte_resultat;R06;Autres produits;poste;EUR;2025-07-04/2025-12-31;758*,76*,77*,78*,79*;;;;;;Autres produits de gestion courante financiers exceptionnels et reprises;a_extraire;Filtrer pour éviter les doublons avec les lignes précédentes
+compte_resultat;R07;Total des ressources;total;EUR;2025-07-04/2025-12-31;;;;;;;Somme R01 à R06;a_calculer;Total calculé après extraction
+annexe_resultat;R08;Report à nouveau et affectation du résultat antérieur;poste;EUR;2025-07-04/2025-12-31;11*,12*;;;;;;À déterminer selon la présentation retenue;ne_pas_integrer;Ne pas intégrer mécaniquement aux produits du compte de résultat
+compte_resultat;E01;Achats fournitures et matériel;poste;EUR;2025-07-04/2025-12-31;60*;;;;;;Achats et fournitures;a_extraire;Regrouper les sous-comptes pour une lecture accessible en AG
+compte_resultat;E02;Loyer charges et énergie;poste;EUR;2025-07-04/2025-12-31;6061*,613*,614*;;;;;;Énergie locations et charges locatives;a_extraire;Inclure notamment eau électricité et location immobilière
+compte_resultat;E03;Missions déplacements et réceptions;poste;EUR;2025-07-04/2025-12-31;625*;;;;;;Déplacements missions et réceptions;a_extraire;Remplace les lignes génériques Projet A et Projet B
+compte_resultat;E04;Assurances télécommunications banque et autres services;poste;EUR;2025-07-04/2025-12-31;616*,626*,627*,628*;;;;;;Services extérieurs ciblés;a_extraire;À détailler uniquement si nécessaire pour l’AG
+compte_resultat;E05;Honoraires et services administratifs;poste;EUR;2025-07-04/2025-12-31;618*,622*;;;;;;Études prestations administratives et honoraires;a_extraire;Vérifier les comptes réellement utilisés
+compte_resultat;E06;Impôts taxes et versements assimilés;poste;EUR;2025-07-04/2025-12-31;63*;;;;;;Impôts taxes et versements assimilés;a_extraire;Ne pas confondre avec les dettes fiscales du bilan
+compte_resultat;E07;Charges de personnel;poste;EUR;2025-07-04/2025-12-31;64*;;;;;;Salaires et charges sociales;a_extraire;Laisser à zéro si aucun salarié n’est concerné
+compte_resultat;E08;Autres charges;poste;EUR;2025-07-04/2025-12-31;65*,66*,67*,68*;;;;;;Autres charges financières exceptionnelles et dotations;a_extraire;Filtrer les comptes réellement présents
+compte_resultat;E09;Total des emplois;total;EUR;2025-07-04/2025-12-31;;;;;;;Somme E01 à E08;a_calculer;Total calculé après extraction
+compte_resultat;E10;Résultat de l’exercice;resultat;EUR;2025-07-04/2025-12-31;;;;;;;R07 moins E09;a_calculer;Qualifier ensuite le résultat en excédent ou déficit
+bilan;B01;Trésorerie banques et caisse;poste;EUR;2025-12-31;511*,512*,53*;;;;;;Soldes de clôture au 31-12-2025;a_extraire;À rapprocher des soldes bancaires et de caisse
+bilan;B02;Créances et produits à recevoir;poste;EUR;2025-12-31;411*,467*;;;;;;Soldes débiteurs à la clôture;a_extraire;Inclure les créances éco-organismes si elles sont comptabilisées ici
+bilan;B03;Immobilisations nettes;poste;EUR;2025-12-31;2*,28*,29*;;;;;;Valeur nette après amortissements et dépréciations;a_extraire;Ne pas reprendre uniquement le coût historique
+bilan;B04;Autres actifs à vérifier;poste;EUR;2025-12-31;3*,4*,48*;;;;;;Autres postes d’actif éventuels;a_extraire;Ligne de contrôle pour ne pas perdre un solde
+bilan;B05;Total actif;total;EUR;2025-12-31;;;;;;;Somme B01 à B04;a_calculer;Le total doit être comparé au total passif
+bilan;B06;Fonds propres réserves et report à nouveau;poste;EUR;2025-12-31;10*,11*,12*,13*;;;;;;Fonds propres réserves résultat et subventions d’investissement;a_extraire;Ne pas réduire les fonds associatifs au seul cumul des excédents
+bilan;B07;Dettes fournisseurs et comptes rattachés;poste;EUR;2025-12-31;40*;;;;;;Dettes fournisseurs à la clôture;a_extraire;À vérifier même si aucune ligne n’existait dans le modèle initial
+bilan;B08;Dettes fiscales et sociales;poste;EUR;2025-12-31;42*,43*,44*;;;;;;Dettes envers personnel organismes sociaux et administration;a_extraire;À distinguer des charges de l’exercice
+bilan;B09;Emprunts et autres dettes;poste;EUR;2025-12-31;16*,45*,46*,47*;;;;;;Emprunts comptes courants et autres dettes;a_extraire;Vérifier la nature des comptes 45 à 47
+bilan;B10;Fonds dédiés et autres passifs à vérifier;poste;EUR;2025-12-31;19*,48*;;;;;;Fonds dédiés produits constatés d’avance et autres passifs;a_extraire;À conserver seulement si un solde existe
+bilan;B11;Total passif;total;EUR;2025-12-31;;;;;;;Somme B06 à B10;a_calculer;Le total doit égaler le total actif
+bilan;B12;Contrôle équilibre du bilan;controle;EUR;2025-12-31;;;;;;;B05 moins B11;a_calculer;Le résultat attendu est zéro
+indicateurs;I01;Taux de frais de fonctionnement;indicateur;%;2025-07-04/2025-12-31;;;;;;;Frais de fonctionnement divisé par total emplois;a_calculer;Définir précisément les postes inclus avant de fixer une cible
+indicateurs;I02;Taux de subventionnement;indicateur;%;2025-07-04/2025-12-31;;;;;;;R02 divisé par R07;a_calculer;Ne pas présenter une cible universelle sans justification
+indicateurs;I03;Part des missions et activités;indicateur;%;2025-07-04/2025-12-31;;;;;;;E03 divisé par E09;a_calculer;À renommer selon le périmètre réel des activités
+indicateurs;I04N;Nombre d’adhérents N;indicateur;personnes;2025-12-31;;;;;;;Table des membres Paheko à la clôture;a_extraire;Valeur distincte de l’indicateur d’évolution
+indicateurs;I04N1;Nombre d’adhérents N-1;indicateur;personnes;non configure;;;;;;;Historique membres Paheko;a_confirmer;N-1 non disponible dans l’exercice configuré fourni
+indicateurs;I04E;Évolution du nombre d’adhérents;indicateur;%;2025-07-04/2025-12-31;;;;;;;I04N moins I04N1 divisé par I04N1;a_calculer;Ne calculer que si les deux nombres sont comparables
+indicateurs;I05;Trésorerie de sécurité;indicateur;mois;2025-07-04/2025-12-31;;;;;;;Trésorerie divisée par moyenne des charges mensuelles;a_calculer;Préciser si la moyenne porte sur six mois ou sur une autre période
+commentaires;C01;Explication des écarts significatifs;commentaire;texte;2025-07-04/2025-12-31;;;;;;;Analyse après extraction;a_rediger;Écart budget réalisé ou événement exceptionnel
+commentaires;C02;Justification du résultat;commentaire;texte;2025-07-04/2025-12-31;;;;;;;Analyse de E10;a_rediger;Expliquer les causes plutôt que seulement annoncer le montant
+commentaires;C03;Affectation du résultat;commentaire;texte;2025-07-04/2025-12-31;;;;;;;Décision de l’AG ou proposition du bureau;a_rediger;Séparer cette décision du compte de résultat
+commentaires;C04;Grandes lignes du budget prévisionnel suivant;commentaire;texte;2026-01-01/2026-12-31;;;;;;;Budget prévisionnel 2026;a_rediger;À traiter séparément du bilan 2025
